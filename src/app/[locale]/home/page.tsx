@@ -170,142 +170,65 @@ export default function HomePage() {
   }
 
   return (
-    <div className="glass-page min-h-screen">
+    <div className="glass-page min-h-dvh">
       <Navbar />
 
-      {/* 自定义呼吸动画 */}
-      <style>{`
-        @keyframes breathe-drift-1 {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-          25% { transform: translate(30px, -20px) scale(1.15); opacity: 0.7; }
-          50% { transform: translate(-20px, 15px) scale(0.95); opacity: 0.4; }
-          75% { transform: translate(15px, 25px) scale(1.1); opacity: 0.65; }
-        }
-        @keyframes breathe-drift-2 {
-          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.45; }
-          30% { transform: translate(-25px, 20px) scale(1.2); opacity: 0.7; }
-          60% { transform: translate(20px, -15px) scale(0.9); opacity: 0.35; }
-          80% { transform: translate(-10px, -25px) scale(1.05); opacity: 0.6; }
-        }
-        @keyframes breathe-drift-3 {
-          0%, 100% { transform: translate(0, 0) scale(1.05); opacity: 0.4; }
-          20% { transform: translate(20px, 15px) scale(0.9); opacity: 0.55; }
-          45% { transform: translate(-15px, -20px) scale(1.15); opacity: 0.7; }
-          70% { transform: translate(10px, -10px) scale(1); opacity: 0.35; }
-        }
-        @keyframes bracket-breathe {
-          0%, 70%, 100% { opacity: 0.2; }
-          75%, 90% { opacity: 0.6; }
-        }
-      `}</style>
-
-      <main className="flex flex-col items-center pt-[13vh] pb-12 px-4 max-w-5xl mx-auto w-full">
-
-        {/* ─── 取景器整体包裹：标题 + 输入框 ─── */}
-        <div className="w-full relative p-5">
-          {/* 四角校准线 */}
-          <span className="absolute top-0 left-0 w-5 h-5 border-t border-l border-[var(--glass-text-primary)] pointer-events-none z-10" style={{ animation: 'bracket-breathe 8s ease-in-out infinite' }} />
-          <span className="absolute top-0 right-0 w-5 h-5 border-t border-r border-[var(--glass-text-primary)] pointer-events-none z-10" style={{ animation: 'bracket-breathe 8s ease-in-out infinite' }} />
-          <span className="absolute bottom-0 left-0 w-5 h-5 border-b border-l border-[var(--glass-text-primary)] pointer-events-none z-10" style={{ animation: 'bracket-breathe 8s ease-in-out infinite' }} />
-          <span className="absolute bottom-0 right-0 w-5 h-5 border-b border-r border-[var(--glass-text-primary)] pointer-events-none z-10" style={{ animation: 'bracket-breathe 8s ease-in-out infinite' }} />
-
-          {/* REC 录制指示灯 */}
-          <span
-            className="absolute top-2 right-7 flex items-center gap-1 z-10"
-            style={{ animation: 'bracket-breathe 2s ease-in-out infinite' }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.7)]" />
-            <span className="text-[8px] font-mono font-bold tracking-widest text-red-500/70">REC</span>
-          </span>
-
-          {/* 标题区 */}
+      <main className="mx-auto w-full max-w-[960px] px-4 pb-8 pt-8 sm:px-6">
+        <div className="mb-2">
           <TypewriterHero title={t('title')} subtitle={t('subtitle')} />
-
-          {/* 呼吸光晕 + 输入区域 */}
-          <div className="w-full relative group">
-            <div
-              className="absolute -inset-10 rounded-[48px] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse 80% 60% at 30% 40%, rgba(6, 182, 212, 0.4), transparent 70%)',
-                animation: 'breathe-drift-1 8s ease-in-out infinite',
-                filter: 'blur(30px)',
-              }}
-            />
-            <div
-              className="absolute -inset-10 rounded-[48px] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse 70% 80% at 70% 60%, rgba(139, 92, 246, 0.35), transparent 70%)',
-                animation: 'breathe-drift-2 10s ease-in-out infinite',
-                filter: 'blur(35px)',
-              }}
-            />
-            <div
-              className="absolute -inset-12 rounded-[56px] pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(59, 130, 246, 0.3), transparent 70%)',
-                animation: 'breathe-drift-3 12s ease-in-out infinite',
-                filter: 'blur(40px)',
-              }}
-            />
-
-            <StoryInputComposer
-              value={inputValue}
-              onValueChange={(nextValue) => {
-                setInputValue(nextValue)
-                if (createError) {
-                  setCreateError(null)
-                }
-              }}
-              placeholder={t('inputPlaceholder')}
-              minRows={HOME_QUICK_START_MIN_ROWS}
-              textareaClassName="px-0 pt-0 pb-3 align-top"
-              videoRatio={videoRatio}
-              onVideoRatioChange={setVideoRatio}
-              ratioOptions={ratioOptions}
-              artStyle={artStyle}
-              onArtStyleChange={setArtStyle}
-              styleOptions={styleOptions}
-              stylePresetValue={stylePresetValue}
-              onStylePresetChange={setStylePresetValue}
-              stylePresetOptions={STYLE_PRESETS}
-              primaryAction={(
-                <button
-                  onClick={() => void handleCreate()}
-                  disabled={!inputValue.trim() || createLoading}
-                  className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm disabled:opacity-50"
-                >
-                  {createLoading ? tc('loading') : t('startCreation')}
-                  <AppIcon name="arrowRight" className="w-4 h-4" />
-                </button>
-              )}
-              secondaryActions={(
-                <button
-                  onClick={() => setAiWriteOpen(true)}
-                  disabled={createLoading}
-                  className="glass-btn-base flex h-10 flex-shrink-0 items-center gap-1.5 border border-[var(--glass-stroke-strong)] px-3 text-sm transition-all hover:border-[var(--glass-tone-info-fg)]/40"
-                >
-                  <AppIcon name="sparkles" className="w-4 h-4 text-[#7c3aed]" />
-                  <span
-                    className="font-medium"
-                    style={{
-                      background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                    }}
-                  >
-                    {t('aiWrite.trigger')}
-                  </span>
-                </button>
-              )}
-              footer={createError ? (
-                <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600">
-                  {createError}
-                </p>
-              ) : null}
-            />
-          </div>
         </div>
-        {/* AI 帮我写模态框 */}
+
+        <div className="mt-3">
+          <StoryInputComposer
+            value={inputValue}
+            onValueChange={(nextValue) => {
+              setInputValue(nextValue)
+              if (createError) {
+                setCreateError(null)
+              }
+            }}
+            placeholder={t('inputPlaceholder')}
+            minRows={HOME_QUICK_START_MIN_ROWS}
+            textareaClassName="px-0 pt-0 pb-3 align-top"
+            videoRatio={videoRatio}
+            onVideoRatioChange={setVideoRatio}
+            ratioOptions={ratioOptions}
+            artStyle={artStyle}
+            onArtStyleChange={setArtStyle}
+            styleOptions={styleOptions}
+            stylePresetValue={stylePresetValue}
+            onStylePresetChange={setStylePresetValue}
+            stylePresetOptions={STYLE_PRESETS}
+            primaryAction={(
+              <button
+                onClick={() => void handleCreate()}
+                disabled={!inputValue.trim() || createLoading}
+                className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm disabled:opacity-50"
+              >
+                {createLoading ? tc('loading') : t('startCreation')}
+                <AppIcon name="arrowRight" className="w-4 h-4" />
+              </button>
+            )}
+            secondaryActions={(
+              <button
+                onClick={() => setAiWriteOpen(true)}
+                disabled={createLoading}
+                className="glass-btn-base glass-btn-secondary flex h-10 flex-shrink-0 items-center gap-1.5 px-3 text-sm"
+              >
+                <AppIcon name="sparkles" className="w-4 h-4 text-[var(--film-gold)]" />
+                <span className="font-medium text-[var(--glass-text-primary)]">
+                  {t('aiWrite.trigger')}
+                </span>
+              </button>
+            )}
+            footer={createError ? (
+              <p className="rounded-[10px] border border-[var(--glass-stroke-danger)] bg-[var(--glass-tone-danger-bg)] px-4 py-3 text-sm text-[var(--glass-tone-danger-fg)]">
+                {createError}
+              </p>
+            ) : null}
+          />
+        </div>
+
         <AiWriteModal
           open={aiWriteOpen}
           loading={aiWriteLoading}
@@ -316,83 +239,87 @@ export default function HomePage() {
       </main>
 
       {/* 最近项目 */}
-      <section className="px-4 sm:px-6 lg:px-10 pb-8 max-w-[1400px] mx-auto w-full">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-semibold text-[var(--glass-text-secondary)]">{t('recentProjects')}</h2>
+      <section className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6 lg:px-8">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[15px] font-bold text-[var(--glass-text-primary)]">{t('recentProjects')}</h2>
           <Link
             href={{ pathname: '/workspace' }}
-            className="text-xs text-[var(--glass-tone-info-fg)] hover:underline font-medium"
+            className="text-xs font-medium text-[var(--glass-text-secondary)] transition-colors hover:text-[var(--film-gold)]"
           >
             {t('viewAll')}
           </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="glass-surface p-5 animate-pulse">
-                <div className="h-4 bg-[var(--glass-bg-muted)] rounded mb-3" />
-                <div className="h-3 bg-[var(--glass-bg-muted)] rounded mb-2" />
-                <div className="h-3 bg-[var(--glass-bg-muted)] rounded w-2/3" />
+              <div key={i} className="glass-surface animate-pulse overflow-hidden">
+                <div className="aspect-[16/10] bg-[var(--glass-bg-muted)]" />
+                <div className="space-y-2 p-3">
+                  <div className="h-4 rounded bg-[var(--glass-bg-muted)]" />
+                  <div className="h-3 w-2/3 rounded bg-[var(--glass-bg-muted)]" />
+                </div>
               </div>
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-12 h-12 bg-[var(--glass-bg-muted)] rounded-xl flex items-center justify-center mx-auto mb-3">
-              <AppIcon name="folderCards" className="w-6 h-6 text-[var(--glass-text-tertiary)]" />
-            </div>
+          <div className="px-2 py-14 text-center">
+            <AppIcon name="folderCards" className="mx-auto mb-3 h-8 w-8 text-[var(--glass-text-tertiary)]" />
             <p className="text-sm text-[var(--glass-text-tertiary)]">{t('noProjects')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {projects.map((project) => (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {projects.map((project, index) => (
               <Link
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
-                className="glass-surface cursor-pointer group hover:border-[var(--glass-tone-info-fg)]/40 transition-all duration-300 overflow-hidden relative block"
+                className="glass-surface group block overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
               >
-                <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                <div className="p-5 relative z-10">
-                  <h3 className="text-sm font-bold text-[var(--glass-text-primary)] mb-2 group-hover:text-[var(--glass-tone-info-fg)] transition-colors line-clamp-1">
+                <div
+                  className="aspect-[16/10] border-b border-[var(--glass-stroke-base)]"
+                  style={{
+                    background:
+                      index % 3 === 0
+                        ? 'linear-gradient(135deg, #3a2e24, #1a1612)'
+                        : index % 3 === 1
+                          ? 'linear-gradient(135deg, #2f3a32, #15120f)'
+                          : 'linear-gradient(135deg, #2a3340, #15120f)',
+                  }}
+                />
+                <div className="p-3">
+                  <h3 className="mb-1 line-clamp-1 text-sm font-bold text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
                     {project.name}
                   </h3>
                   {(project.description || project.stats?.firstEpisodePreview) && (
-                    <div className="flex items-start gap-2 mb-3">
-                      <AppIcon name="fileText" className="w-3.5 h-3.5 text-[var(--glass-text-tertiary)] mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-[var(--glass-text-secondary)] line-clamp-2 leading-relaxed">
-                        {project.description || project.stats?.firstEpisodePreview}
-                      </p>
-                    </div>
+                    <p className="mb-2 line-clamp-2 text-xs leading-relaxed text-[var(--glass-text-secondary)]">
+                      {project.description || project.stats?.firstEpisodePreview}
+                    </p>
                   )}
                   {project.stats && (project.stats.episodes > 0 || project.stats.images > 0 || project.stats.videos > 0) && (
-                    <div className="flex items-center gap-2 mb-3">
-                      <IconGradientDefs className="w-0 h-0 absolute" aria-hidden="true" />
-                      <AppIcon name="statsBarGradient" className="w-4 h-4 flex-shrink-0" />
-                      <div className="flex items-center gap-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                        {project.stats.episodes > 0 && (
-                          <span className="flex items-center gap-1">
-                            <AppIcon name="statsEpisodeGradient" className="w-3.5 h-3.5" />
-                            {project.stats.episodes}
-                          </span>
-                        )}
-                        {project.stats.images > 0 && (
-                          <span className="flex items-center gap-1">
-                            <AppIcon name="statsImageGradient" className="w-3.5 h-3.5" />
-                            {project.stats.images}
-                          </span>
-                        )}
-                        {project.stats.videos > 0 && (
-                          <span className="flex items-center gap-1">
-                            <AppIcon name="statsVideoGradient" className="w-3.5 h-3.5" />
-                            {project.stats.videos}
-                          </span>
-                        )}
-                      </div>
+                    <div className="mb-2 flex items-center gap-3 text-xs font-semibold text-[var(--glass-text-secondary)]">
+                      <IconGradientDefs className="absolute h-0 w-0" aria-hidden="true" />
+                      {project.stats.episodes > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <AppIcon name="statsEpisodeGradient" className="h-3.5 w-3.5" />
+                          {project.stats.episodes}
+                        </span>
+                      )}
+                      {project.stats.images > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <AppIcon name="statsImageGradient" className="h-3.5 w-3.5" />
+                          {project.stats.images}
+                        </span>
+                      )}
+                      {project.stats.videos > 0 && (
+                        <span className="inline-flex items-center gap-1">
+                          <AppIcon name="statsVideoGradient" className="h-3.5 w-3.5" />
+                          {project.stats.videos}
+                        </span>
+                      )}
                     </div>
                   )}
                   <div className="flex items-center gap-1 text-[10px] text-[var(--glass-text-tertiary)]">
-                    <AppIcon name="clock" className="w-3 h-3" />
+                    <AppIcon name="clock" className="h-3 w-3" />
                     {formatTimeAgo(project.updatedAt)}
                   </div>
                 </div>

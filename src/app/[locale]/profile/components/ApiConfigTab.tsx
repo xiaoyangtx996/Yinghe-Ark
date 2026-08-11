@@ -2,6 +2,10 @@
 
 import { ApiConfigTabContainer } from './api-config-tab/ApiConfigTabContainer'
 
-export default function ApiConfigTab() {
-  return <ApiConfigTabContainer />
+interface ApiConfigTabProps {
+  pane?: 'defaults' | 'providers'
+}
+
+export default function ApiConfigTab({ pane = 'defaults' }: ApiConfigTabProps) {
+  return <ApiConfigTabContainer pane={pane} />
 }

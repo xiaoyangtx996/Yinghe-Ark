@@ -124,20 +124,15 @@ export function ApiConfigProviderList({
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="glass-surface-soft inline-flex h-7 w-7 items-center justify-center rounded-lg text-[var(--glass-text-secondary)]">
-              <AppIcon name="cube" className="w-4 h-4" />
-            </span>
-            <div>
-              <h2 className="text-xl font-bold text-[var(--glass-text-primary)]">{labels.providerPool}</h2>
-              <p className="text-[13px] text-[var(--glass-text-secondary)]">{labels.providerPoolDesc}</p>
-              <p className="text-[12px] text-[var(--glass-text-tertiary)]">{labels.dragToSortHint}</p>
-            </div>
+        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--glass-stroke-base)] pb-4">
+          <div className="min-w-0">
+            <p className="text-[13px] leading-relaxed text-[var(--glass-text-secondary)]">{labels.providerPoolDesc}</p>
+            <p className="mt-1 text-[12px] text-[var(--glass-text-tertiary)]">{labels.dragToSortHint}</p>
           </div>
           <button
+            type="button"
             onClick={onAddGeminiProvider}
-            className="glass-btn-base glass-btn-primary cursor-pointer px-3 py-1.5 text-sm font-semibold"
+            className="glass-btn-base glass-btn-primary shrink-0 cursor-pointer px-3 py-1.5 text-sm font-semibold"
           >
             {labels.addGeminiProvider}
           </button>

@@ -5,46 +5,37 @@
 
 .glass-surface {
   background: var(--glass-bg-surface);
-  border: 1px solid var(--glass-stroke-soft);
+  border: 1px solid var(--glass-stroke-base);
   box-shadow: var(--glass-shadow-sm);
-  backdrop-filter: blur(var(--glass-blur-md));
-  -webkit-backdrop-filter: blur(var(--glass-blur-md));
-  border-radius: var(--glass-radius-lg);
+  border-radius: var(--glass-radius-md);
 }
 
 .glass-surface-elevated {
   background: var(--glass-bg-surface-strong);
-  border: 1px solid var(--glass-stroke-soft);
-  box-shadow: var(--glass-shadow-lg);
-  backdrop-filter: blur(var(--glass-blur-lg));
-  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
-  border-radius: var(--glass-radius-lg);
+  border: 1px solid var(--glass-stroke-base);
+  box-shadow: var(--glass-shadow-md);
+  border-radius: var(--glass-radius-md);
 }
 
 .glass-surface-modal {
   background: var(--glass-bg-surface-modal);
-  border: 1px solid var(--glass-stroke-soft);
+  border: 1px solid var(--glass-stroke-base);
   box-shadow: var(--glass-shadow-modal);
-  backdrop-filter: blur(var(--glass-blur-lg));
-  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
-  border-radius: var(--glass-radius-xl);
+  border-radius: var(--glass-radius-lg);
 }
 
 .glass-surface-nav {
   background: var(--glass-bg-nav);
-  border: 1px solid var(--glass-stroke-soft);
+  border: 1px solid var(--glass-stroke-base);
   box-shadow: var(--glass-shadow-nav);
-  backdrop-filter: blur(var(--glass-blur-nav));
-  -webkit-backdrop-filter: blur(var(--glass-blur-nav));
-  border-radius: 999px;
+  border-radius: var(--glass-radius-md);
 }
 
 .glass-surface-soft {
   background: var(--glass-bg-surface-strong);
-  box-shadow: var(--glass-shadow-sm);
-  backdrop-filter: blur(var(--glass-blur-md));
-  -webkit-backdrop-filter: blur(var(--glass-blur-md));
-  border-radius: var(--glass-radius-lg);
+  border: 1px solid var(--glass-stroke-base);
+  box-shadow: none;
+  border-radius: var(--glass-radius-md);
 }
 
 .glass-divider {
@@ -52,9 +43,9 @@
 }
 
 .glass-field-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--glass-text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--glass-text-secondary);
   letter-spacing: 0.01em;
 }
 
@@ -135,26 +126,34 @@
 }
 
 .glass-btn-primary {
-  background: linear-gradient(140deg, var(--glass-accent-from) 0%, var(--glass-accent-to) 100%);
-  border: none;
+  background: var(--glass-accent-from);
+  border: 1px solid var(--glass-accent-from);
   color: var(--glass-text-on-accent);
-  box-shadow: 0 8px 20px var(--glass-accent-shadow-soft);
+  box-shadow: none;
 }
 
 .glass-btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px var(--glass-accent-shadow-strong);
+  background: var(--glass-accent-to);
+  border-color: var(--glass-accent-to);
+  transform: none;
+  box-shadow: none;
+}
+
+.glass-btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .glass-btn-secondary {
-  background: var(--glass-bg-surface-strong);
+  background: var(--glass-bg-surface);
   color: var(--glass-text-primary);
-  box-shadow: var(--glass-shadow-sm);
+  border: 1px solid var(--glass-stroke-base);
+  box-shadow: none;
 }
 
 .glass-btn-secondary:hover:not(:disabled) {
+  border-color: var(--glass-stroke-strong);
   background: var(--glass-bg-surface-strong);
-  box-shadow: var(--glass-shadow-md);
+  box-shadow: none;
 }
 
 .glass-btn-soft {
@@ -194,7 +193,7 @@
 }
 
 .glass-btn-tone-info:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--glass-tone-info-bg) 85%, white);
+  background: color-mix(in srgb, var(--glass-tone-info-bg) 85%, #3a2e24);
 }
 
 .glass-btn-tone-success {
@@ -204,7 +203,7 @@
 }
 
 .glass-btn-tone-success:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--glass-tone-success-bg) 85%, white);
+  background: color-mix(in srgb, var(--glass-tone-success-bg) 85%, #2f3a32);
 }
 
 .glass-btn-tone-warning {
@@ -214,7 +213,7 @@
 }
 
 .glass-btn-tone-warning:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--glass-tone-warning-bg) 85%, white);
+  background: color-mix(in srgb, var(--glass-tone-warning-bg) 85%, #3a2e24);
 }
 
 .glass-btn-tone-danger {
@@ -224,7 +223,7 @@
 }
 
 .glass-btn-tone-danger:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--glass-tone-danger-bg) 85%, white);
+  background: color-mix(in srgb, var(--glass-tone-danger-bg) 85%, #403028);
 }
 
 .glass-chip {

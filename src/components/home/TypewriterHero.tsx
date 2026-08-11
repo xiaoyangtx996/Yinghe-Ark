@@ -44,7 +44,7 @@ export default function TypewriterHero({ title, subtitle }: TypewriterHeroProps)
     !isDeleting && i === text.length - 1 && text.length > prevLenRef.current
 
   return (
-    <div className="text-center mb-4">
+    <div className="mb-3 text-left">
       <style>{`
         @keyframes twh-focus-pull {
           0%, 70%, 100% { filter: blur(0px); opacity: 1; }
@@ -71,14 +71,13 @@ export default function TypewriterHero({ title, subtitle }: TypewriterHeroProps)
 
       {/* 标题 — 带对焦动画 */}
       <h1
-        className="text-3xl font-bold text-[var(--glass-text-primary)] tracking-[0.08em] mb-2"
-        style={{ animation: 'twh-focus-pull 8s ease-in-out infinite' }}
+        className="font-display mb-2 text-left text-[clamp(28px,4vw,34px)] font-semibold tracking-tight text-[var(--glass-text-primary)]"
       >
         {title}
       </h1>
 
       {/* 终端打字机副标题 */}
-      <p className="font-mono text-sm h-6 flex items-center justify-center" style={{ color: 'var(--glass-text-tertiary)' }}>
+      <p className="flex h-6 items-center justify-start font-mono text-sm" style={{ color: 'var(--glass-text-secondary)' }}>
         <span className="mr-1.5 opacity-50">&gt;_</span>
         {text.split('').map((char, i) => (
           <span

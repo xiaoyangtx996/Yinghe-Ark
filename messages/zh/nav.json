@@ -5,5 +5,12 @@
   "downloadLogs": "下载日志",
   "signin": "登录",
   "signup": "注册",
-  "logout": "退出登录"
+  "logout": "退出登录",
+  "railHome": "创作",
+  "railProjects": "项目",
+  "railAssets": "资产",
+  "railLogs": "日志",
+  "railSettings": "设置",
+  "themeToLight": "切换到浅色模式",
+  "themeToDark": "切换到深色模式"
 }

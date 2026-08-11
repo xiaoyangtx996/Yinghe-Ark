@@ -54,10 +54,9 @@ export default function AiWriteModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15))' }}
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)]"
               >
-                <AppIcon name="sparkles" className="w-5 h-5 text-[#7c3aed]" />
+                <AppIcon name="sparkles" className="h-5 w-5 text-[var(--film-gold)]" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">
@@ -94,8 +93,8 @@ export default function AiWriteModal({
 
           {/* 提示文案 */}
           <div
-            className="px-3 py-2 rounded-lg text-xs text-[var(--glass-text-tertiary)] leading-relaxed"
-            style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.06), rgba(139,92,246,0.06))' }}
+            className="rounded-[8px] px-3 py-2 text-xs leading-relaxed text-[var(--glass-text-tertiary)]"
+            style={{ background: 'rgba(224,163,106,0.08)', border: '1px solid rgba(224,163,106,0.2)' }}
           >
             {t('hint')}
           </div>
@@ -105,17 +104,16 @@ export default function AiWriteModal({
             <button
               onClick={handleClose}
               disabled={loading}
-              className="flex-1 py-2.5 text-sm text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] transition-colors rounded-xl"
+              className="flex-1 rounded-[10px] py-2.5 text-sm text-[var(--glass-text-tertiary)] transition-colors hover:text-[var(--glass-text-secondary)]"
             >
               {t('cancel')}
             </button>
             <button
               onClick={handleStart}
               disabled={!promptText.trim() || loading}
-              className="flex-1 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #7c3aed)' }}
+              className="glass-btn-base glass-btn-primary flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold disabled:opacity-50"
             >
-              <AppIcon name="sparkles" className="w-4 h-4" />
+              <AppIcon name="sparkles" className="h-4 w-4" />
               <span>{loading ? '...' : t('startAiWrite')}</span>
             </button>
           </div>

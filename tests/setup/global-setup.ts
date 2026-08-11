@@ -67,6 +67,15 @@ async function waitForRedis(maxAttempts = 60) {
   throw new Error('Redis test service did not become ready in time')
 }
 
+function dockerAvailable() {
+  try {
+    execSync('docker --version', { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
+
 export default async function globalSetup() {
   loadTestEnv()
 
@@ -75,15 +84,22 @@ export default async function globalSetup() {
     return async () => {}
   }
 
-  execSync('docker compose -f docker-compose.test.yml down -v --remove-orphans', {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-  })
+  const useDocker = dockerAvailable()
+  if (useDocker) {
+    execSync('docker compose -f docker-compose.test.yml down -v --remove-orphans', {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+    })
 
-  execSync('docker compose -f docker-compose.test.yml up -d --remove-orphans', {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-  })
+    execSync('docker compose -f docker-compose.test.yml up -d --remove-orphans', {
+      cwd: process.cwd(),
+      stdio: 'inherit',
+    })
+  } else {
+    process.stdout.write(
+      '[global-setup] docker unavailable; using MySQL/Redis from env (see .env.test defaults)\n',
+    )
+  }
 
   await waitForMysql()
   await waitForRedis()
@@ -94,6 +110,8 @@ export default async function globalSetup() {
   })
 
   return async () => {
-    await runGlobalTeardown()
+    if (useDocker) {
+      await runGlobalTeardown()
+    }
   }
 }

@@ -328,16 +328,16 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="glass-page min-h-screen">
+    <div className="glass-page min-h-dvh">
       {/* Header - 统一导航栏 */}
       <Navbar />
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mb-5 flex flex-col gap-4 border-b border-[var(--glass-stroke-base)] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[var(--glass-text-primary)] mb-2">{t('title')}</h1>
-            <p className="text-[var(--glass-text-secondary)]">{t('subtitle')}</p>
+            <h1 className="font-display mb-1 text-[28px] font-semibold text-[var(--glass-text-primary)]">{t('title')}</h1>
+            <p className="text-sm text-[var(--glass-text-secondary)]">{t('subtitle')}</p>
           </div>
 
           {/* 搜索框 */}
@@ -371,44 +371,60 @@ export default function WorkspacePage() {
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* New Project Card */}
-          <div
-            onClick={() => openCreateModal()}
-            className="glass-surface p-6 cursor-pointer group flex items-center justify-center bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-blue-600/5 hover:from-blue-500/10 hover:via-cyan-500/10 hover:to-blue-600/10 transition-all duration-300"
-          >
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-300">
-                <AppIcon name="plus" className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-sm font-medium text-[var(--glass-text-secondary)] group-hover:text-[var(--glass-text-primary)] transition-colors">{t('newProject')}</span>
-            </div>
-          </div>
-
-          {/* Project Cards */}
-          {loading ? (
-            // Loading skeleton
-            Array.from({ length: 3 }).map((_, index) => (
+        {/* Projects Grid / Empty State */}
+        {loading ? (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="glass-surface p-6 animate-pulse">
                 <div className="h-4 bg-[var(--glass-bg-muted)] rounded mb-3"></div>
                 <div className="h-3 bg-[var(--glass-bg-muted)] rounded mb-2"></div>
                 <div className="h-3 bg-[var(--glass-bg-muted)] rounded w-2/3"></div>
               </div>
-            ))
-          ) : (
-            projects.map((project) => (
+            ))}
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-[var(--glass-bg-muted)] rounded-xl flex items-center justify-center mx-auto mb-4">
+              <AppIcon name="folderCards" className="w-8 h-8 text-[var(--glass-text-tertiary)]" />
+            </div>
+            <h3 className="text-lg font-medium text-[var(--glass-text-primary)] mb-2">
+              {searchQuery ? t('noResults') : t('noProjects')}
+            </h3>
+            <p className="text-[var(--glass-text-secondary)] mb-6">
+              {searchQuery ? t('noResultsDesc') : t('noProjectsDesc')}
+            </p>
+            {!searchQuery && (
+              <button
+                onClick={() => openCreateModal()}
+                className="glass-btn-base glass-btn-primary px-6 py-3"
+              >
+                {t('newProject')}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div
+              onClick={() => openCreateModal()}
+              className="glass-surface group flex min-h-[180px] cursor-pointer items-center justify-center border-dashed transition-colors hover:border-[var(--film-gold)]/50"
+            >
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--film-gold)] text-[var(--glass-text-on-accent)] transition-transform group-hover:scale-105">
+                  <AppIcon name="plus" className="h-6 w-6" />
+                </div>
+                <span className="text-sm font-medium text-[var(--glass-text-secondary)] transition-colors group-hover:text-[var(--glass-text-primary)]">{t('newProject')}</span>
+              </div>
+            </div>
+
+            {projects.map((project) => (
               <Link
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
-                className="glass-surface cursor-pointer relative group block hover:border-[var(--glass-tone-info-fg)]/40 transition-all duration-300 overflow-hidden"
+                className="glass-surface group relative block cursor-pointer overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
               >
-                {/* 悬停光效 */}
-                <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                <div className="p-5 relative z-10">
+                <div className="relative z-10 p-5">
                   {/* 操作按钮 */}
-                  <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                  <div className="absolute top-3 right-3 z-20 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       onClick={(e) => openEditModal(project, e)}
                       className="glass-btn-base glass-btn-secondary p-2 rounded-lg transition-colors"
@@ -439,7 +455,7 @@ export default function WorkspacePage() {
                   </div>
 
                   {/* 标题 */}
-                  <h3 className="text-lg font-bold text-[var(--glass-text-primary)] mb-2 line-clamp-2 pr-20 group-hover:text-[var(--glass-tone-info-fg)] transition-colors">
+                  <h3 className="mb-2 line-clamp-2 pr-20 text-lg font-bold text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
                     {project.name}
                   </h3>
 
@@ -456,10 +472,9 @@ export default function WorkspacePage() {
                   {/* 统计信息 - 整行统一渐变 */}
                   {project.stats && (project.stats.episodes > 0 || project.stats.images > 0 || project.stats.videos > 0) ? (
                     <div className="flex items-center gap-2 mb-3">
-                      {/* 共享渐变定义 */}
                       <IconGradientDefs className="w-0 h-0 absolute" aria-hidden="true" />
                       <AppIcon name="statsBarGradient" className="w-4 h-4 flex-shrink-0" />
-                      <div className="flex items-center gap-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                      <div className="flex items-center gap-3 text-sm font-semibold text-[var(--glass-text-secondary)]">
                         {project.stats.episodes > 0 && (
                           <span className="flex items-center gap-1" title={t('statsEpisodes')}>
                             <AppIcon name="statsEpisodeGradient" className="w-3.5 h-3.5" />
@@ -501,35 +516,12 @@ export default function WorkspacePage() {
                   </div>
                 </div>
               </Link>
-            ))
-          )}
-        </div>
-
-        {/* Empty State */}
-        {!loading && projects.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-[var(--glass-bg-muted)] rounded-xl flex items-center justify-center mx-auto mb-4">
-              <AppIcon name="folderCards" className="w-8 h-8 text-[var(--glass-text-tertiary)]" />
-            </div>
-            <h3 className="text-lg font-medium text-[var(--glass-text-primary)] mb-2">
-              {searchQuery ? t('noResults') : t('noProjects')}
-            </h3>
-            <p className="text-[var(--glass-text-secondary)] mb-6">
-              {searchQuery ? t('noResultsDesc') : t('noProjectsDesc')}
-            </p>
-            {!searchQuery && (
-              <button
-                onClick={() => openCreateModal()}
-                className="glass-btn-base glass-btn-primary px-6 py-3"
-              >
-                {t('newProject')}
-              </button>
-            )}
+            ))}
           </div>
         )}
 
         {/* 分页控件 */}
-        {!loading && pagination.totalPages > 1 && (
+        {!loading && projects.length > 0 && pagination.totalPages > 1 && (
           <div className="mt-8 flex items-center justify-center gap-2">
             <button
               onClick={() => handlePageChange(pagination.page - 1)}

@@ -57,6 +57,7 @@ import {
   RefreshCw,
   Search,
   Settings,
+  SlidersHorizontal,
   Sparkles,
   SquarePen,
   Trash2,
@@ -72,6 +73,8 @@ import {
   WandSparkles,
   X,
   Zap,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { customIcons } from './custom'
 
@@ -155,6 +158,7 @@ export const iconRegistry = {
   settingsHex: Settings,
   settingsHexAlt: Settings,
   settingsHexMinor: Settings,
+  sliders: SlidersHorizontal,
   audioWave: AudioLines,
   externalLink: ExternalLink,
   receipt: Receipt,
@@ -186,6 +190,8 @@ export const iconRegistry = {
   film: Film,
   folderOpen: FolderOpen,
   gripVertical: GripVertical,
+  sun: Sun,
+  moon: Moon,
 } as const satisfies Record<string, LucideIcon>
 
 export type AppIconName = keyof typeof iconRegistry

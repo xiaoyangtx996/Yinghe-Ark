@@ -21,19 +21,12 @@ vi.mock('@/components/LanguageSwitcher', () => ({
   default: () => createElement('div', null, 'LanguageSwitcher'),
 }))
 
-vi.mock('@/hooks/common/useGithubReleaseUpdate', () => ({
-  useGithubReleaseUpdate: () => ({
-    currentVersion: '0.3.0',
-    update: null,
-    shouldPulse: false,
-    showModal: false,
-    openModal: () => undefined,
-    dismissCurrentUpdate: () => undefined,
-    checkNow: async () => undefined,
-  }),
+vi.mock('@/components/AboutModal', () => ({
+  default: () => null,
 }))
 
 vi.mock('@/i18n/navigation', () => ({
+  usePathname: () => '/home',
   Link: ({
     href,
     children,
@@ -55,15 +48,19 @@ const messages = {
     downloadLogs: '下载日志',
     signin: '登录',
     signup: '注册',
+    railHome: '创作',
+    railProjects: '项目',
+    railAssets: '资产',
+    railLogs: '日志',
+    railSettings: '设置',
   },
   common: {
     appName: 'waoowaoo',
     betaVersion: 'Beta v{version}',
-    updateNotice: {
-      openDialog: '打开更新弹窗',
-      updateTag: '更新',
-      checkUpdate: '检查更新',
-      upToDate: '已是最新版本',
+    about: {
+      title: '关于',
+      open: '关于',
+      description: 'about',
     },
   },
 } as const
@@ -81,12 +78,12 @@ const renderWithIntl = (node: ReactElement) => {
   )
 }
 
-describe('Navbar download logs entry', () => {
+describe('Navbar authenticated chrome', () => {
   beforeEach(() => {
     useSessionMock.mockReset()
   })
 
-  it('renders the download logs entry on the far-right action group for signed-in users', () => {
+  it('renders theater rail with logs entry and without top-bar download logs for signed-in users', () => {
     Reflect.set(globalThis, 'React', React)
     useSessionMock.mockReturnValue({
       data: { user: { name: 'Earth' } },
@@ -95,13 +92,14 @@ describe('Navbar download logs entry', () => {
 
     const html = renderWithIntl(createElement(Navbar))
 
-    expect(html).toContain('下载日志')
+    expect(html).toContain('aria-label="日志"')
+    expect(html).toContain('href="/logs"')
     expect(html).toContain('href="/home"')
-    expect(html).toContain('href="/api/admin/download-logs"')
-    expect(html).toContain('download=""')
+    expect(html).not.toContain('下载日志')
+    expect(html).not.toContain('/api/admin/download-logs')
   })
 
-  it('does not render the download logs entry for signed-out users', () => {
+  it('does not render theater rail for signed-out users', () => {
     Reflect.set(globalThis, 'React', React)
     useSessionMock.mockReturnValue({
       data: null,
@@ -110,7 +108,8 @@ describe('Navbar download logs entry', () => {
 
     const html = renderWithIntl(createElement(Navbar))
 
-    expect(html).not.toContain('下载日志')
+    expect(html).not.toContain('data-theater-rail')
     expect(html).not.toContain('/api/admin/download-logs')
+    expect(html).toContain('登录')
   })
 })

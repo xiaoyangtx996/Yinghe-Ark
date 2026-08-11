@@ -7,12 +7,20 @@
 export function AnimatedBackground() {
     return (
         <div className="fixed inset-0 -z-10 overflow-hidden bg-[var(--glass-bg-canvas)]">
-            <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] opacity-40 animate-aurora filter blur-[100px]">
-                <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[var(--glass-bg-surface)] rounded-full mix-blend-multiply animate-blob" />
-                <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-[var(--glass-bg-muted)] rounded-full mix-blend-multiply animate-blob animation-delay-2000" />
-                <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[var(--glass-bg-surface-strong)] rounded-full mix-blend-multiply animate-blob animation-delay-4000" />
-            </div>
-            <div className="absolute inset-0 bg-white/60 backdrop-blur-3xl" />
+            <div
+                className="absolute inset-0 opacity-80"
+                style={{
+                    background:
+                        'radial-gradient(ellipse at 20% 0%, rgba(224,163,106,0.08), transparent 45%), radial-gradient(ellipse at 90% 20%, rgba(111,158,154,0.06), transparent 40%)',
+                }}
+            />
+            <div
+                className="pointer-events-none absolute inset-0 opacity-[0.035]"
+                style={{
+                    backgroundImage:
+                        'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
+                }}
+            />
         </div>
     )
 }
@@ -62,7 +70,7 @@ export function Button({
             className={`
         glass-btn-base px-6 py-2.5
         ${primary
-                    ? 'glass-btn-primary text-white'
+                    ? 'glass-btn-primary'
                     : 'glass-btn-secondary'}
         disabled:opacity-50 disabled:cursor-not-allowed
         ${className}

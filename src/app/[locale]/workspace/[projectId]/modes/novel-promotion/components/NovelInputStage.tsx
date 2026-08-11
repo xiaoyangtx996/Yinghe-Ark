@@ -219,17 +219,10 @@ export default function NovelInputStage({
             <button
               onClick={() => setAiWriteOpen(true)}
               disabled={isSubmittingTask || isSwitchingStage}
-              className="glass-btn-base flex h-10 flex-shrink-0 items-center gap-1.5 border border-[var(--glass-stroke-strong)] px-3 text-sm transition-all hover:border-[var(--glass-tone-info-fg)]/40"
+              className="glass-btn-base glass-btn-secondary flex h-10 flex-shrink-0 items-center gap-1.5 px-3 text-sm"
             >
-              <AppIcon name="sparkles" className="w-4 h-4 text-[#7c3aed]" />
-              <span
-                className="font-medium"
-                style={{
-                  background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
+              <AppIcon name="sparkles" className="w-4 h-4 text-[var(--film-gold)]" />
+              <span className="font-medium text-[var(--glass-text-primary)]">
                 {homeT('aiWrite.trigger')}
               </span>
             </button>

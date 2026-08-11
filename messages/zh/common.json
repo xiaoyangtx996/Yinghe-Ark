@@ -1,6 +1,11 @@
 {
     "appName": "waoowaoo",
     "betaVersion": "Beta v{version}",
+    "about": {
+        "title": "关于",
+        "open": "关于",
+        "description": "AI 短剧创作平台。网页版会随服务器发布自动更新。"
+    },
     "updateNotice": {
         "title": "发现新版本",
         "subtitle": "当前 v{current} · 最新 v{latest}",

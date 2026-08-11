@@ -364,6 +364,77 @@ export async function readAllLogs(): Promise<string> {
         return ''
     }
 }
+
+/**
+ * Safely resolve a log file name within the logs directory (basename only).
+ */
+function resolveSafeLogFileName(fileName: string): string | null {
+    const trimmed = fileName.trim()
+    if (!trimmed || trimmed !== modulesBasename(trimmed)) return null
+    if (!trimmed.endsWith('.log')) return null
+    if (trimmed.includes('..') || trimmed.includes('/') || trimmed.includes('\\')) return null
+    return trimmed
+}
+
+function modulesBasename(fileName: string): string {
+    const normalized = fileName.replace(/\\/g, '/')
+    const parts = normalized.split('/')
+    return parts[parts.length - 1] || ''
+}
+
+export interface ReadLogFileResult {
+    name: string
+    content: string
+    truncated: boolean
+    sizeBytes: number
+    modifiedAt: string
+}
+
+/**
+ * Read a single log file for UI preview / single-file download.
+ * Pass maxBytes <= 0 to read the entire file.
+ */
+export async function readLogFile(
+    fileName: string,
+    maxBytes = 512 * 1024,
+): Promise<ReadLogFileResult | null> {
+    if (isEdgeOrBrowser()) return null
+    const safeName = resolveSafeLogFileName(fileName)
+    if (!safeName) return null
+
+    const modules = await getNodeModules()
+    if (!modules) return null
+
+    const filePath = modules.path.join(modules.cwd, 'logs', safeName)
+    try {
+        const stat = modules.fs.statSync(filePath)
+        const sizeBytes = stat.size
+        const unlimited = maxBytes <= 0
+        const truncated = !unlimited && sizeBytes > maxBytes
+        let content: string
+        if (!truncated) {
+            content = modules.fs.readFileSync(filePath, 'utf-8')
+        } else {
+            const fd = modules.fs.openSync(filePath, 'r')
+            try {
+                const buffer = Buffer.alloc(maxBytes)
+                modules.fs.readSync(fd, buffer, 0, maxBytes, Math.max(0, sizeBytes - maxBytes))
+                content = buffer.toString('utf-8')
+            } finally {
+                modules.fs.closeSync(fd)
+            }
+        }
+        return {
+            name: safeName,
+            content,
+            truncated,
+            sizeBytes,
+            modifiedAt: stat.mtime.toISOString(),
+        }
+    } catch {
+        return null
+    }
+}
 /**
  * 清理所有项目日志文件中 24 小时前的内容。
  * 供 watchdog 定期调用（建议每小时一次）。

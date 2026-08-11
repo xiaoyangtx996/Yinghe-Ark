@@ -35,7 +35,8 @@ function NavItem({
     status,
     href,
     disabled,
-    disabledLabel
+    disabledLabel,
+    index,
 }: {
     active: boolean
     onClick: () => void
@@ -44,6 +45,7 @@ function NavItem({
     href?: string
     disabled?: boolean
     disabledLabel?: string
+    index: number
 }) {
     const handleClick = (e: React.MouseEvent) => {
         if (disabled) return
@@ -65,50 +67,26 @@ function NavItem({
     }
 
     return (
-        <div className="relative group">
+        <div className="relative group min-w-0">
             <button
                 onClick={handleClick}
                 onAuxClick={handleAuxClick}
                 disabled={disabled}
-                className={`
-                    relative flex min-h-[52px] items-center gap-1 px-6 pt-3.5 pb-4 transition-all duration-300 ease-out
-                    ${disabled
-                        ? 'cursor-not-allowed'
-                        : active
-                            ? 'text-[var(--glass-tone-info-fg)]'
-                            : 'text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-primary)]'}
-                    ${!disabled && 'active:scale-[0.98]'}
-                `}
+                data-active={active ? 'true' : 'false'}
+                className="film-stages__item w-full"
             >
-                {disabled ? (
-                    <span className="text-base font-medium text-[var(--glass-text-tertiary)] opacity-80">
-                        {label}
-                    </span>
-                ) : (
-                    <span className="text-base font-semibold">{label}</span>
-                )}
-                {/* 底部指示条 */}
-                <span className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-[3px] rounded-full transition-all duration-300 ease-out
-                    ${active
-                        ? 'w-6 bg-gradient-to-r from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] shadow-[0_2px_8px_var(--glass-accent-shadow-soft)]'
-                        : 'w-0 bg-transparent'
-                    }`}
-                />
-                {status === 'ready' && !disabled && (
-                    <span className={`absolute top-2 right-2 w-1.5 h-1.5 rounded-full transition-colors
-                        ${active ? 'bg-[var(--glass-tone-info-fg)]' : 'bg-[var(--glass-tone-success-fg)]'}`}
-                    />
-                )}
-                {status === 'processing' && !disabled && (
-                    <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[var(--glass-accent-from)] animate-pulse" />
-                )}
+                <span className="film-stages__n">
+                    {String(index + 1).padStart(2, '0')}
+                    {status === 'ready' && !disabled ? ' · ✓' : ''}
+                    {status === 'processing' && !disabled ? ' · …' : ''}
+                </span>
+                <span className={`film-stages__t ${disabled ? 'opacity-70' : ''}`}>{label}</span>
             </button>
             {disabled && disabledLabel && (
                 <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
                     <div className="glass-surface-soft text-xs px-3 py-2 whitespace-nowrap text-[var(--glass-text-primary)]">
                         {disabledLabel}
                     </div>
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-1 w-2 h-2 bg-[var(--glass-bg-surface-strong)] rotate-45 border-l border-t border-[var(--glass-stroke-base)]" />
                 </div>
             )}
         </div>
@@ -133,18 +111,9 @@ export function CapsuleNav({ items, activeId, onItemClick, projectId, episodeId 
     }
 
     return (
-        <nav className="fixed top-20 left-1/2 -translate-x-1/2 z-40 animate-fadeInDown">
-            <div
-                className="flex rounded-full px-2 py-1"
-                style={{
-                    background: 'rgba(255,255,255,0.55)',
-                    backdropFilter: 'blur(24px) saturate(1.6)',
-                    WebkitBackdropFilter: 'blur(24px) saturate(1.6)',
-                    border: '1px solid rgba(255,255,255,0.45)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)',
-                }}
-            >
-                {items.map((item) => (
+        <nav className="fixed top-[4.75rem] left-1/2 z-40 w-[min(720px,calc(100vw-2rem))] -translate-x-1/2 animate-fadeInDown max-[900px]:left-[calc(50%+36px)]">
+            <div className="film-stages w-full">
+                {items.map((item, index) => (
                     <NavItem
                         key={item.id}
                         active={activeId === item.id}
@@ -154,6 +123,7 @@ export function CapsuleNav({ items, activeId, onItemClick, projectId, episodeId 
                         href={buildHref(item.id)}
                         disabled={item.disabled}
                         disabledLabel={item.disabledLabel}
+                        index={index}
                     />
                 ))}
             </div>
@@ -215,13 +185,13 @@ export function EpisodeSelector({
     if (!currentEp) return null
 
     return (
-        <div className="fixed top-20 left-6 z-40" ref={menuRef}>
+        <div className="fixed top-[4.75rem] left-[calc(var(--app-rail-width)+1.5rem)] z-40" ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="glass-btn-base glass-btn-secondary flex items-center gap-3 px-4 py-3 transition-all group"
-                style={{ borderRadius: '1.5rem' }}
+                style={{ borderRadius: '12px' }}
             >
-                <div className="glass-surface-soft flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold text-[var(--glass-tone-info-fg)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] text-xs font-bold text-[var(--glass-tone-info-fg)]">
                     {t('episode')}
                 </div>
                 <div className="flex flex-col items-start text-left mr-2">

@@ -89,7 +89,11 @@ function toCapabilityFieldLabel(field: string): string {
   return field.replace(/([A-Z])/g, ' $1').replace(/^./, (char) => char.toUpperCase())
 }
 
-export function ApiConfigTabContainer() {
+export function ApiConfigTabContainer({
+  pane = 'defaults',
+}: {
+  pane?: 'defaults' | 'providers'
+}) {
   const locale = useLocale()
   const {
     providers,
@@ -255,56 +259,58 @@ export function ApiConfigTabContainer() {
         saveFailedLabel={t('saveFailed')}
       />
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-6 p-6">
-          <DefaultModelCards
-            t={t}
-            defaultModels={defaultModels}
-            getEnabledModelsByType={getEnabledModelsByType}
-            parseModelKey={parseModelKey}
-            encodeModelKey={encodeModelKey}
-            getProviderDisplayName={getProviderDisplayName}
-            locale={locale}
-            updateDefaultModel={updateDefaultModel}
-            batchUpdateDefaultModels={batchUpdateDefaultModels}
-            extractCapabilityFieldsFromModel={extractCapabilityFieldsFromModel}
-            toCapabilityFieldLabel={toCapabilityFieldLabel}
-            capabilityDefaults={capabilityDefaults}
-            updateCapabilityDefault={updateCapabilityDefault}
-            parseBySample={parseBySample}
-            workflowConcurrency={workflowConcurrency}
-            handleWorkflowConcurrencyChange={handleWorkflowConcurrencyChange}
-          />
-
-          <ApiConfigProviderList
-            modelProviders={modelProviders}
-            allModels={models}
-            defaultModels={defaultModels}
-            getModelsForProvider={getModelsForProvider}
-            onAddGeminiProvider={() => setShowAddGeminiProvider(true)}
-            onToggleModel={toggleModel}
-            onUpdateApiKey={updateProviderApiKey}
-            onUpdateBaseUrl={updateProviderBaseUrl}
-            onReorderProviders={reorderProviders}
-            onDeleteModel={deleteModel}
-            onUpdateModel={updateModel}
-            onDeleteProvider={deleteProvider}
-            onAddModel={addModel}
-            onFlushConfig={flushConfig}
-            onToggleProviderHidden={updateProviderHidden}
-            labels={{
-              providerPool: t('providerPool'),
-              providerPoolDesc: t('providerPoolDesc'),
-              dragToSort: t('dragToSort'),
-              dragToSortHint: t('dragToSortHint'),
-              hideProvider: t('hideProvider'),
-              showProvider: t('showProvider'),
-              showHiddenProviders: t('showHiddenProviders'),
-              hideHiddenProviders: t('hideHiddenProviders'),
-              hiddenProvidersPrefix: t('hiddenProvidersPrefix'),
-              addGeminiProvider: t('addGeminiProvider'),
-            }}
-          />
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="space-y-5">
+          {pane === 'defaults' ? (
+            <DefaultModelCards
+              t={t}
+              defaultModels={defaultModels}
+              getEnabledModelsByType={getEnabledModelsByType}
+              parseModelKey={parseModelKey}
+              encodeModelKey={encodeModelKey}
+              getProviderDisplayName={getProviderDisplayName}
+              locale={locale}
+              updateDefaultModel={updateDefaultModel}
+              batchUpdateDefaultModels={batchUpdateDefaultModels}
+              extractCapabilityFieldsFromModel={extractCapabilityFieldsFromModel}
+              toCapabilityFieldLabel={toCapabilityFieldLabel}
+              capabilityDefaults={capabilityDefaults}
+              updateCapabilityDefault={updateCapabilityDefault}
+              parseBySample={parseBySample}
+              workflowConcurrency={workflowConcurrency}
+              handleWorkflowConcurrencyChange={handleWorkflowConcurrencyChange}
+            />
+          ) : (
+            <ApiConfigProviderList
+              modelProviders={modelProviders}
+              allModels={models}
+              defaultModels={defaultModels}
+              getModelsForProvider={getModelsForProvider}
+              onAddGeminiProvider={() => setShowAddGeminiProvider(true)}
+              onToggleModel={toggleModel}
+              onUpdateApiKey={updateProviderApiKey}
+              onUpdateBaseUrl={updateProviderBaseUrl}
+              onReorderProviders={reorderProviders}
+              onDeleteModel={deleteModel}
+              onUpdateModel={updateModel}
+              onDeleteProvider={deleteProvider}
+              onAddModel={addModel}
+              onFlushConfig={flushConfig}
+              onToggleProviderHidden={updateProviderHidden}
+              labels={{
+                providerPool: t('providerPool'),
+                providerPoolDesc: t('providerPoolDesc'),
+                dragToSort: t('dragToSort'),
+                dragToSortHint: t('dragToSortHint'),
+                hideProvider: t('hideProvider'),
+                showProvider: t('showProvider'),
+                showHiddenProviders: t('showHiddenProviders'),
+                hideHiddenProviders: t('hideHiddenProviders'),
+                hiddenProvidersPrefix: t('hiddenProvidersPrefix'),
+                addGeminiProvider: t('addGeminiProvider'),
+              }}
+            />
+          )}
         </div>
       </div>
 

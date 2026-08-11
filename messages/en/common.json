@@ -1,6 +1,11 @@
 {
     "appName": "waoowaoo",
     "betaVersion": "Beta v{version}",
+    "about": {
+        "title": "About",
+        "open": "About",
+        "description": "AI short-drama creation platform. The web edition updates automatically with server releases."
+    },
     "updateNotice": {
         "title": "New version available",
         "subtitle": "Current v{current} · Latest v{latest}",

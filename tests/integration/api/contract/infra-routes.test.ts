@@ -10,6 +10,16 @@ const authState = vi.hoisted(() => ({
 
 const loggingMock = vi.hoisted(() => ({
   readAllLogs: vi.fn(async () => 'worker log line 1\nworker log line 2'),
+  getLogFilesList: vi.fn(async () => ([
+    { name: 'app.log', sizeBytes: 128, modifiedAt: '2026-08-11T00:00:00.000Z' },
+  ])),
+  readLogFile: vi.fn(async (name: string) => ({
+    name,
+    content: 'preview log line',
+    truncated: false,
+    sizeBytes: 16,
+    modifiedAt: '2026-08-11T00:00:00.000Z',
+  })),
 }))
 
 const storageMock = vi.hoisted(() => ({
@@ -73,6 +83,7 @@ describe('api contract - infra routes (behavior)', () => {
   it('infra route group exists', () => {
     expect(routes.map((entry) => entry.routeFile)).toEqual(expect.arrayContaining([
       'src/app/api/admin/download-logs/route.ts',
+      'src/app/api/admin/logs/route.ts',
       'src/app/api/cos/image/route.ts',
       'src/app/api/files/[...path]/route.ts',
       'src/app/api/storage/sign/route.ts',
@@ -107,6 +118,34 @@ describe('api contract - infra routes (behavior)', () => {
     expect(text).toContain('worker log line 1')
     expect(res.headers.get('content-type')).toBe('text/plain; charset=utf-8')
     expect(res.headers.get('content-disposition')).toMatch(/^attachment; filename="waoowaoo-logs-/)
+  })
+
+  it('GET /api/admin/logs rejects unauthenticated requests', async () => {
+    const mod = await import('@/app/api/admin/logs/route')
+    const req = buildMockRequest({
+      path: '/api/admin/logs',
+      method: 'GET',
+    })
+
+    const res = await mod.GET(req, { params: Promise.resolve({}) })
+    expect(res.status).toBe(401)
+    expect(loggingMock.getLogFilesList).not.toHaveBeenCalled()
+  })
+
+  it('GET /api/admin/logs lists log files when authenticated', async () => {
+    authState.authenticated = true
+    const mod = await import('@/app/api/admin/logs/route')
+    const req = buildMockRequest({
+      path: '/api/admin/logs',
+      method: 'GET',
+    })
+
+    const res = await mod.GET(req, { params: Promise.resolve({}) })
+    const data = await res.json() as { files: Array<{ name: string }> }
+
+    expect(res.status).toBe(200)
+    expect(data.files[0]?.name).toBe('app.log')
+    expect(loggingMock.getLogFilesList).toHaveBeenCalled()
   })
 
   it('GET /api/cos/image redirects to signed storage route with normalized query', async () => {

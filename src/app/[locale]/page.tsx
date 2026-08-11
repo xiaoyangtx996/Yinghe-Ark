@@ -39,66 +39,105 @@ export default function Home() {
   }
 
   return (
-    <div className="glass-page min-h-screen overflow-hidden font-sans selection:bg-[var(--glass-tone-info-bg)]">
-      {/* Navbar */}
-      <div className="relative z-50">
-        <Navbar />
-      </div>
+    <div className="glass-page min-h-dvh font-sans selection:bg-[var(--glass-tone-info-bg)]">
+      <Navbar />
 
-      {/* Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(138,170,255,0.12),transparent),radial-gradient(900px_500px_at_0%_100%,rgba(148,163,184,0.16),transparent)]"></div>
-      </div>
-
-      <main className="relative z-10">
-        <section className="relative min-h-screen flex items-center justify-center -mt-16 px-4">
-          <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center">
-            <div className="text-left space-y-8 animate-slide-up" style={{ animationDuration: '0.8s' }}>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <span className="block text-[var(--glass-text-primary)]">
-                  {t('title')}
-                </span>
-                <span className="text-[var(--glass-tone-info-fg)]">
-                  {t('subtitle')}
-                </span>
+      <main className="relative z-10 pb-8">
+        <section className="mx-4 mt-5 overflow-hidden rounded-2xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] sm:mx-6 lg:mx-8">
+          <div className="grid min-h-[460px] lg:grid-cols-[1.1fr_0.9fr]">
+            <div
+              className="border-b border-[var(--glass-stroke-base)] p-8 sm:p-10 lg:border-b-0 lg:border-r lg:p-12"
+              style={{
+                background:
+                  'radial-gradient(ellipse at 0% 0%, rgba(224,163,106,.12), transparent 50%), var(--glass-bg-surface)',
+              }}
+            >
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--film-gold)]">
+                Open Source Film Suite
+              </div>
+              <h1 className="font-display mt-3 max-w-[12ch] text-[clamp(36px,4.5vw,52px)] font-semibold leading-[1.08] text-[var(--glass-text-primary)] text-balance">
+                {t('title')}
+                <span className="mt-2 block text-[var(--film-gold)]">{t('subtitle')}</span>
               </h1>
-
-              <div className="flex flex-wrap gap-4 pt-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <p className="mt-4 max-w-md text-[15px] leading-relaxed text-[var(--glass-text-secondary)]">
+                {t('features.subtitle')}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={{ pathname: '/auth/signup' }}
-                  className="glass-btn-base glass-btn-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300"
+                  className="glass-btn-base glass-btn-primary px-5 py-2.5 text-sm"
                 >
                   {t('getStarted')}
+                </Link>
+                <Link
+                  href={{ pathname: '/auth/signin' }}
+                  className="glass-btn-base glass-btn-ghost border border-[var(--glass-stroke-base)] px-5 py-2.5 text-sm"
+                >
+                  {t('enterWorkspace')}
                 </Link>
               </div>
             </div>
 
-            <div className="relative h-[600px] hidden lg:flex items-center justify-center animate-scale-in" style={{ animationDuration: '1s' }}>
-              <div className="relative w-full max-w-md aspect-square">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle,rgba(148,163,184,0.2),transparent_65%)] rounded-full blur-3xl opacity-70"></div>
-                <div className="absolute top-0 right-10 w-64 h-80 glass-surface rounded-3xl transform rotate-6 animate-float-delayed"></div>
-                <div className="absolute bottom-10 left-10 w-72 h-80 glass-surface-soft rounded-3xl transform -rotate-3 animate-float-slow"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-96 glass-surface-modal rounded-3xl overflow-hidden animate-float">
-                  <div className="p-6 h-full flex flex-col">
-                    <div className="w-full h-48 bg-[var(--glass-bg-muted)] rounded-2xl mb-6 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-[var(--glass-tone-info-bg)]/20 group-hover:bg-[var(--glass-tone-info-bg)]/35 transition-colors"></div>
-                      <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[var(--glass-bg-surface)]"></div>
-                      <div className="absolute bottom-4 left-4 w-12 h-12 rounded-lg bg-[var(--glass-bg-surface-strong)] rotate-12"></div>
-                    </div>
-                    <div className="space-y-3">
-                      <div className="h-3 w-3/4 bg-[var(--glass-bg-muted)] rounded-full"></div>
-                      <div className="h-3 w-1/2 bg-[var(--glass-bg-muted)] rounded-full"></div>
-                      <div className="pt-4 flex gap-2">
-                        <div className="h-10 w-10 rounded-full bg-[var(--glass-bg-surface)] border border-[var(--glass-stroke-soft)]"></div>
-                        <div className="h-10 flex-1 rounded-full bg-[var(--glass-tone-info-bg)]/40 border border-[var(--glass-stroke-base)]"></div>
-                      </div>
-                    </div>
+            <div className="flex flex-col gap-4 bg-[var(--glass-bg-muted)] p-6">
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  t('features.character.title'),
+                  t('features.world.title'),
+                  t('features.storyboard.title'),
+                  '成片',
+                ].map((label, i) => (
+                  <div
+                    key={label}
+                    className="flex aspect-[3/4] items-end rounded-[10px] border border-[var(--glass-stroke-base)] p-2 text-[11px] text-[var(--glass-text-secondary)]"
+                    style={{
+                      background:
+                        i === 0
+                          ? 'linear-gradient(160deg, #3a2e24, #15120f)'
+                          : i === 1
+                            ? 'linear-gradient(160deg, #2f3a32, #15120f)'
+                            : i === 2
+                              ? 'linear-gradient(160deg, #2a3340, #15120f)'
+                              : 'linear-gradient(160deg, #403028, #15120f)',
+                    }}
+                  >
+                    {label}
                   </div>
-                </div>
+                ))}
+              </div>
+              <div className="mt-auto flex flex-wrap gap-1.5">
+                <span className="glass-chip glass-chip-neutral">故事</span>
+                <span className="glass-chip glass-chip-neutral">剧本</span>
+                <span className="glass-chip glass-chip-neutral">分镜</span>
+                <span className="glass-chip glass-chip-info">成片 · 配音</span>
               </div>
             </div>
           </div>
         </section>
+
+        <section className="mx-4 mt-5 overflow-hidden rounded-xl border border-[var(--glass-stroke-base)] sm:mx-6 lg:mx-8">
+          <div className="grid grid-cols-1 divide-y divide-[var(--glass-stroke-base)] bg-[var(--glass-stroke-base)] sm:grid-cols-2 sm:divide-x lg:grid-cols-4 lg:divide-y-0">
+            <article className="bg-[var(--glass-bg-canvas)] p-4 sm:p-5">
+              <h3 className="mb-1.5 text-[13px] font-semibold">{t('features.character.title')}</h3>
+              <p className="text-xs text-[var(--glass-text-secondary)]">{t('features.character.description')}</p>
+            </article>
+            <article className="bg-[var(--glass-bg-canvas)] p-4 sm:p-5">
+              <h3 className="mb-1.5 text-[13px] font-semibold">{t('features.world.title')}</h3>
+              <p className="text-xs text-[var(--glass-text-secondary)]">{t('features.world.description')}</p>
+            </article>
+            <article className="bg-[var(--glass-bg-canvas)] p-4 sm:p-5">
+              <h3 className="mb-1.5 text-[13px] font-semibold">{t('features.storyboard.title')}</h3>
+              <p className="text-xs text-[var(--glass-text-secondary)]">{t('features.storyboard.description')}</p>
+            </article>
+            <article className="bg-[var(--glass-bg-canvas)] p-4 sm:p-5">
+              <h3 className="mb-1.5 text-[13px] font-semibold">{t('features.title')}</h3>
+              <p className="text-xs text-[var(--glass-text-secondary)]">{t('features.subtitle')}</p>
+            </article>
+          </div>
+        </section>
+
+        <footer className="mt-8 px-6 text-center text-xs text-[var(--glass-text-tertiary)]">
+          {t('footer.copyright')}
+        </footer>
       </main>
     </div>
   )

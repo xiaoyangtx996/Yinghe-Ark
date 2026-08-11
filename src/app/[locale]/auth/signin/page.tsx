@@ -43,21 +43,27 @@ export default function SignIn() {
   }
 
   return (
-    <div className="glass-page min-h-screen">
+    <div className="glass-page min-h-dvh">
       <Navbar />
-      <div className="flex items-center justify-center px-4 py-12">
-        <div className="max-w-md w-full">
-          <div className="glass-surface-modal p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-[var(--glass-text-primary)] mb-2">
+      <div
+        className="flex items-center justify-center px-4 py-12"
+        style={{
+          background:
+            'radial-gradient(ellipse at 50% 0%, rgba(224,163,106,.08), transparent 45%)',
+        }}
+      >
+        <div className="w-full max-w-[400px]">
+          <div className="glass-surface p-7 sm:p-8">
+            <div className="mb-6">
+              <h1 className="font-display text-[28px] font-semibold text-[var(--glass-text-primary)]">
                 {t('welcomeBack')}
               </h1>
-              <p className="text-[var(--glass-text-secondary)]">{t('loginTo')}</p>
+              <p className="mt-1.5 text-sm text-[var(--glass-text-secondary)]">{t('loginTo')}</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label htmlFor="username" className="glass-field-label block mb-2">
+                <label htmlFor="username" className="glass-field-label mb-2 block text-xs font-medium text-[var(--glass-text-secondary)]">
                   {t('phoneNumber')}
                 </label>
                 <input
@@ -68,13 +74,13 @@ export default function SignIn() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="glass-input-base w-full px-4 py-3"
+                  className="glass-input-base w-full px-3 py-2.5"
                   placeholder={t('phoneNumberPlaceholder')}
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="glass-field-label block mb-2">
+                <label htmlFor="password" className="glass-field-label mb-2 block text-xs font-medium text-[var(--glass-text-secondary)]">
                   {t('password')}
                 </label>
                 <input
@@ -85,13 +91,13 @@ export default function SignIn() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="glass-input-base w-full px-4 py-3"
+                  className="glass-input-base w-full px-3 py-2.5"
                   placeholder={t('passwordPlaceholder')}
                 />
               </div>
 
               {error && (
-                <div className="bg-[var(--glass-tone-danger-bg)] border border-[color:color-mix(in_srgb,var(--glass-tone-danger-fg)_22%,transparent)] text-[var(--glass-tone-danger-fg)] px-4 py-3 rounded-lg text-sm">
+                <div className="rounded-[8px] border border-[color:color-mix(in_srgb,var(--glass-tone-danger-fg)_22%,transparent)] bg-[var(--glass-tone-danger-bg)] px-4 py-3 text-sm text-[var(--glass-tone-danger-fg)]">
                   {error}
                 </div>
               )}
@@ -99,23 +105,21 @@ export default function SignIn() {
               <button
                 type="submit"
                 disabled={loading}
-                className="glass-btn-base glass-btn-primary w-full py-3 px-4 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="glass-btn-base glass-btn-primary w-full px-4 py-2.5 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? t('loginButtonLoading') : t('loginButton')}
               </button>
             </form>
 
-            <div className="mt-6 text-center">
-              <p className="text-[var(--glass-text-secondary)]">
-                {t('noAccount')}{" "}
-                <Link href={{ pathname: '/auth/signup' }} className="text-[var(--glass-tone-info-fg)] hover:underline font-medium">
-                  {t('signupNow')}
-                </Link>
-              </p>
+            <div className="mt-5 text-center text-xs text-[var(--glass-text-secondary)]">
+              {t('noAccount')}{" "}
+              <Link href={{ pathname: '/auth/signup' }} className="font-medium text-[var(--film-gold)] hover:underline">
+                {t('signupNow')}
+              </Link>
             </div>
 
-            <div className="mt-6 text-center">
-              <Link href={{ pathname: '/' }} className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] text-sm">
+            <div className="mt-4 text-center">
+              <Link href={{ pathname: '/' }} className="text-xs text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">
                 {t('backToHome')}
               </Link>
             </div>

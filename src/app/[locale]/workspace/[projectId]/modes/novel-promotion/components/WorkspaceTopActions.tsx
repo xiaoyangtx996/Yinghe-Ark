@@ -43,30 +43,30 @@ export default function WorkspaceTopActions({
   }, [isRefreshing, onRefresh, refreshTitle, showToast])
 
   return (
-    <div className="fixed top-24 right-6 z-40 flex gap-3">
+    <div className="fixed top-[4.75rem] right-6 z-40 flex gap-2">
       <button
         onClick={onOpenAssetLibrary}
-        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-4 py-3 rounded-3xl text-[var(--glass-text-primary)]"
+        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
       >
-        <AppIcon name="package" className="h-5 w-5" />
+        <AppIcon name="package" className="h-4 w-4" />
         <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{assetLibraryLabel}</span>
       </button>
       <button
         onClick={onOpenSettings}
-        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-4 py-3 rounded-3xl text-[var(--glass-text-primary)]"
+        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
       >
-        <AppIcon name="settingsHexMinor" className="h-5 w-5" />
+        <AppIcon name="settingsHexMinor" className="h-4 w-4" />
         <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{settingsLabel}</span>
       </button>
       <button
         onClick={handleRefreshClick}
-        className={`glass-btn-base glass-btn-secondary flex items-center gap-2 px-4 py-3 rounded-3xl text-[var(--glass-text-primary)] ${
+        className={`glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)] ${
           isRefreshing ? 'opacity-60 cursor-wait' : ''
         }`}
         title={refreshTitle}
         disabled={isRefreshing}
       >
-        <AppIcon name="refresh" className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+        <AppIcon name="refresh" className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
       </button>
     </div>
   )

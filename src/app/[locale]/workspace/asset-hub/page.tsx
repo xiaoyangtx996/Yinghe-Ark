@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useQueryClient } from '@tanstack/react-query'
 import Navbar from '@/components/Navbar'
-import { FolderSidebar } from './components/FolderSidebar'
+import { SecondarySidebar } from '@/components/SecondarySidebar'
 import { AssetGrid } from './components/AssetGrid'
 import { CharacterCreationModal, LocationCreationModal, PropCreationModal, CharacterEditModal, LocationEditModal, PropEditModal } from '@/components/shared/assets'
 import { FolderModal } from './components/FolderModal'
@@ -451,39 +451,85 @@ export default function AssetHubPage() {
     }
 
     return (
-        <div className="glass-page min-h-screen">
+        <div className="glass-page min-h-dvh">
             <Navbar />
-            <div className="max-w-7xl mx-auto px-4 py-6">
-                {/* 页面标题 */}
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-[var(--glass-text-primary)]">{t('title')}</h1>
-                    <p className="text-sm text-[var(--glass-text-secondary)] mt-1">{t('description')}</p>
-                    <p className="text-xs text-[var(--glass-text-tertiary)] mt-2 flex items-center gap-1">
-                        <AppIcon name="info" className="w-3.5 h-3.5" />
-                        {t('modelHint')}
-                        <Link href={{ pathname: '/profile' }} className="text-[var(--glass-tone-info-fg)] hover:underline">{t('modelHintLink')}</Link>
-                        {t('modelHintSuffix')}
-                    </p>
-                </div>
-
-                <div className="flex gap-6">
-                    {/* 左侧文件夹树 */}
-                    <FolderSidebar
-                        folders={folders}
-                        selectedFolderId={selectedFolderId}
-                        onSelectFolder={setSelectedFolderId}
-                        onCreateFolder={() => {
+            <SecondarySidebar
+                title={t('title')}
+                description={t('description')}
+                headerAction={(
+                    <button
+                        type="button"
+                        onClick={() => {
                             setEditingFolder(null)
                             setShowFolderModal(true)
                         }}
-                        onEditFolder={(folder) => {
-                            setEditingFolder(folder)
-                            setShowFolderModal(true)
-                        }}
-                        onDeleteFolder={handleDeleteFolder}
-                    />
+                        className="glass-btn-base glass-btn-primary flex h-7 w-7 items-center justify-center rounded-[8px]"
+                        title={t('newFolder')}
+                    >
+                        <AppIcon name="plus" className="h-4 w-4" />
+                    </button>
+                )}
+                items={[
+                    {
+                        id: 'all',
+                        label: t('allAssets'),
+                        icon: 'folder',
+                        active: selectedFolderId === null,
+                        onClick: () => setSelectedFolderId(null),
+                    },
+                    ...folders.map((folder) => ({
+                        id: folder.id,
+                        label: folder.name,
+                        icon: 'folder' as const,
+                        active: selectedFolderId === folder.id,
+                        onClick: () => setSelectedFolderId(folder.id),
+                        trailing: (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setEditingFolder(folder)
+                                        setShowFolderModal(true)
+                                    }}
+                                    className="glass-btn-base glass-btn-soft flex h-6 w-6 items-center justify-center rounded"
+                                    title={t('editFolder')}
+                                >
+                                    <AppIcon name="edit" className="h-3 w-3" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        void handleDeleteFolder(folder.id)
+                                    }}
+                                    className="glass-btn-base glass-btn-tone-danger flex h-6 w-6 items-center justify-center rounded"
+                                    title={t('deleteFolder')}
+                                >
+                                    <AppIcon name="trash" className="h-3 w-3" />
+                                </button>
+                            </>
+                        ),
+                    })),
+                ]}
+            />
 
-                    {/* 右侧资产网格 */}
+            <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 py-4 sm:px-6">
+                <header className="mb-4 border-b border-[var(--glass-stroke-base)] pb-4">
+                    <h1 className="font-display text-[22px] font-semibold text-[var(--glass-text-primary)]">
+                        {selectedFolderId
+                            ? (folders.find((folder) => folder.id === selectedFolderId)?.name || t('title'))
+                            : t('allAssets')}
+                    </h1>
+                    <p className="mt-2 flex items-center gap-1 text-xs text-[var(--glass-text-tertiary)]">
+                        <AppIcon name="info" className="h-3.5 w-3.5" />
+                        {t('modelHint')}
+                        <Link href={{ pathname: '/profile' }} className="text-[var(--film-gold)] hover:underline">{t('modelHintLink')}</Link>
+                        {t('modelHintSuffix')}
+                    </p>
+                </header>
+
+                <div className="min-h-0 flex-1 overflow-hidden">
                     <AssetGrid
                         assets={assets}
                         loading={loading}
@@ -503,7 +549,7 @@ export default function AssetHubPage() {
                         onVoiceSelect={(characterId) => setVoicePickerCharacterId(characterId)}
                     />
                 </div>
-            </div>
+            </main>
 
             {/* 新建角色弹窗 */}
             {showAddCharacter && (

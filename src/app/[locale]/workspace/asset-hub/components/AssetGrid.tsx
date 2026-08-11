@@ -343,11 +343,9 @@ export function AssetGrid({
 
             {isEmpty ? (
                 /* 空状态 */
-                <div className="glass-surface rounded-xl p-12 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--glass-bg-muted)] flex items-center justify-center">
-                        <PlusIcon className="w-8 h-8 text-[var(--glass-text-tertiary)]" />
-                    </div>
-                    <p className="text-[var(--glass-text-secondary)] mb-2">{t('emptyState')}</p>
+                <div className="px-4 py-16 text-center">
+                    <PlusIcon className="mx-auto mb-4 h-8 w-8 text-[var(--glass-text-tertiary)]" />
+                    <p className="mb-2 text-[var(--glass-text-secondary)]">{t('emptyState')}</p>
                     <p className="text-sm text-[var(--glass-text-tertiary)]">{t('emptyStateHint')}</p>
                     <div className="mt-6 flex justify-center">
                         <AddAssetDropdown
