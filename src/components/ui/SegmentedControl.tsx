@@ -10,6 +10,7 @@ export interface SegmentedControlOption<T extends string = string> {
 }
 
 type SegmentedControlLayout = 'fill' | 'compact'
+type SegmentedControlSize = 'md' | 'lg'
 
 interface SegmentedControlProps<T extends string = string> {
     options: SegmentedControlOption<T>[]
@@ -17,6 +18,10 @@ interface SegmentedControlProps<T extends string = string> {
     onChange: (value: T) => void
     /** Layout mode: stretch to container or keep a compact left-aligned width */
     layout?: SegmentedControlLayout
+    /** Control height: md ~40px, lg ~44px */
+    size?: SegmentedControlSize
+    /** Accessible name for the group */
+    'aria-label'?: string
     /** Extra className on the outer container */
     className?: string
 }
@@ -24,23 +29,22 @@ interface SegmentedControlProps<T extends string = string> {
 // ─── Component ────────────────────────────────────────
 
 /**
- * Unified iOS-style segmented control with sliding pill indicator.
- *
- * Single source of truth for all tab/segment UIs across the app.
- * Indicator lives inside the grid container to share the same
- * positioning context as buttons — guaranteeing equal padding
- * on all four sides (Apple-style).
+ * Unified Film DI segmented control with sliding pill indicator.
+ * Single source of truth for tab/segment UIs across the app.
  */
 export function SegmentedControl<T extends string = string>({
     options,
     value,
     onChange,
     layout = 'fill',
+    size = 'md',
+    'aria-label': ariaLabel,
     className = '',
 }: SegmentedControlProps<T>) {
     const gridRef = useRef<HTMLDivElement>(null)
     const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 })
     const isCompact = layout === 'compact'
+    const isLg = size === 'lg'
 
     useEffect(() => {
         if (!gridRef.current) return
@@ -50,35 +54,44 @@ export function SegmentedControl<T extends string = string>({
         if (activeButton) {
             setIndicator({ left: activeButton.offsetLeft, width: activeButton.offsetWidth })
         }
-    }, [value, options])
+    }, [value, options, size])
 
     return (
         <div
-            className={`rounded-xl p-[3px] bg-[#e8e8ed] dark:bg-[#1c1c1e] ${isCompact ? 'inline-block max-w-full' : 'block w-full'} ${className}`}
+            role="group"
+            aria-label={ariaLabel}
+            className={`rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] p-1 ${isCompact ? 'inline-block max-w-full' : 'block w-full'} ${className}`}
         >
             <div
                 ref={gridRef}
                 className={isCompact ? 'relative inline-grid grid-flow-col auto-cols-[minmax(96px,max-content)]' : 'relative grid'}
                 style={isCompact ? undefined : { gridTemplateColumns: `repeat(${Math.max(1, options.length)}, minmax(0, 1fr))` }}
             >
-                {/* Sliding pill indicator */}
                 <div
-                    className="absolute top-0 bottom-0 rounded-[10px] bg-white dark:bg-[#3a3a3c] shadow-[0_1px_3px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                    className="pointer-events-none absolute top-0 bottom-0 rounded-[calc(var(--glass-radius-lg)-2px)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] shadow-[var(--glass-shadow-sm)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
                     style={{ left: indicator.left, width: indicator.width }}
+                    aria-hidden
                 />
-                {options.map((opt) => (
-                    <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => onChange(opt.value)}
-                        className={`relative z-10 flex items-center justify-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[13px] font-semibold transition-colors duration-200 cursor-pointer ${value === opt.value
-                            ? 'text-[#1d1d1f] dark:text-white'
-                            : 'text-[#86868b] hover:text-[#6e6e73]'
+                {options.map((opt) => {
+                    const selected = value === opt.value
+                    return (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => onChange(opt.value)}
+                            aria-pressed={selected}
+                            className={`relative z-10 flex cursor-pointer items-center justify-center gap-1.5 rounded-[calc(var(--glass-radius-lg)-2px)] px-3 text-[13px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)] ${
+                                isLg ? 'min-h-[44px] py-2' : 'min-h-[40px] py-1.5'
+                            } ${
+                                selected
+                                    ? 'text-[var(--glass-text-primary)]'
+                                    : 'text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)]'
                             }`}
-                    >
-                        {opt.label}
-                    </button>
-                ))}
+                        >
+                            {opt.label}
+                        </button>
+                    )
+                })}
             </div>
         </div>
     )

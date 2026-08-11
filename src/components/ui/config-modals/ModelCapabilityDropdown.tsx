@@ -236,7 +236,7 @@ export function ModelCapabilityDropdown({
 
     const triggerPy = compact ? 'py-1' : 'py-2.5'
     const triggerPx = compact ? 'px-1.5' : 'px-3'
-    const textSize = compact ? 'text-[11px]' : 'text-sm'
+    const textSize = compact ? 'text-[12px]' : 'text-sm'
     const modelOptionTextSize = compact ? 'text-[12px]' : 'text-sm'
 
     return (
@@ -245,7 +245,7 @@ export function ModelCapabilityDropdown({
             <button
                 type="button"
                 onClick={handleToggleOpen}
-                className={`glass-input-base w-full ${triggerPx} ${triggerPy} rounded-[14px] transition-all duration-200 cursor-pointer ${isOpen
+                className={`glass-input-base w-full ${triggerPx} ${triggerPy} rounded-[var(--glass-radius-md)] transition-all duration-200 cursor-pointer ${isOpen
                     ? '!border-[var(--glass-tone-info-fg)] shadow-[0_0_0_3px_var(--glass-tone-info-bg)]'
                     : 'hover:border-[var(--glass-stroke-active)]'
                     }`}
@@ -268,7 +268,7 @@ export function ModelCapabilityDropdown({
                         {selectedModel && (paramSummary || selectedModel.providerName || selectedModel.provider) && (
                             <span className="relative group/info">
                                 <AppIcon name="info" className="w-4 h-4 text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] transition-colors cursor-help" />
-                                <span className="pointer-events-none absolute right-0 bottom-full mb-2 whitespace-nowrap rounded-lg bg-[var(--glass-text-primary)] px-3 py-1.5 text-[12px] text-white opacity-0 transition-opacity group-hover/info:opacity-100 z-50 shadow-lg">
+                                <span className="pointer-events-none absolute right-0 bottom-full z-[60] mb-2 whitespace-nowrap rounded-lg glass-surface-modal px-3 py-1.5 text-[12px] text-[var(--glass-text-primary)] opacity-0 transition-opacity group-hover/info:opacity-100">
                                     {[selectedModel.providerName || selectedModel.provider, paramSummary].filter(Boolean).join(' · ')}
                                 </span>
                             </span>
@@ -282,7 +282,7 @@ export function ModelCapabilityDropdown({
             {isOpen && createPortal(
                 <div
                     ref={panelRef}
-                    className="glass-surface-modal z-[9999] overflow-hidden flex flex-col rounded-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.1)]"
+                    className="glass-surface-modal z-[9999] overflow-hidden flex flex-col rounded-[var(--glass-radius-lg)] shadow-[0_8px_32px_rgba(0,0,0,0.1)]"
                     style={panelStyle}
                 >
                     {/* Model list */}
@@ -297,7 +297,7 @@ export function ModelCapabilityDropdown({
                             }
                             return Array.from(grouped.entries()).map(([providerLabel, groupModels]) => (
                                 <div key={providerLabel} className="mb-1">
-                                    <div className="sticky top-0 z-10 px-2 pt-2 pb-1 bg-white/80 dark:bg-[#1c1c1e]/80 backdrop-blur-md">
+                                    <div className="sticky top-0 z-10 bg-[var(--glass-bg-surface-strong)] px-2 pt-2 pb-1 backdrop-blur-md">
                                         <span className="text-[11px] font-bold text-[var(--glass-text-tertiary)] tracking-wide">
                                             {providerLabel}
                                         </span>
@@ -337,7 +337,7 @@ export function ModelCapabilityDropdown({
                     {(visibleCapabilityFields.length > 0 || booleanToggles.length > 0) && (
                         <div data-capability-params className="shrink-0 bg-[var(--glass-bg-surface)]">
                             <div className="px-4 py-3">
-                                <div className="text-[10px] font-bold text-[#8e8e93] uppercase tracking-wider mb-2.5">
+                                <div className="text-[12px] font-bold text-[var(--glass-text-secondary)] uppercase tracking-wider mb-2.5">
                                     {t('paramConfig')}
                                 </div>
                                 <div className="max-h-[156px] overflow-y-auto app-scrollbar pr-1">
@@ -395,7 +395,7 @@ export function ModelCapabilityDropdown({
                                                                         type="button"
                                                                         onClick={() => onCapabilityChange(def.field, s, def.options[0])}
                                                                         className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-all flex items-center gap-1 cursor-pointer ${on
-                                                                            ? 'bg-white text-black dark:bg-[#2c2c2e] dark:text-white shadow-[0_3px_8px_rgba(0,0,0,0.12),0_3px_1px_rgba(0,0,0,0.04)] font-bold'
+                                                                            ? 'bg-[var(--glass-bg-surface-strong)] text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)] font-bold border border-[var(--glass-stroke-base)]'
                                                                             : disabled
                                                                                 ? 'text-[#8e8e93] opacity-75 hover:opacity-95'
                                                                                 : 'text-[#8e8e93] hover:text-[#3a3a3c] dark:hover:text-[#ebebf5]'
@@ -421,7 +421,7 @@ export function ModelCapabilityDropdown({
                                                         type="button"
                                                         onClick={() => toggle.onChange(true)}
                                                         className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-all ${toggle.value
-                                                            ? 'bg-white text-black dark:bg-[#2c2c2e] dark:text-white shadow-[0_3px_8px_rgba(0,0,0,0.12),0_3px_1px_rgba(0,0,0,0.04)] font-bold'
+                                                            ? 'bg-[var(--glass-bg-surface-strong)] text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)] font-bold border border-[var(--glass-stroke-base)]'
                                                             : 'text-[#8e8e93] hover:text-[#3a3a3c] dark:hover:text-[#ebebf5]'
                                                             }`}
                                                     >
@@ -431,7 +431,7 @@ export function ModelCapabilityDropdown({
                                                         type="button"
                                                         onClick={() => toggle.onChange(false)}
                                                         className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-all ${!toggle.value
-                                                            ? 'bg-white text-black dark:bg-[#2c2c2e] dark:text-white shadow-[0_3px_8px_rgba(0,0,0,0.12),0_3px_1px_rgba(0,0,0,0.04)] font-bold'
+                                                            ? 'bg-[var(--glass-bg-surface-strong)] text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)] font-bold border border-[var(--glass-stroke-base)]'
                                                             : 'text-[#8e8e93] hover:text-[#3a3a3c] dark:hover:text-[#ebebf5]'
                                                             }`}
                                                     >

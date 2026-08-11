@@ -167,9 +167,10 @@ export function ProviderAdvancedFields({
   return useTabbedLayout ? (
     <div className="space-y-2.5 p-3">
       <SegmentedControl
+        aria-label={t('modelTypeTabs')}
         options={visibleTypes.map((type) => ({
           value: type,
-          label: <><TypeIcon type={type} className="h-3 w-3" /><span>{typeLabel(type, t)}</span></>,
+          label: <><TypeIcon type={type} className="h-3.5 w-3.5" /><span>{typeLabel(type, t)}</span></>,
         }))}
         value={currentType ?? visibleTypes[0]}
         onChange={(val) => setActiveType(val as ProviderCardModelType)}
@@ -209,7 +210,12 @@ export function ProviderAdvancedFields({
               className="glass-input-base px-3 py-1.5 text-[12px]"
               autoFocus
             />
-            <button onClick={state.handleCancelAdd} className="glass-icon-btn-sm">
+            <button
+              onClick={state.handleCancelAdd}
+              className="glass-icon-btn-sm"
+              title={t('cancel')}
+              aria-label={t('cancel')}
+            >
               <AppIcon name="close" className="h-4 w-4" />
             </button>
           </div>
@@ -237,46 +243,54 @@ export function ProviderAdvancedFields({
             </button>
           </div>
           {shouldShowVideoHint && (
-            <p className="mt-2 text-xs text-[var(--glass-text-tertiary)]">
+            <p className="mt-2 text-xs text-[var(--glass-text-secondary)]">
               {t('openaiCompatVideoOnlyHint')}
             </p>
           )}
           {currentType === 'video' && provider.id === 'ark' && (
-            <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-[var(--glass-bg-muted)] px-2 py-2">
-              <button
-                onClick={() => state.setBatchMode(!state.batchMode)}
-                className="glass-check-mini"
+            <label className="mt-2.5 flex cursor-pointer items-center gap-2.5 rounded-lg bg-[var(--glass-bg-muted)] px-2.5 py-2">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={state.batchMode}
+                onChange={(event) => state.setBatchMode(event.target.checked)}
+              />
+              <span
+                className="glass-check pointer-events-none"
                 data-active={state.batchMode}
+                aria-hidden
               >
-                {state.batchMode && (
-                  <AppIcon name="checkSm" className="h-2.5 w-2.5 text-white" />
-                )}
-              </button>
+                {state.batchMode ? <AppIcon name="checkSm" className="h-3 w-3" /> : null}
+              </span>
               <span className="text-xs font-medium text-[var(--glass-text-secondary)]">
                 {t('batchModeHalfPrice')}
               </span>
-            </div>
+            </label>
           )}
         </div>
       )}
 
-      <div className="glass-surface-soft rounded-xl p-2">
-        <div
-          className="app-scrollbar h-[280px] overflow-y-auto pr-1"
-        >
-          <div className="space-y-2">
-            {currentModels.map((model, index) => (
-              <ModelRow
-                key={`${model.modelKey}-${index}`}
-                model={model}
-                t={t}
-                state={state}
-                onToggleModel={onToggleModel}
-                onDeleteModel={onDeleteModel}
-                onUpdateModel={onUpdateModel}
-                hasApiKey={!!provider.hasApiKey}
-              />
-            ))}
+      <div className="rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] p-2">
+        <div className="app-scrollbar h-[280px] overflow-y-auto pr-1">
+          <div className="space-y-1.5">
+            {currentModels.length === 0 ? (
+              <div className="admin-empty py-10">
+                <p className="admin-empty__title text-[13px]">{t('noModelsForProvider')}</p>
+              </div>
+            ) : (
+              currentModels.map((model, index) => (
+                <ModelRow
+                  key={`${model.modelKey}-${index}`}
+                  model={model}
+                  t={t}
+                  state={state}
+                  onToggleModel={onToggleModel}
+                  onDeleteModel={onDeleteModel}
+                  onUpdateModel={onUpdateModel}
+                  hasApiKey={!!provider.hasApiKey}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -285,7 +299,7 @@ export function ProviderAdvancedFields({
     <div className="p-3">
       {state.showAddForm === null ? (
         <div className="text-center">
-          <p className="mb-3 text-[12px] text-[var(--glass-text-tertiary)]">{t('noModelsForProvider')}</p>
+          <p className="mb-3 text-[12px] text-[var(--glass-text-secondary)]">{t('noModelsForProvider')}</p>
           <div className="flex items-center justify-center">
             <button
               onClick={() => state.setShowAddForm(defaultAddType)}
@@ -309,7 +323,12 @@ export function ProviderAdvancedFields({
               className="glass-input-base px-3 py-1.5 text-[12px]"
               autoFocus
             />
-            <button onClick={state.handleCancelAdd} className="glass-icon-btn-sm">
+            <button
+              onClick={state.handleCancelAdd}
+              className="glass-icon-btn-sm"
+              title={t('cancel')}
+              aria-label={t('cancel')}
+            >
               <AppIcon name="close" className="h-4 w-4" />
             </button>
           </div>
@@ -366,10 +385,15 @@ function ModelRow({
   const hasPriceText = priceText.length > 0
   const isComingSoonModel = isPresetComingSoonModel(model.provider, model.modelId)
   const toggleDisabled = isComingSoonModel || !hasApiKey
-  const rowDisabledClass = model.enabled ? '' : 'opacity-50'
 
   return (
-    <div className={`group flex items-center justify-between gap-2 rounded-xl bg-[var(--glass-bg-surface)] px-3 py-2 transition-colors hover:bg-[var(--glass-bg-surface-strong)] ${rowDisabledClass}`}>
+    <div
+      className={`group flex items-center justify-between gap-2 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] px-3 py-2.5 transition-colors hover:border-[var(--glass-stroke-strong)] ${
+        model.enabled
+          ? 'bg-[var(--glass-bg-surface-strong)]'
+          : 'bg-[color-mix(in_srgb,var(--glass-bg-surface-strong)_70%,var(--glass-bg-muted))]'
+      }`}
+    >
       {state.editingModelId === model.modelKey ? (
         <>
           <div className="flex min-w-0 flex-1 flex-col gap-2">
@@ -392,7 +416,7 @@ function ModelRow({
               placeholder={t('modelActualId')}
             />
             {hasPriceText && (
-              <div className="text-xs text-[var(--glass-text-tertiary)]">{priceText}</div>
+              <div className="text-xs text-[var(--glass-text-secondary)]">{priceText}</div>
             )}
           </div>
           <div className="flex items-center gap-1.5">
@@ -401,6 +425,7 @@ function ModelRow({
               disabled={state.isModelSavePending}
               className="glass-icon-btn-sm"
               title={t('save')}
+              aria-label={t('save')}
             >
               {state.isModelSavePending
                 ? <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--glass-text-secondary)] border-t-transparent" />
@@ -410,6 +435,7 @@ function ModelRow({
               onClick={state.handleCancelEditModel}
               className="glass-icon-btn-sm"
               title={t('cancel')}
+              aria-label={t('cancel')}
             >
               <AppIcon name="close" className="w-3.5 h-3.5" />
             </button>
@@ -419,49 +445,72 @@ function ModelRow({
         <>
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`text-[12px] font-semibold ${model.enabled ? 'text-[var(--glass-text-primary)]' : 'text-[var(--glass-text-secondary)]'}`}>
+              <span
+                className={`text-[13px] font-semibold leading-snug ${
+                  model.enabled
+                    ? 'text-[var(--glass-text-primary)]'
+                    : 'text-[var(--glass-text-secondary)]'
+                }`}
+              >
                 {model.name}
               </span>
               {state.isDefaultModel(model) && model.enabled && (
-                <span className="shrink-0 rounded-md bg-[var(--glass-text-primary)] px-1.5 py-0.5 text-[10px] leading-none text-white">
+                <span className="shrink-0 rounded-md bg-[var(--glass-text-primary)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--glass-bg-surface-strong)]">
                   {t('default')}
                 </span>
               )}
               {hasPriceText && (
-                <span className="shrink-0 text-[11px] text-[var(--glass-text-tertiary)]">{priceText}</span>
+                <span className="shrink-0 text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                  {priceText}
+                </span>
               )}
             </div>
-            <span className="break-all text-[11px] text-[var(--glass-text-tertiary)]">{model.modelId}</span>
+            <span className="break-all font-mono text-[12px] leading-snug text-[var(--glass-text-secondary)]">
+              {model.modelId}
+            </span>
           </div>
 
           <div className="flex items-center gap-1.5">
             {!state.isPresetModel(model.modelKey) && onUpdateModel && (
               <button
+                type="button"
                 onClick={() => state.handleEditModel(model)}
-                className="glass-icon-btn-sm opacity-0 transition-opacity group-hover:opacity-100"
+                className="glass-icon-btn-sm"
                 title={t('configure')}
+                aria-label={t('configure')}
               >
                 <AppIcon name="edit" className="h-3.5 w-3.5" />
               </button>
             )}
             <button
+              type="button"
               onClick={() => onDeleteModel(model.modelKey)}
-              className="glass-icon-btn-sm opacity-0 transition-opacity hover:text-[var(--glass-tone-danger-fg)] group-hover:opacity-100"
+              className="glass-icon-btn-sm hover:text-[var(--glass-tone-danger-fg)]"
+              title={t('delete')}
+              aria-label={t('delete')}
             >
               <AppIcon name="trash" className="h-3.5 w-3.5" />
             </button>
 
             <button
+              type="button"
+              role="switch"
+              aria-checked={model.enabled}
+              aria-label={
+                model.enabled
+                  ? t('disableModel', { name: model.name })
+                  : t('enableModel', { name: model.name })
+              }
               onClick={() => {
                 if (toggleDisabled) return
                 onToggleModel(model.modelKey)
               }}
-              className={`glass-toggle ${toggleDisabled ? 'cursor-not-allowed opacity-60' : ''}`}
+              className={`glass-toggle ${toggleDisabled ? 'cursor-not-allowed' : ''}`}
               data-active={model.enabled}
               disabled={toggleDisabled}
               title={isComingSoonModel ? t('comingSoon') : !hasApiKey ? t('configureApiKey') : undefined}
             >
-              <div className="glass-toggle-thumb"></div>
+              <span className="glass-toggle-thumb" />
             </button>
           </div>
         </>

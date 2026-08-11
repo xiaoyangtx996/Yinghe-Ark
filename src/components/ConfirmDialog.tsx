@@ -60,12 +60,12 @@ export default function ConfirmDialog({
     <>
       {/* 背景遮罩 */}
       <div
-        className="fixed inset-0 z-50 glass-overlay animate-fade-in"
+        className="fixed inset-0 z-[80] glass-overlay animate-fade-in"
         onClick={onCancel}
       />
 
       {/* 对话框 */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 pointer-events-none">
         <div
           className="glass-surface-modal max-w-md w-full p-6 pointer-events-auto animate-scale-in"
           onClick={(e) => e.stopPropagation()}

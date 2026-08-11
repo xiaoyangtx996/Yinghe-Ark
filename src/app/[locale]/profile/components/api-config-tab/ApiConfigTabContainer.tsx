@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { GlassModalShell } from '@/components/ui/primitives'
 import { resolveTaskPresentationState } from '@/lib/task/presentation'
@@ -91,8 +91,12 @@ function toCapabilityFieldLabel(field: string): string {
 
 export function ApiConfigTabContainer({
   pane = 'defaults',
+  addProviderOpen,
+  onAddProviderOpenChange,
 }: {
   pane?: 'defaults' | 'providers'
+  addProviderOpen?: boolean
+  onAddProviderOpenChange?: (open: boolean) => void
 }) {
   const locale = useLocale()
   const {
@@ -144,6 +148,18 @@ export function ApiConfigTabContainer({
   })
 
   const [showAddGeminiProvider, setShowAddGeminiProvider] = useState(false)
+  const addProviderModalOpen = addProviderOpen ?? showAddGeminiProvider
+  const setAddProviderModalOpen = useCallback((open: boolean) => {
+    onAddProviderOpenChange?.(open)
+    setShowAddGeminiProvider(open)
+  }, [onAddProviderOpenChange])
+
+  useEffect(() => {
+    if (typeof addProviderOpen === 'boolean') {
+      setShowAddGeminiProvider(addProviderOpen)
+    }
+  }, [addProviderOpen])
+
   const [newGeminiProvider, setNewGeminiProvider] = useState<{
     name: string
     baseUrl: string
@@ -178,8 +194,8 @@ export function ApiConfigTabContainer({
     setNewGeminiProvider({ name: '', baseUrl: '', apiKey: '', apiType: 'gemini-compatible' })
     setTestStatus('idle')
     setTestSteps([])
-    setShowAddGeminiProvider(false)
-  }, [newGeminiProvider, addProvider])
+    setAddProviderModalOpen(false)
+  }, [newGeminiProvider, addProvider, setAddProviderModalOpen])
 
   const handleAddGeminiProvider = useCallback(async () => {
     if (!newGeminiProvider.name || !newGeminiProvider.baseUrl) {
@@ -226,7 +242,7 @@ export function ApiConfigTabContainer({
     setNewGeminiProvider({ name: '', baseUrl: '', apiKey: '', apiType: 'gemini-compatible' })
     setTestStatus('idle')
     setTestSteps([])
-    setShowAddGeminiProvider(false)
+    setAddProviderModalOpen(false)
   }
 
   const handleWorkflowConcurrencyChange = useCallback(
@@ -240,7 +256,7 @@ export function ApiConfigTabContainer({
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center p-6 text-[var(--glass-text-tertiary)]">
+      <div className="flex h-full items-center justify-center p-6 text-[var(--glass-text-secondary)]">
         {tc('loading')}
       </div>
     )
@@ -249,7 +265,7 @@ export function ApiConfigTabContainer({
 
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex flex-col gap-3">
       <ApiConfigToolbar
         title={t('title')}
         saveStatus={saveStatus}
@@ -259,9 +275,7 @@ export function ApiConfigTabContainer({
         saveFailedLabel={t('saveFailed')}
       />
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="space-y-5">
-          {pane === 'defaults' ? (
+      {pane === 'defaults' ? (
             <DefaultModelCards
               t={t}
               defaultModels={defaultModels}
@@ -286,7 +300,7 @@ export function ApiConfigTabContainer({
               allModels={models}
               defaultModels={defaultModels}
               getModelsForProvider={getModelsForProvider}
-              onAddGeminiProvider={() => setShowAddGeminiProvider(true)}
+              onAddGeminiProvider={() => setAddProviderModalOpen(true)}
               onToggleModel={toggleModel}
               onUpdateApiKey={updateProviderApiKey}
               onUpdateBaseUrl={updateProviderBaseUrl}
@@ -297,6 +311,7 @@ export function ApiConfigTabContainer({
               onAddModel={addModel}
               onFlushConfig={flushConfig}
               onToggleProviderHidden={updateProviderHidden}
+              hideAddButton
               labels={{
                 providerPool: t('providerPool'),
                 providerPoolDesc: t('providerPoolDesc'),
@@ -311,14 +326,12 @@ export function ApiConfigTabContainer({
               }}
             />
           )}
-        </div>
-      </div>
 
       <GlassModalShell
-        open={showAddGeminiProvider}
+        open={addProviderModalOpen}
         onClose={handleCancelAddGeminiProvider}
         title={t('addGeminiProvider')}
-        description={t('providerPool')}
+        description={t('customProviderTip')}
         size="md"
         footer={
           <div className="flex justify-end gap-2">
@@ -347,7 +360,7 @@ export function ApiConfigTabContainer({
               <button
                 onClick={handleAddGeminiProvider}
                 disabled={testStatus === 'testing'}
-                className="glass-btn-base glass-btn-primary px-3 py-1.5 text-sm disabled:opacity-50"
+                className="glass-btn-base glass-btn-primary px-3 py-1.5 text-sm"
               >
                 {testStatus === 'testing' ? t('testing') : tp('add')}
               </button>
@@ -463,12 +476,12 @@ export function ApiConfigTabContainer({
                   <div key={step.name} className="space-y-0.5">
                     <div className="flex items-center gap-2 text-xs">
                       {step.status === 'pass' && (
-                        <span className="text-green-500">
+                        <span className="text-[var(--glass-tone-success-fg)]">
                           <AppIcon name="check" className="h-3.5 w-3.5" />
                         </span>
                       )}
                       {step.status === 'fail' && (
-                        <span className="text-red-500">
+                        <span className="text-[var(--glass-tone-danger-fg)]">
                           <AppIcon name="close" className="h-3.5 w-3.5" />
                         </span>
                       )}
@@ -479,16 +492,16 @@ export function ApiConfigTabContainer({
                         {stepLabel}
                       </span>
                       {step.model && (
-                        <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
+                        <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--glass-text-secondary)]">
                           {step.model}
                         </span>
                       )}
                     </div>
-                    <p className={`pl-5 text-[11px] ${step.status === 'fail' ? 'text-red-400' : 'text-[var(--glass-text-secondary)]'}`}>
+                    <p className={`pl-5 text-[12px] ${step.status === 'fail' ? 'text-[var(--glass-tone-danger-fg)]' : 'text-[var(--glass-text-secondary)]'}`}>
                       {step.message}
                     </p>
                     {step.detail && (
-                      <p className="pl-5 text-[10px] text-[var(--glass-text-tertiary)] break-all line-clamp-3">
+                      <p className="pl-5 text-[12px] text-[var(--glass-text-secondary)] break-all line-clamp-3">
                         {step.detail}
                       </p>
                     )}
@@ -497,14 +510,14 @@ export function ApiConfigTabContainer({
               })}
 
               {testStatus === 'failed' && (
-                <div className="flex items-start gap-2 rounded-lg bg-yellow-500/10 px-2.5 py-2 text-[11px] text-yellow-600 dark:text-yellow-400">
+                <div className="flex items-start gap-2 rounded-lg bg-[var(--glass-tone-warning-bg)] px-2.5 py-2 text-[12px] text-[var(--glass-tone-warning-fg)]">
                   <span className="mt-0.5 shrink-0">⚠</span>
                   <span>{t('testWarning')}</span>
                 </div>
               )}
 
               {testStatus === 'passed' && (
-                <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-2.5 py-2 text-[11px] text-green-600 dark:text-green-400">
+                <div className="flex items-center gap-2 rounded-lg bg-[var(--glass-tone-success-bg)] px-2.5 py-2 text-[12px] text-[var(--glass-tone-success-fg)]">
                   <AppIcon name="check" className="h-3.5 w-3.5" />
                   {t('testPassed')}
                 </div>

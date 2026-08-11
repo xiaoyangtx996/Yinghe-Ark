@@ -25,13 +25,28 @@ export default function LogsPage() {
     }
   }, [router, session, status])
 
-  if (status === 'loading' || !session) {
+  if (status === 'loading') {
     return (
-      <div className="glass-page flex min-h-dvh items-center justify-center">
-        <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
+      <div className="glass-page min-h-dvh">
+        <Navbar />
+        <main className="mx-auto flex h-dvh max-w-[1440px] flex-col items-center justify-center px-4 pb-4 pt-4 sm:px-6">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--glass-stroke-base)] border-t-[var(--glass-text-secondary)]" />
+          <p className="mt-3 text-sm text-[var(--glass-text-secondary)]">{tc('loading')}</p>
+        </main>
       </div>
     )
   }
+
+  if (!session) {
+    return (
+      <div className="glass-page flex min-h-dvh items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--glass-stroke-base)] border-t-[var(--glass-text-secondary)]" />
+      </div>
+    )
+  }
+
+  const title = activeTab === 'billing' ? t('tabBilling') : t('tabSystem')
+  const description = activeTab === 'billing' ? t('tabBillingDesc') : t('tabSystemDesc')
 
   return (
     <div className="glass-page min-h-dvh">
@@ -57,14 +72,15 @@ export default function LogsPage() {
         ]}
       />
 
-      <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 py-4 sm:px-6">
-        <header className="mb-4 border-b border-[var(--glass-stroke-base)] pb-4">
-          <h1 className="font-display text-[22px] font-semibold text-[var(--glass-text-primary)]">
-            {activeTab === 'billing' ? t('tabBilling') : t('tabSystem')}
-          </h1>
+      <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 pb-4 pt-4 sm:px-6">
+        <header className="admin-page-header">
+          <div>
+            <h1 className="admin-page-header__title">{title}</h1>
+            <p className="admin-page-header__desc">{description}</p>
+          </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col">
           {activeTab === 'billing' ? <BillingRecordsPanel /> : <SystemLogsPanel />}
         </div>
       </main>

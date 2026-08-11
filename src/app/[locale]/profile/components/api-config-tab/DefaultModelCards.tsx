@@ -172,7 +172,7 @@ function SmartSelector({
             <select
                 value={normalizedKey}
                 onChange={(event) => props.updateDefaultModel(field, event.target.value)}
-                className="glass-input-base w-full appearance-none px-3 py-2 text-[13px] rounded-xl outline-none transition-all text-[var(--glass-text-primary)]"
+                className="glass-input-base w-full appearance-none px-3 py-2 text-[13px] outline-none transition-all text-[var(--glass-text-primary)]"
             >
                 <option value="">{placeholder}</option>
                 {options.map((option, index) => (
@@ -262,29 +262,33 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
         ]
 
     return (
-        <div className="space-y-6">
-            <p className="text-[13px] leading-relaxed text-[var(--glass-text-secondary)]">{t('defaultModel.hint')}</p>
-
-            {/* ===== Section 1: Core Foundation ===== */}
-            <section className="border-b border-[var(--glass-stroke-base)] pb-6">
-                <h3 className="mb-4 flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.08em] text-[var(--glass-text-secondary)]">
-                    <AppIcon name="bolt" className="h-4 w-4 text-[var(--film-gold)]" />
-                    {t('defaultModelSection.coreFoundation')}
-                </h3>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div className="rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-4">
+        <div className="space-y-4">
+            <section className="admin-section-card !flex-none">
+                <div className="admin-section-card__head">
+                    <div className="flex items-start gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                            <AppIcon name="bolt" className="h-4 w-4" />
+                        </div>
+                        <div>
+                            <h3 className="admin-section-card__title">{t('defaultModelSection.coreFoundation')}</h3>
+                            <p className="admin-section-card__desc">{t('defaultModelSection.coreFoundationDesc')}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="admin-section-card__body grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div className="admin-tile">
                         <div className="mb-3 flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
+                            <div className="flex min-w-0 items-center gap-2">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
                                     <AppIcon name="fileText" className="h-4 w-4 text-[var(--film-gold)]" />
                                 </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreTextTitle')}</h4>
-                                    <p className="text-[11px] text-[var(--glass-text-tertiary)]">{t('defaultModelDesc.analysisModel')}</p>
+                                <div className="min-w-0">
+                                    <h4 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreTextTitle')}</h4>
+                                    <p className="text-[12px] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.analysisModel')}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <span className="whitespace-nowrap text-[10px] font-medium text-[var(--glass-text-secondary)]">
+                            <div className="flex shrink-0 items-center gap-1.5">
+                                <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
                                     {t('workflowConcurrency.analysis')}
                                 </span>
                                 <input
@@ -293,7 +297,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                                     step={1}
                                     value={workflowConcurrency.analysis}
                                     onChange={(event) => handleWorkflowConcurrencyChange('analysis', event.target.value)}
-                                    className="glass-input-base h-6 w-12 px-1.5 py-0 text-[11px]"
+                                    className="glass-input-base h-8 w-14 px-2 text-xs"
                                 />
                             </div>
                         </div>
@@ -305,19 +309,19 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                         />
                     </div>
 
-                    <div className="rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-4">
+                    <div className="admin-tile">
                         <div className="mb-3 flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
+                            <div className="flex min-w-0 items-center gap-2">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
                                     <AppIcon name="clapperboard" className="h-4 w-4 text-[var(--film-gold)]" />
                                 </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreVideoTitle')}</h4>
-                                    <p className="text-[11px] text-[var(--glass-text-tertiary)]">{t('defaultModelDesc.videoModel')}</p>
+                                <div className="min-w-0">
+                                    <h4 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreVideoTitle')}</h4>
+                                    <p className="text-[12px] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.videoModel')}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <span className="whitespace-nowrap text-[10px] font-medium text-[var(--glass-text-secondary)]">
+                            <div className="flex shrink-0 items-center gap-1.5">
+                                <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
                                     {t('workflowConcurrency.video')}
                                 </span>
                                 <input
@@ -326,7 +330,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                                     step={1}
                                     value={workflowConcurrency.video}
                                     onChange={(event) => handleWorkflowConcurrencyChange('video', event.target.value)}
-                                    className="glass-input-base h-6 w-12 px-1.5 py-0 text-[11px]"
+                                    className="glass-input-base h-8 w-14 px-2 text-xs"
                                 />
                             </div>
                         </div>
@@ -340,88 +344,101 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                 </div>
             </section>
 
-            {/* ===== Section 2: Global Image Model Config ===== */}
-            <section className="border-b border-[var(--glass-stroke-base)] pb-6">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.08em] text-[var(--glass-text-secondary)]">
-                        <AppIcon name="sparklesAlt" className="h-4 w-4 text-[var(--film-gold)]" />
-                        {t('defaultModelSection.creativePipeline')}
-                    </h3>
-                    <div className="flex items-center gap-1.5">
-                        <span className="whitespace-nowrap text-[10px] font-medium text-[var(--glass-text-secondary)]">
-                            {t('workflowConcurrency.image')}
-                        </span>
-                        <input
-                            type="number"
-                            min={1}
-                            step={1}
-                            value={workflowConcurrency.image}
-                            onChange={(event) => handleWorkflowConcurrencyChange('image', event.target.value)}
-                            className="glass-input-base h-6 w-12 px-1.5 py-0 text-[11px]"
-                        />
-                    </div>
-                </div>
-
-                <div className="mb-4 flex items-start gap-2 rounded-[8px] border border-[rgba(224,163,106,0.28)] bg-[rgba(224,163,106,0.08)] px-3 py-2.5 text-[var(--glass-tone-warning-fg)]">
-                    <AppIcon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
-                    <span className="text-[12px] leading-relaxed">{t('imageModelTip')}</span>
-                </div>
-
-                <div className="mb-4 flex flex-col justify-between gap-3 border-b border-[var(--glass-stroke-base)] pb-4 sm:flex-row sm:items-center">
-                    <div>
-                        <div className="text-[14px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.unifiedOverride')}</div>
-                        <div className="mt-0.5 text-[12px] text-[var(--glass-text-tertiary)]">{t('defaultModelSection.unifiedOverrideHint')}</div>
-                    </div>
-                    <div className="w-full sm:w-[280px]">
-                        <ModelCapabilityDropdown
-                            models={pipelineGlobalOptions.map((opt) => ({
-                                value: opt.modelKey,
-                                label: opt.name,
-                                provider: opt.provider,
-                                providerName: opt.providerName || getProviderDisplayName(opt.provider, locale),
-                            }))}
-                            value={pipelineGlobalKey || undefined}
-                            onModelChange={handlePipelineGlobalChange}
-                            capabilityFields={pipelineGlobalCapFields.map((d) => ({
-                                ...d,
-                                label: allProps.toCapabilityFieldLabel(d.field),
-                            }))}
-                            capabilityOverrides={pipelineGlobalCapOverrides}
-                            onCapabilityChange={handlePipelineGlobalCapChange}
-                            placeholder={t('defaultModelSection.unifiedOverridePlaceholder')}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {pipelineItems.map((item) => {
-                        const resolved = resolveModel(item.field, item.modelType, defaultModels, getEnabledModelsByType, parseModelKey, encodeModelKey)
-                        return (
-                            <div key={item.field} className="flex flex-col gap-3 rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-3.5">
-                                <div className="flex items-center gap-2">
-                                    <AppIcon name={item.icon} className="h-4 w-4 text-[var(--glass-text-tertiary)]" />
-                                    <span className="text-[13px] font-semibold text-[var(--glass-text-secondary)]">{t(item.titleKey)}</span>
-                                </div>
-                                <SmartSelector
-                                    field={item.field} modelType={item.modelType}
-                                    options={resolved.options} normalizedKey={resolved.normalizedKey} current={resolved.current}
-                                    placeholder={t('defaultModelSection.followUnified')}
-                                    locale={locale} t={t} props={allProps}
-                                />
+            <section className="admin-section-card !flex-none">
+                <div className="admin-section-card__head">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex items-start gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                                <AppIcon name="sparklesAlt" className="h-4 w-4" />
                             </div>
-                        )
-                    })}
+                            <div>
+                                <h3 className="admin-section-card__title">{t('defaultModelSection.creativePipeline')}</h3>
+                                <p className="admin-section-card__desc">{t('defaultModelSection.unifiedOverrideHint')}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                                {t('workflowConcurrency.image')}
+                            </span>
+                            <input
+                                type="number"
+                                min={1}
+                                step={1}
+                                value={workflowConcurrency.image}
+                                onChange={(event) => handleWorkflowConcurrencyChange('image', event.target.value)}
+                                className="glass-input-base h-8 w-14 px-2 text-xs"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="admin-section-card__body space-y-4">
+                    <div className="flex items-start gap-2 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-warning)] bg-[var(--glass-tone-warning-bg)] px-3 py-2.5 text-[var(--glass-tone-warning-fg)]">
+                        <AppIcon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
+                        <span className="text-[12px] leading-relaxed">{t('imageModelTip')}</span>
+                    </div>
+
+                    <div className="admin-tile flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                        <div>
+                            <div className="text-[14px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.unifiedOverride')}</div>
+                        </div>
+                        <div className="w-full sm:w-[280px]">
+                            <ModelCapabilityDropdown
+                                models={pipelineGlobalOptions.map((opt) => ({
+                                    value: opt.modelKey,
+                                    label: opt.name,
+                                    provider: opt.provider,
+                                    providerName: opt.providerName || getProviderDisplayName(opt.provider, locale),
+                                }))}
+                                value={pipelineGlobalKey || undefined}
+                                onModelChange={handlePipelineGlobalChange}
+                                capabilityFields={pipelineGlobalCapFields.map((d) => ({
+                                    ...d,
+                                    label: allProps.toCapabilityFieldLabel(d.field),
+                                }))}
+                                capabilityOverrides={pipelineGlobalCapOverrides}
+                                onCapabilityChange={handlePipelineGlobalCapChange}
+                                placeholder={t('defaultModelSection.unifiedOverridePlaceholder')}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        {pipelineItems.map((item) => {
+                            const resolved = resolveModel(item.field, item.modelType, defaultModels, getEnabledModelsByType, parseModelKey, encodeModelKey)
+                            return (
+                                <div key={item.field} className="admin-tile flex flex-col gap-3">
+                                    <div className="flex items-center gap-2">
+                                        <AppIcon name={item.icon} className="h-4 w-4 text-[var(--glass-text-secondary)]" />
+                                        <span className="text-[13px] font-semibold text-[var(--glass-text-primary)]">{t(item.titleKey)}</span>
+                                    </div>
+                                    <SmartSelector
+                                        field={item.field} modelType={item.modelType}
+                                        options={resolved.options} normalizedKey={resolved.normalizedKey} current={resolved.current}
+                                        placeholder={t('defaultModelSection.followUnified')}
+                                        locale={locale} t={t} props={allProps}
+                                    />
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             </section>
 
-            {/* ===== Section 3: Extensions ===== */}
-            <section>
-                <h3 className="mb-4 flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.08em] text-[var(--glass-text-secondary)]">
-                    <AppIcon name="cube" className="h-4 w-4 text-[var(--film-gold)]" />
-                    {t('defaultModelSection.extensions')}
-                </h3>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-4">
+            <section className="admin-section-card !flex-none">
+                <div className="admin-section-card__head">
+                    <div className="flex items-start gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                            <AppIcon name="cube" className="h-4 w-4" />
+                        </div>
+                        <div>
+                            <h3 className="admin-section-card__title">{t('defaultModelSection.extensions')}</h3>
+                            <p className="admin-section-card__desc">{t('defaultModelSection.extensionsDesc')}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="admin-section-card__body grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="admin-tile">
                         <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extLipSync')}</h4>
                         <SmartSelector
                             field="lipSyncModel" modelType="lipsync"
@@ -430,7 +447,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                             locale={locale} t={t} props={allProps}
                         />
                     </div>
-                    <div className="rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-4">
+                    <div className="admin-tile">
                         <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extTTS')}</h4>
                         <SmartSelector
                             field="audioModel" modelType="audio"
@@ -439,7 +456,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                             locale={locale} t={t} props={allProps}
                         />
                     </div>
-                    <div className="rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-canvas)] p-4">
+                    <div className="admin-tile">
                         <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extVoiceDesign')}</h4>
                         <SmartSelector
                             field="voiceDesignModel" modelType="voicedesign"

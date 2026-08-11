@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocale } from 'next-intl'
 import { type Locale } from '@/i18n/routing'
 import ConfirmDialog from './ConfirmDialog'
@@ -35,14 +36,22 @@ function isSupportedLocale(locale?: string): locale is Locale {
     return locale === 'zh' || locale === 'en'
 }
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({
+    hideIcon = false,
+    className = '',
+}: {
+    hideIcon?: boolean
+    className?: string
+}) {
     const router = useRouter()
     const pathname = usePathname()
     const locale = useLocale()
-    const containerRef = useRef<HTMLDivElement | null>(null)
+    const triggerRef = useRef<HTMLButtonElement | null>(null)
+    const menuRef = useRef<HTMLDivElement | null>(null)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [showConfirm, setShowConfirm] = useState(false)
     const [pendingLocale, setPendingLocale] = useState<Locale | null>(null)
+    const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null)
 
     if (!isSupportedLocale(locale)) {
         throw new Error('LanguageSwitcher requires locale to be zh or en')
@@ -52,18 +61,54 @@ export default function LanguageSwitcher() {
     const activeLocaleForCopy: Locale = pendingLocale ?? targetLocale
     const confirmCopy = SWITCH_CONFIRM_COPY[activeLocaleForCopy]
 
+    useLayoutEffect(() => {
+        if (!isMenuOpen || !triggerRef.current) {
+            setMenuPos(null)
+            return
+        }
+
+        const updatePosition = () => {
+            const rect = triggerRef.current?.getBoundingClientRect()
+            if (!rect) return
+            const menuWidth = 176
+            const left = Math.min(
+                Math.max(8, rect.left),
+                window.innerWidth - menuWidth - 8,
+            )
+            setMenuPos({
+                top: rect.bottom + 8,
+                left,
+            })
+        }
+
+        updatePosition()
+        window.addEventListener('resize', updatePosition)
+        window.addEventListener('scroll', updatePosition, true)
+        return () => {
+            window.removeEventListener('resize', updatePosition)
+            window.removeEventListener('scroll', updatePosition, true)
+        }
+    }, [isMenuOpen])
+
     useEffect(() => {
         if (!isMenuOpen) return
 
         const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false)
-            }
+            const target = event.target as Node
+            if (triggerRef.current?.contains(target)) return
+            if (menuRef.current?.contains(target)) return
+            setIsMenuOpen(false)
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsMenuOpen(false)
         }
 
         document.addEventListener('mousedown', handleClickOutside)
+        document.addEventListener('keydown', handleKeyDown)
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
+            document.removeEventListener('keydown', handleKeyDown)
         }
     }, [isMenuOpen])
 
@@ -88,42 +133,54 @@ export default function LanguageSwitcher() {
         setPendingLocale(null)
     }
 
+    const menu = isMenuOpen && menuPos
+        ? createPortal(
+            <div
+                ref={menuRef}
+                className="glass-surface-modal fixed z-[100] w-44 rounded-xl p-2"
+                style={{ top: menuPos.top, left: menuPos.left }}
+                role="listbox"
+                aria-label={SWITCH_CONFIRM_COPY[targetLocale].triggerLabel}
+            >
+                {(Object.entries(LANGUAGE_LABELS) as Array<[Locale, string]>).map(([optionLocale, label]) => {
+                    const isActive = optionLocale === currentLocale
+                    return (
+                        <button
+                            key={optionLocale}
+                            type="button"
+                            role="option"
+                            aria-selected={isActive}
+                            onClick={() => requestLanguageSwitch(optionLocale)}
+                            className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${isActive
+                                ? 'bg-[var(--glass-fill-active)] text-[var(--glass-text-primary)]'
+                                : 'text-[var(--glass-text-secondary)] hover:bg-[var(--glass-fill-hover)] hover:text-[var(--glass-text-primary)]'
+                                }`}
+                        >
+                            {label}
+                        </button>
+                    )
+                })}
+            </div>,
+            document.body,
+        )
+        : null
+
     return (
         <>
-            <div ref={containerRef} className="relative inline-block">
-                <button
-                    type="button"
-                    onClick={() => setIsMenuOpen((prev) => !prev)}
-                    aria-label={SWITCH_CONFIRM_COPY[targetLocale].triggerLabel}
-                    aria-expanded={isMenuOpen}
-                    className="glass-btn-base glass-btn-secondary inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm"
-                >
-                    <AppIcon name="globe" className="h-4 w-4" />
-                    <span>{LANGUAGE_LABELS[currentLocale]}</span>
-                    <AppIcon name="chevronDown" className="h-4 w-4 text-[var(--glass-text-tertiary)]" />
-                </button>
-
-                {isMenuOpen ? (
-                    <div className="glass-surface-modal absolute right-0 z-50 mt-2 w-44 rounded-xl p-2">
-                        {(Object.entries(LANGUAGE_LABELS) as Array<[Locale, string]>).map(([locale, label]) => {
-                            const isActive = locale === currentLocale
-                            return (
-                                <button
-                                    key={locale}
-                                    type="button"
-                                    onClick={() => requestLanguageSwitch(locale)}
-                                    className={`w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${isActive
-                                        ? 'bg-[var(--glass-fill-active)] text-[var(--glass-text-primary)]'
-                                        : 'text-[var(--glass-text-secondary)] hover:bg-[var(--glass-fill-hover)] hover:text-[var(--glass-text-primary)]'
-                                        }`}
-                                >
-                                    {label}
-                                </button>
-                            )
-                        })}
-                    </div>
-                ) : null}
-            </div>
+            <button
+                ref={triggerRef}
+                type="button"
+                onClick={() => setIsMenuOpen((prev) => !prev)}
+                aria-label={SWITCH_CONFIRM_COPY[targetLocale].triggerLabel}
+                aria-expanded={isMenuOpen}
+                aria-haspopup="listbox"
+                className={`glass-btn-base glass-btn-secondary inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${className}`}
+            >
+                {!hideIcon ? <AppIcon name="globe" className="h-4 w-4" /> : null}
+                <span className="flex-1 text-left">{LANGUAGE_LABELS[currentLocale]}</span>
+                <AppIcon name="chevronDown" className="h-4 w-4 text-[var(--glass-text-secondary)]" />
+            </button>
+            {menu}
             <ConfirmDialog
                 show={showConfirm}
                 title={confirmCopy.title}

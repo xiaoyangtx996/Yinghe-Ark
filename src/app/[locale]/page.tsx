@@ -43,7 +43,7 @@ export default function Home() {
       <Navbar />
 
       <main className="relative z-10 pb-8">
-        <section className="mx-4 mt-5 overflow-hidden rounded-2xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] sm:mx-6 lg:mx-8">
+        <section className="mx-4 mt-5 overflow-hidden rounded-[var(--glass-radius-panel)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] sm:mx-6 lg:mx-8">
           <div className="grid min-h-[460px] lg:grid-cols-[1.1fr_0.9fr]">
             <div
               className="border-b border-[var(--glass-stroke-base)] p-8 sm:p-10 lg:border-b-0 lg:border-r lg:p-12"

@@ -2,7 +2,9 @@
   "title": "日志",
   "subtitle": "查看扣费流水与系统运行日志",
   "tabBilling": "扣费记录",
-  "tabSystem": "日志",
+  "tabBillingDesc": "筛选、追溯与导出账户交易流水",
+  "tabSystem": "系统日志",
+  "tabSystemDesc": "查看与下载服务运行日志文件",
   "export": "导出",
   "exportCsv": "导出 CSV",
   "exportAllLogs": "导出全部日志",
@@ -26,5 +28,15 @@
   "action": "操作",
   "description": "说明",
   "balanceAfter": "余额",
-  "detail": "详情"
+  "detail": "详情",
+  "statTotal": "记录总数",
+  "statPage": "本页笔数",
+  "statFilter": "当前筛选",
+  "statFilterAll": "全部类型",
+  "statFiles": "日志文件",
+  "statLatest": "最近更新",
+  "tableTitle": "交易明细",
+  "tableDesc": "按时间倒序展示扣费与充值记录",
+  "filesTitle": "日志文件",
+  "filesDesc": "服务端写入的运行日志，可预览或下载"
 }

@@ -33,9 +33,9 @@ export function getCompatibilityLayerBadgeLabel(
 // 连接状态图标
 function StatusIcon({ connected }: { connected: boolean }) {
   if (connected) {
-    return <AppIcon name="bolt" className="h-3.5 w-3.5 text-green-500" />
+    return <AppIcon name="bolt" className="h-3.5 w-3.5 text-[var(--glass-tone-success-fg)]" aria-hidden />
   }
-  return <AppIcon name="unplug" className="h-3.5 w-3.5 text-red-400" />
+  return <AppIcon name="unplug" className="h-3.5 w-3.5 text-[var(--glass-tone-danger-fg)]" aria-hidden />
 }
 
 // 使用统一的 VERIFIABLE_PROVIDER_KEYS（从 types 导入）
@@ -59,9 +59,10 @@ export function ProviderCardShell({
   const hiddenToggleLabel = isHidden
     ? (showProviderLabel || t('showProvider'))
     : (hideProviderLabel || t('hideProvider'))
+  const connectionLabel = provider.hasApiKey ? t('connected') : t('notConfigured')
 
   return (
-    <div className="glass-surface overflow-hidden rounded-2xl">
+    <div className="glass-surface-soft overflow-hidden rounded-[var(--glass-radius-md)]">
 
       {/* ── 头部：logo + 名称 + 心电图 + 右侧操作 ── */}
       <div className="flex items-center justify-between px-3.5 py-2.5">
@@ -74,42 +75,44 @@ export function ProviderCardShell({
               aria-label={hiddenToggleLabel}
               onClick={() => {
                 if (isHidden) {
-                  // Restoring — no confirmation needed
                   onToggleProviderHidden(provider.id, false)
                 } else {
-                  // Hiding — confirm first
                   if (window.confirm(t('hideProviderConfirm'))) {
                     onToggleProviderHidden(provider.id, true)
                   }
                 }
               }}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-md text-[var(--glass-text-tertiary)] transition-colors hover:text-[var(--glass-text-secondary)]"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--glass-radius-md)] text-[var(--glass-text-secondary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
             >
               <AppIcon name={isHidden ? 'plus' : 'minus'} className="h-3.5 w-3.5" />
             </button>
           )}
           <h3 className="text-[15px] font-bold text-[var(--glass-text-primary)]">{provider.name}</h3>
           {compatibilityLayerLabel && (
-            <span className="rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-2 py-0.5 text-[10px] font-semibold text-[var(--glass-text-secondary)]">
+            <span className="rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-2 py-0.5 text-[11px] font-semibold text-[var(--glass-text-secondary)]">
               {compatibilityLayerLabel}
             </span>
           )}
-          {/* 连接状态图标 */}
-          <span title={provider.hasApiKey ? t('connected') : t('notConfigured')}>
+          <span
+            className="inline-flex items-center gap-1 rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-2 py-0.5 text-[11px] font-semibold text-[var(--glass-text-secondary)]"
+            role="status"
+            aria-label={connectionLabel}
+            title={connectionLabel}
+          >
             <StatusIcon connected={!!provider.hasApiKey} />
+            <span>{connectionLabel}</span>
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          {/* 测试连接按钮（内联在标题行） */}
           {isVerifiable && !state.isEditing && state.keyTestStatus === 'idle' && (
             <button
               onClick={state.handleTestOnly}
               disabled={!canTest}
               className={[
-                'flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium transition-all',
+                'inline-flex h-8 items-center gap-1 rounded-[var(--glass-radius-md)] border px-2.5 text-[12px] font-medium transition-all focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]',
                 canTest
                   ? 'border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] cursor-pointer'
-                  : 'border-[var(--glass-stroke-base)] cursor-not-allowed text-[var(--glass-text-tertiary)] opacity-40',
+                  : 'border-[var(--glass-stroke-base)] cursor-not-allowed text-[var(--glass-text-disabled)] bg-[var(--glass-bg-muted)]',
               ].join(' ')}
             >
               <AppIcon name="refresh" className="h-3 w-3" />
@@ -119,8 +122,9 @@ export function ProviderCardShell({
           {!state.isPresetProvider && onDeleteProvider && (
             <button
               onClick={() => onDeleteProvider(provider.id)}
-              className="rounded p-1 text-[var(--glass-text-tertiary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)]"
+              className="inline-flex h-8 items-center gap-1 rounded-[var(--glass-radius-md)] px-2 text-[12px] text-[var(--glass-text-secondary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
               title={t('delete')}
+              aria-label={t('delete')}
             >
               <AppIcon name="trash" className="w-3.5 h-3.5" />
             </button>
@@ -128,7 +132,7 @@ export function ProviderCardShell({
           {state.tutorial && (
             <button
               onClick={() => state.setShowTutorial(true)}
-              className="glass-btn-base cursor-pointer flex items-center gap-1 rounded-lg border border-[var(--glass-stroke-base)] bg-transparent px-2 py-1 text-[12px] font-medium text-[var(--glass-text-primary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)]"
+              className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] bg-transparent px-2.5 text-[12px] font-medium text-[var(--glass-text-primary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-muted)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
             >
               <AppIcon name="bookOpen" className="h-3 w-3" />
               {t('tutorial.button')}
@@ -141,7 +145,7 @@ export function ProviderCardShell({
       {state.showTutorial && state.tutorial && typeof document !== 'undefined'
         ? createPortal(
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center glass-overlay"
+            className="fixed inset-0 z-[80] flex items-center justify-center glass-overlay"
             onClick={() => state.setShowTutorial(false)}
           >
             <div

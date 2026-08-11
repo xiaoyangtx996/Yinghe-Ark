@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import LanguageSwitcher from './LanguageSwitcher'
-import AboutModal from './AboutModal'
 import { AppIcon } from '@/components/ui/icons'
 import { Link, usePathname } from '@/i18n/navigation'
 import { buildAuthenticatedHomeTarget } from '@/lib/home/default-route'
@@ -16,7 +14,6 @@ export default function Navbar() {
   const tc = useTranslations('common')
   const homeTarget = buildAuthenticatedHomeTarget()
   const isAuthed = status === 'authenticated' && !!session
-  const [aboutOpen, setAboutOpen] = useState(false)
 
   const isActive = (target: string) => {
     if (target === '/home' || target === homeTarget.pathname) {
@@ -40,17 +37,14 @@ export default function Navbar() {
   return (
     <>
       {isAuthed ? (
-        <aside className="theater-rail" data-theater-rail aria-label="Primary">
-          <button
-            type="button"
+        <aside className="theater-rail" data-theater-rail aria-label={t('railPrimary')}>
+          <Link
+            href={homeTarget}
             className="theater-rail__brand"
-            title={tc('about.open')}
-            aria-label={tc('about.open')}
-            onClick={() => setAboutOpen(true)}
+            aria-label={t('railBrandHome')}
           >
             W
-            <span className="rail-tip" role="tooltip">{tc('about.open')}</span>
-          </button>
+          </Link>
           <Link
             href={homeTarget}
             className="theater-rail__link"
@@ -137,8 +131,6 @@ export default function Navbar() {
           </div>
         </nav>
       ) : null}
-
-      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </>
   )
 }

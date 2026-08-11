@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { AppIcon } from '@/components/ui/icons'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import type { ThemeMode } from '@/components/ThemeToggle'
 
 const STORAGE_KEY = 'waoowaoo-theme'
@@ -55,65 +56,71 @@ export function BasicSettingsPanel() {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      <p className="text-[13px] leading-relaxed text-[var(--glass-text-secondary)]">
-        {t('basicSettingsDesc')}
-      </p>
+  const activeTheme = mounted ? theme : 'light'
 
-      <section className="border-b border-[var(--glass-stroke-base)] pb-6">
-        <div className="mb-4 flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
-            <AppIcon name={theme === 'dark' ? 'moon' : 'sun'} className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('appearance')}</h3>
-            <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{t('appearanceDesc')}</p>
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <section className="admin-section-card !flex-none">
+        <div className="admin-section-card__head">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+              <AppIcon name={theme === 'dark' ? 'moon' : 'sun'} className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="admin-section-card__title">{t('appearance')}</h3>
+              <p className="admin-section-card__desc">{t('appearanceDesc')}</p>
+            </div>
           </div>
         </div>
-
-        <div className="inline-flex rounded-[10px] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] p-1">
-          <button
-            type="button"
-            onClick={() => setThemeMode('light')}
-            className={`inline-flex items-center gap-2 rounded-[8px] px-4 py-2 text-sm font-semibold transition-colors ${
-              mounted && theme === 'light'
-                ? 'bg-[var(--glass-bg-surface-strong)] text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)]'
-                : 'text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)]'
-            }`}
-            aria-pressed={theme === 'light'}
-          >
-            <AppIcon name="sun" className="h-4 w-4" />
-            {t('themeLight')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setThemeMode('dark')}
-            className={`inline-flex items-center gap-2 rounded-[8px] px-4 py-2 text-sm font-semibold transition-colors ${
-              mounted && theme === 'dark'
-                ? 'bg-[var(--glass-bg-surface-strong)] text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)]'
-                : 'text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)]'
-            }`}
-            aria-pressed={theme === 'dark'}
-          >
-            <AppIcon name="moon" className="h-4 w-4" />
-            {t('themeDark')}
-          </button>
+        <div className="admin-section-card__body">
+          <div className="w-full max-w-[320px]">
+            <SegmentedControl
+              size="lg"
+              aria-label={t('appearance')}
+              value={activeTheme}
+              onChange={(val) => setThemeMode(val as ThemeMode)}
+              options={[
+                {
+                  value: 'light',
+                  label: (
+                    <>
+                      <AppIcon name="sun" className="h-4 w-4" />
+                      {t('themeLight')}
+                    </>
+                  ),
+                },
+                {
+                  value: 'dark',
+                  label: (
+                    <>
+                      <AppIcon name="moon" className="h-4 w-4" />
+                      {t('themeDark')}
+                    </>
+                  ),
+                },
+              ]}
+            />
+          </div>
         </div>
       </section>
 
-      <section>
-        <div className="mb-4 flex items-start gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
-            <AppIcon name="globe" className="h-4 w-4" />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('language')}</h3>
-            <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{t('languageDesc')}</p>
+      <section className="admin-section-card !flex-none">
+        <div className="admin-section-card__head">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+              <AppIcon name="globe" className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="admin-section-card__title">{t('language')}</h3>
+              <p className="admin-section-card__desc">{t('languageDesc')}</p>
+            </div>
           </div>
         </div>
-
-        <LanguageSwitcher />
+        <div className="admin-section-card__body">
+          <div className="w-full max-w-[320px]">
+            <LanguageSwitcher hideIcon className="w-full justify-between min-h-[44px]" />
+          </div>
+        </div>
       </section>
     </div>
   )

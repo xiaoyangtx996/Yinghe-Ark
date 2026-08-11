@@ -6,14 +6,23 @@
   --glass-bg-surface-modal: #ffffff;
   --glass-bg-muted: #ebe4db;
   --glass-bg-nav: rgba(255, 252, 248, 0.94);
+  --glass-bg-base: var(--glass-bg-surface);
+  --glass-bg-hover: var(--glass-fill-hover);
+  --glass-bg-active: var(--glass-fill-active);
   --glass-text-primary: #1a1510;
   --glass-text-secondary: #5c5046;
-  --glass-text-tertiary: #8a7b6c;
+  /* ≥4.5:1 on canvas/surface for helper copy (WCAG AA) */
+  --glass-text-tertiary: #6f6256;
   --glass-text-on-accent: #1a120c;
+  --glass-text-disabled: #8a7b6c;
+  --glass-placeholder: #6f6256;
 
   --glass-stroke-soft: rgba(58, 48, 40, 0.08);
   --glass-stroke-base: #d9cfc3;
   --glass-stroke-strong: #c4b6a6;
+  --glass-stroke-subtle: var(--glass-stroke-soft);
+  --glass-stroke-active: var(--glass-stroke-strong);
+  --glass-border: var(--glass-stroke-base);
   --glass-stroke-focus: rgba(180, 120, 60, 0.75);
   --glass-stroke-danger: rgba(185, 80, 70, 0.55);
   --glass-stroke-warning: rgba(180, 120, 60, 0.55);
@@ -29,10 +38,12 @@
   --glass-blur-lg: 8px;
   --glass-blur-nav: 10px;
 
-  --glass-radius-xs: 8px;
+  /* controls=xs/sm/md · panels=lg/panel · chips=pill */
+  --glass-radius-xs: 6px;
   --glass-radius-sm: 8px;
   --glass-radius-md: 10px;
   --glass-radius-lg: 12px;
+  --glass-radius-panel: 14px;
   --glass-radius-xl: 16px;
 
   --glass-space-1: 4px;
@@ -45,11 +56,12 @@
   --glass-space-8: 32px;
   --glass-density-compact-scale: 0.86;
   --glass-density-default-scale: 1;
+  --admin-card-pad-x: 18px;
 
   --glass-tone-neutral-bg: rgba(90, 80, 70, 0.1);
   --glass-tone-neutral-fg: #5c5046;
-  --glass-tone-info-bg: rgba(196, 137, 79, 0.14);
-  --glass-tone-info-fg: #a86a2f;
+  --glass-tone-info-bg: rgba(95, 143, 139, 0.14);
+  --glass-tone-info-fg: #3f6f6b;
   --glass-tone-success-bg: rgba(70, 140, 100, 0.12);
   --glass-tone-success-fg: #2f7a55;
   --glass-tone-warning-bg: rgba(196, 137, 79, 0.16);
@@ -61,8 +73,9 @@
   --glass-overlay: rgba(26, 21, 16, 0.4);
   --glass-overlay-strong: rgba(26, 21, 16, 0.55);
 
-  --glass-accent-from: #c4894f;
-  --glass-accent-to: #b8793f;
+  --glass-accent-from: #b8793f;
+  /* Hover stays ≥4.5:1 with on-accent (avoid darker wash) */
+  --glass-accent-to: #c4894f;
   --glass-accent-shadow-soft: rgba(196, 137, 79, 0.22);
   --glass-accent-shadow-strong: rgba(196, 137, 79, 0.32);
   --glass-focus-ring: rgba(196, 137, 79, 0.16);
@@ -75,12 +88,19 @@
 
   --app-rail-width: 72px;
   --app-secondary-width: 220px;
+  --app-chrome-left: 0px;
   --film-rail-bg: #efe8df;
   --film-secondary-bg: #f7f2eb;
   --film-topbar-bg: rgba(255, 252, 248, 0.96);
   --film-gold: #c4894f;
   --film-gold-2: #b8793f;
   --film-teal: #5f8f8b;
+
+  /* Stacking: secondary 50 · rail 60 · tip 61 · modal/overlay 80+ */
+  --z-secondary: 50;
+  --z-rail: 60;
+  --z-rail-tip: 61;
+  --z-modal: 80;
 }
 
 .dark {
@@ -91,14 +111,22 @@
   --glass-bg-surface-modal: #1a1612;
   --glass-bg-muted: #17130f;
   --glass-bg-nav: #120f0c;
+  --glass-bg-base: var(--glass-bg-surface);
+  --glass-bg-hover: var(--glass-fill-hover);
+  --glass-bg-active: var(--glass-fill-active);
   --glass-text-primary: #f3ebe3;
   --glass-text-secondary: #a89888;
-  --glass-text-tertiary: #6e6054;
+  --glass-text-tertiary: #b0a090;
   --glass-text-on-accent: #1a120c;
+  --glass-text-disabled: #7a6c5e;
+  --glass-placeholder: #b0a090;
 
   --glass-stroke-soft: rgba(58, 48, 40, 0.9);
   --glass-stroke-base: #3a3028;
   --glass-stroke-strong: #4a3d32;
+  --glass-stroke-subtle: var(--glass-stroke-soft);
+  --glass-stroke-active: var(--glass-stroke-strong);
+  --glass-border: var(--glass-stroke-base);
   --glass-stroke-focus: rgba(196, 137, 79, 0.85);
   --glass-stroke-danger: rgba(201, 123, 106, 0.7);
   --glass-stroke-warning: rgba(224, 163, 106, 0.7);
@@ -116,8 +144,8 @@
 
   --glass-tone-neutral-bg: rgba(110, 96, 84, 0.22);
   --glass-tone-neutral-fg: #a89888;
-  --glass-tone-info-bg: rgba(224, 163, 106, 0.14);
-  --glass-tone-info-fg: #e0a36a;
+  --glass-tone-info-bg: rgba(111, 158, 154, 0.16);
+  --glass-tone-info-fg: #8fbcb8;
   --glass-tone-success-bg: rgba(143, 188, 143, 0.16);
   --glass-tone-success-fg: #8fbc8f;
   --glass-tone-warning-bg: rgba(224, 163, 106, 0.18);

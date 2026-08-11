@@ -2,7 +2,9 @@
   "title": "Logs",
   "subtitle": "Billing history and system runtime logs",
   "tabBilling": "Billing Records",
+  "tabBillingDesc": "Filter, audit, and export account transactions",
   "tabSystem": "System Logs",
+  "tabSystemDesc": "Inspect and download runtime log files",
   "export": "Export",
   "exportCsv": "Export CSV",
   "exportAllLogs": "Export All Logs",
@@ -26,5 +28,15 @@
   "action": "Action",
   "description": "Description",
   "balanceAfter": "Balance",
-  "detail": "Detail"
+  "detail": "Detail",
+  "statTotal": "Total records",
+  "statPage": "On this page",
+  "statFilter": "Active filter",
+  "statFilterAll": "All types",
+  "statFiles": "Log files",
+  "statLatest": "Latest update",
+  "tableTitle": "Transactions",
+  "tableDesc": "Charges and top-ups in reverse chronological order",
+  "filesTitle": "Log files",
+  "filesDesc": "Server-written runtime logs — preview or download"
 }

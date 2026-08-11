@@ -7,6 +7,8 @@
   "signup": "Sign Up",
   "logout": "Logout",
   "railHome": "Create",
+  "railBrandHome": "Home",
+  "railPrimary": "Primary navigation",
   "railProjects": "Projects",
   "railAssets": "Assets",
   "railLogs": "Logs",

@@ -7,6 +7,8 @@
   "signup": "注册",
   "logout": "退出登录",
   "railHome": "创作",
+  "railBrandHome": "首页",
+  "railPrimary": "主导航",
   "railProjects": "项目",
   "railAssets": "资产",
   "railLogs": "日志",

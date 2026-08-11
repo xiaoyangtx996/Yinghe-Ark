@@ -49,6 +49,7 @@ interface ApiConfigProviderListProps {
   onAddModel: (model: Omit<CustomModel, 'enabled'>) => void
   onFlushConfig: () => Promise<void>
   onToggleProviderHidden: (providerId: string, hidden: boolean) => void
+  hideAddButton?: boolean
   labels: {
     providerPool: string
     providerPoolDesc: string
@@ -79,6 +80,7 @@ export function ApiConfigProviderList({
   onAddModel,
   onFlushConfig,
   onToggleProviderHidden,
+  hideAddButton = false,
   labels,
 }: ApiConfigProviderListProps) {
   const [showHiddenProviders, setShowHiddenProviders] = useState(false)
@@ -122,13 +124,9 @@ export function ApiConfigProviderList({
   const hiddenProviderNames = hiddenProviders.map((provider) => provider.name).join(' / ')
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--glass-stroke-base)] pb-4">
-          <div className="min-w-0">
-            <p className="text-[13px] leading-relaxed text-[var(--glass-text-secondary)]">{labels.providerPoolDesc}</p>
-            <p className="mt-1 text-[12px] text-[var(--glass-text-tertiary)]">{labels.dragToSortHint}</p>
-          </div>
+    <div className="space-y-3">
+      {!hideAddButton ? (
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={onAddGeminiProvider}
@@ -137,64 +135,16 @@ export function ApiConfigProviderList({
             {labels.addGeminiProvider}
           </button>
         </div>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={visibleProviders.map((provider) => provider.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              {visibleProviders.map((provider) => (
-                <SortableProviderCardItem key={provider.id} providerId={provider.id} dragLabel={labels.dragToSort}>
-                  {({ dragHandle }) => (
-                    <ProviderCard
-                      provider={provider}
-                      dragHandle={dragHandle}
-                      models={providerModelsById.get(provider.id) || []}
-                      allModels={allModels}
-                      defaultModels={defaultModels}
-                      onToggleModel={(modelKey) => onToggleModel(modelKey, provider.id)}
-                      onUpdateApiKey={onUpdateApiKey}
-                      onUpdateBaseUrl={onUpdateBaseUrl}
-                      onDeleteModel={(modelKey) => onDeleteModel(modelKey, provider.id)}
-                      onUpdateModel={(modelKey, updates) => onUpdateModel(modelKey, updates, provider.id)}
-                      onDeleteProvider={onDeleteProvider}
-                      onAddModel={onAddModel}
-                      onFlushConfig={onFlushConfig}
-                      onToggleProviderHidden={onToggleProviderHidden}
-                      hideProviderLabel={labels.hideProvider}
-                      showProviderLabel={labels.showProvider}
-                    />
-                  )}
-                </SortableProviderCardItem>
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
-        {hiddenProviders.length > 0 && (
-          <>
-            <button
-              type="button"
-              onClick={() => setShowHiddenProviders((prev) => !prev)}
-              className="glass-btn-base glass-btn-secondary flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-[var(--glass-text-primary)]">
-                  {showHiddenProviders
-                    ? labels.hideHiddenProviders
-                    : `${labels.showHiddenProviders} (${hiddenProviders.length})`}
-                </p>
-                <p className="truncate text-xs text-[var(--glass-text-tertiary)]">
-                  {labels.hiddenProvidersPrefix}: {hiddenProviderNames}
-                </p>
-              </div>
-              <AppIcon
-                name={showHiddenProviders ? 'chevronUp' : 'chevronDown'}
-                className="h-4 w-4 shrink-0 text-[var(--glass-text-secondary)]"
-              />
-            </button>
-            {showHiddenProviders && (
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                {hiddenProviders.map((provider) => (
+      ) : null}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={visibleProviders.map((provider) => provider.id)} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {visibleProviders.map((provider) => (
+              <SortableProviderCardItem key={provider.id} providerId={provider.id} dragLabel={labels.dragToSort}>
+                {({ dragHandle }) => (
                   <ProviderCard
-                    key={`hidden-${provider.id}`}
                     provider={provider}
+                    dragHandle={dragHandle}
                     models={providerModelsById.get(provider.id) || []}
                     allModels={allModels}
                     defaultModels={defaultModels}
@@ -210,13 +160,61 @@ export function ApiConfigProviderList({
                     hideProviderLabel={labels.hideProvider}
                     showProviderLabel={labels.showProvider}
                   />
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </>
+                )}
+              </SortableProviderCardItem>
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+      {hiddenProviders.length > 0 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowHiddenProviders((prev) => !prev)}
+            className="glass-btn-base glass-btn-secondary flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left"
+          >
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-[var(--glass-text-primary)]">
+                {showHiddenProviders
+                  ? labels.hideHiddenProviders
+                  : `${labels.showHiddenProviders} (${hiddenProviders.length})`}
+              </p>
+              <p className="truncate text-xs text-[var(--glass-text-secondary)]">
+                {labels.hiddenProvidersPrefix}: {hiddenProviderNames}
+              </p>
+            </div>
+            <AppIcon
+              name={showHiddenProviders ? 'chevronUp' : 'chevronDown'}
+              className="h-4 w-4 shrink-0 text-[var(--glass-text-secondary)]"
+            />
+          </button>
+          {showHiddenProviders && (
+            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              {hiddenProviders.map((provider) => (
+                <ProviderCard
+                  key={`hidden-${provider.id}`}
+                  provider={provider}
+                  models={providerModelsById.get(provider.id) || []}
+                  allModels={allModels}
+                  defaultModels={defaultModels}
+                  onToggleModel={(modelKey) => onToggleModel(modelKey, provider.id)}
+                  onUpdateApiKey={onUpdateApiKey}
+                  onUpdateBaseUrl={onUpdateBaseUrl}
+                  onDeleteModel={(modelKey) => onDeleteModel(modelKey, provider.id)}
+                  onUpdateModel={(modelKey, updates) => onUpdateModel(modelKey, updates, provider.id)}
+                  onDeleteProvider={onDeleteProvider}
+                  onAddModel={onAddModel}
+                  onFlushConfig={onFlushConfig}
+                  onToggleProviderHidden={onToggleProviderHidden}
+                  hideProviderLabel={labels.hideProvider}
+                  showProviderLabel={labels.showProvider}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   )
 }
 
@@ -251,7 +249,7 @@ function SortableProviderCardItem({ providerId, dragLabel, children }: SortableP
             type="button"
             aria-label={dragLabel}
             title={dragLabel}
-            className="inline-flex cursor-grab items-center justify-center rounded-md p-1 text-[var(--glass-text-tertiary)] touch-none transition-colors hover:text-[var(--glass-text-secondary)] active:cursor-grabbing"
+            className="inline-flex h-8 w-8 cursor-grab items-center justify-center rounded-md text-[var(--glass-text-secondary)] touch-none transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)] active:cursor-grabbing"
             {...attributes}
             {...listeners}
           >

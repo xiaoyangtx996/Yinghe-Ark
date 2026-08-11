@@ -25,7 +25,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
   return (
     <>
       <div className="px-3.5 pt-2.5">
-        <div className="glass-surface-soft flex items-center gap-2.5 rounded-xl px-3 py-2">
+        <div className="flex items-center gap-2.5 rounded-[var(--glass-radius-md)] bg-[var(--glass-bg-muted)] px-3 py-2">
           <span className="w-[64px] shrink-0 whitespace-nowrap text-[12px] font-semibold text-[var(--glass-text-primary)]">
             {t('apiKeyLabel')}
           </span>
@@ -43,8 +43,9 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
               <button
                 onClick={state.handleSaveKey}
                 disabled={state.keyTestStatus === 'testing'}
-                className="glass-icon-btn-sm disabled:opacity-50"
+                className="glass-icon-btn-sm"
                 title={state.keyTestStatus === 'failed' ? t('testRetry') : t('save')}
+                aria-label={state.keyTestStatus === 'failed' ? t('testRetry') : t('save')}
               >
                 {state.keyTestStatus === 'testing' ? (
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -55,8 +56,9 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
               <button
                 onClick={state.handleCancelEdit}
                 disabled={state.keyTestStatus === 'testing'}
-                className="glass-icon-btn-sm disabled:opacity-50"
+                className="glass-icon-btn-sm"
                 title={t('cancel')}
+                aria-label={t('cancel')}
               >
                 <AppIcon name="close" className="h-4 w-4" />
               </button>
@@ -73,6 +75,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                       onClick={() => state.setShowKey(!state.showKey)}
                       className="glass-icon-btn-sm"
                       title={state.showKey ? t('hide') : t('show')}
+                      aria-label={state.showKey ? t('hide') : t('show')}
                     >
                       {state.showKey ? (
                         <AppIcon name="eye" className="h-4 w-4" />
@@ -84,6 +87,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                       onClick={state.startEditKey}
                       className="glass-icon-btn-sm"
                       title={t('configure')}
+                      aria-label={t('configure')}
                     >
                       <AppIcon name="edit" className="h-4 w-4" />
                     </button>
@@ -118,12 +122,12 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                   <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
                 )}
                 {state.keyTestStatus === 'passed' && (
-                  <span className="text-green-500">
+                  <span className="text-[var(--glass-tone-success-fg)]">
                     <AppIcon name="check" className="h-4 w-4" />
                   </span>
                 )}
                 {state.keyTestStatus === 'failed' && (
-                  <span className="text-red-500">
+                  <span className="text-[var(--glass-tone-danger-fg)]">
                     <AppIcon name="close" className="h-4 w-4" />
                   </span>
                 )}
@@ -134,16 +138,18 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                   {/* 重新测试 */}
                   <button
                     onClick={state.handleTestOnly}
-                    className="rounded p-1 text-[var(--glass-text-tertiary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] transition-colors"
+                    className="rounded p-1.5 text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] transition-colors focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
                     title={t('testRetry')}
+                    aria-label={t('testRetry')}
                   >
                     <AppIcon name="refresh" className="h-3 w-3" />
                   </button>
                   {/* 关闭结果 */}
                   <button
                     onClick={state.handleDismissTest}
-                    className="rounded p-1 text-[var(--glass-text-tertiary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] transition-colors"
+                    className="rounded p-1.5 text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] transition-colors focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
                     title={t('close')}
+                    aria-label={t('close')}
                   >
                     <AppIcon name="close" className="h-3 w-3" />
                   </button>
@@ -166,12 +172,12 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                 <div key={step.name} className="space-y-0.5">
                   <div className="flex items-center gap-2 text-xs">
                     {step.status === 'pass' && (
-                      <span className="text-green-500">
+                      <span className="text-[var(--glass-tone-success-fg)]">
                         <AppIcon name="check" className="h-3.5 w-3.5" />
                       </span>
                     )}
                     {step.status === 'fail' && (
-                      <span className="text-red-500">
+                      <span className="text-[var(--glass-tone-danger-fg)]">
                         <AppIcon name="close" className="h-3.5 w-3.5" />
                       </span>
                     )}
@@ -182,16 +188,16 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                       {stepLabel}
                     </span>
                     {step.model && (
-                      <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
+                      <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--glass-text-secondary)]">
                         {step.model}
                       </span>
                     )}
                   </div>
-                  <p className={`pl-6 text-[11px] ${step.status === 'fail' ? 'text-red-400' : 'text-[var(--glass-text-secondary)]'}`}>
+                  <p className={`pl-6 text-[12px] ${step.status === 'fail' ? 'text-[var(--glass-tone-danger-fg)]' : 'text-[var(--glass-text-secondary)]'}`}>
                     {step.message}
                   </p>
                   {step.detail && (
-                    <p className="pl-6 text-[10px] text-[var(--glass-text-tertiary)] break-all line-clamp-3">
+                    <p className="pl-6 text-[12px] text-[var(--glass-text-secondary)] break-all line-clamp-3">
                       {step.detail}
                     </p>
                   )}
@@ -209,7 +215,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
 
             {/* Failure warning */}
             {state.keyTestStatus === 'failed' && (
-              <div className="flex items-start gap-2 rounded-lg bg-yellow-500/10 px-3 py-2 text-[11px] text-[var(--glass-text-primary)]">
+              <div className="flex items-start gap-2 rounded-lg bg-[var(--glass-tone-warning-bg)] px-3 py-2 text-[12px] text-[var(--glass-text-primary)]">
                 <span className="mt-0.5 shrink-0 text-sm">&#9888;</span>
                 <span>{t('testWarning')}</span>
               </div>
@@ -220,8 +226,8 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
 
       {state.showBaseUrlEdit && (
         <div className="px-3.5 pb-2.5 pt-2">
-          <div className="glass-surface-soft flex items-center gap-2.5 rounded-xl px-3 py-2">
-            <span className="w-[64px] shrink-0 whitespace-nowrap text-[12px] font-semibold text-[var(--glass-text-tertiary)]">
+          <div className="flex items-center gap-2.5 rounded-[var(--glass-radius-md)] bg-[var(--glass-bg-muted)] px-3 py-2">
+            <span className="w-[64px] shrink-0 whitespace-nowrap text-[12px] font-semibold text-[var(--glass-text-secondary)]">
               {t('baseUrl')}
             </span>
             {state.isEditingUrl ? (
@@ -238,6 +244,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                   onClick={state.handleSaveUrl}
                   className="glass-icon-btn-sm"
                   title={t('save')}
+                  aria-label={t('save')}
                 >
                   <AppIcon name="check" className="h-4 w-4" />
                 </button>
@@ -245,6 +252,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                   onClick={state.handleCancelUrlEdit}
                   className="glass-icon-btn-sm"
                   title={t('cancel')}
+                  aria-label={t('cancel')}
                 >
                   <AppIcon name="close" className="h-4 w-4" />
                 </button>
@@ -261,6 +269,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
                         onClick={state.startEditUrl}
                         className="glass-icon-btn-sm"
                         title={t('configure')}
+                        aria-label={t('configure')}
                       >
                         <AppIcon name="edit" className="h-4 w-4" />
                       </button>
