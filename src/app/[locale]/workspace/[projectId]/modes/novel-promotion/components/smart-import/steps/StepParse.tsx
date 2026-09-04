@@ -20,7 +20,7 @@ export default function StepParse() {
             />
           ))}
         </div>
-        <h2 className="text-xl font-semibold text-[var(--glass-text-primary)] mb-2">{t('analyzing.title')}</h2>
+        <h2 className="text-xl font-medium text-[var(--glass-text-primary)] mb-2">{t('analyzing.title')}</h2>
         <p className="text-[var(--glass-text-secondary)]">{t('analyzing.description')}</p>
         <p className="text-sm text-[var(--glass-text-tertiary)] mt-2">{t('analyzing.autoSave')}</p>
 

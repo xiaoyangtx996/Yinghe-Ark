@@ -60,9 +60,11 @@ export default function ImageSectionActionButtons({
                 onRegeneratePanelImage(panelId, count, isSubmittingPanelImageTask)
               }}
               disabled={false}
+              splitInteractiveZones
               ariaLabel={t('image.selectCount')}
-              className={`glass-btn-base glass-btn-secondary flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] transition-all active:scale-95 ${isSubmittingPanelImageTask ? 'opacity-75' : ''}`}
-              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[10px] font-semibold text-[var(--glass-text-primary)] outline-none cursor-pointer leading-none transition-colors"
+              className={`glass-btn-base glass-btn-secondary flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[length:var(--glass-font-size-caption)] transition-all active:scale-95 ${isSubmittingPanelImageTask ? 'opacity-75' : ''}`}
+              actionClassName={`glass-btn-base glass-btn-secondary flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[length:var(--glass-font-size-caption)] transition-all active:scale-95 ${isSubmittingPanelImageTask ? 'opacity-75' : ''}`}
+              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-caption)] font-semibold text-[var(--glass-text-primary)] outline-none cursor-pointer leading-none transition-colors"
               labelClassName="inline-flex items-center gap-0.5"
             />
 
@@ -70,7 +72,7 @@ export default function ImageSectionActionButtons({
 
             <button
               onClick={onOpenAIDataModal}
-              className={`glass-btn-base glass-btn-secondary flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] transition-all active:scale-95 ${isSubmittingPanelImageTask || isModifying ? 'opacity-75' : ''}`}
+              className={`glass-btn-base glass-btn-secondary flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[length:var(--glass-font-size-caption)] transition-all active:scale-95 ${isSubmittingPanelImageTask || isModifying ? 'opacity-75' : ''}`}
               title={t('aiData.viewData')}
             >
               <AppIcon name="chart" className="w-2.5 h-2.5" />
@@ -92,7 +94,7 @@ export default function ImageSectionActionButtons({
                 <button
                   onClick={() => onUndo(panelId)}
                   disabled={isSubmittingPanelImageTask}
-                  className="glass-btn-base glass-btn-secondary flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] transition-all active:scale-95 disabled:opacity-50"
+                  className="glass-btn-base glass-btn-secondary flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[length:var(--glass-font-size-caption)] transition-all active:scale-95"
                   title={t('assets.image.undo')}
                 >
                   <span>{t('assets.image.undo')}</span>

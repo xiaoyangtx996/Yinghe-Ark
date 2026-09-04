@@ -7,7 +7,8 @@ import { AppIcon } from '@/components/ui/icons'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import type { ThemeMode } from '@/components/ThemeToggle'
 
-const STORAGE_KEY = 'waoowaoo-theme'
+const STORAGE_KEY = 'yinghe-ark-theme'
+const LEGACY_STORAGE_KEY = 'waoowaoo-theme'
 
 function applyTheme(mode: ThemeMode) {
   const root = document.documentElement
@@ -17,7 +18,7 @@ function applyTheme(mode: ThemeMode) {
 
 function readStoredTheme(): ThemeMode | null {
   try {
-    const value = localStorage.getItem(STORAGE_KEY)
+    const value = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY)
     if (value === 'light' || value === 'dark') return value
   } catch {
     // ignore
@@ -59,21 +60,32 @@ export function BasicSettingsPanel() {
   const activeTheme = mounted ? theme : 'light'
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="space-y-4">
       <section className="admin-section-card !flex-none">
         <div className="admin-section-card__head">
-          <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
-              <AppIcon name={theme === 'dark' ? 'moon' : 'sun'} className="h-4 w-4" />
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+              <AppIcon name="sliders" className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="admin-section-card__title">{t('appearance')}</h3>
-              <p className="admin-section-card__desc">{t('appearanceDesc')}</p>
+              <h3 className="admin-section-card__title">{t('basicSettings')}</h3>
+              <p className="admin-section-card__desc">{t('basicSettingsDesc')}</p>
             </div>
           </div>
         </div>
-        <div className="admin-section-card__body">
-          <div className="w-full max-w-[320px]">
+        <div className="admin-section-card__body grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="admin-tile flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]">
+                <AppIcon name={activeTheme === 'dark' ? 'moon' : 'sun'} className="h-4 w-4 text-[var(--film-gold)]" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-medium text-[var(--glass-text-primary)]">{t('appearance')}</h4>
+                <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">
+                  {t('appearanceDesc')}
+                </p>
+              </div>
+            </div>
             <SegmentedControl
               size="lg"
               aria-label={t('appearance')}
@@ -101,24 +113,20 @@ export function BasicSettingsPanel() {
               ]}
             />
           </div>
-        </div>
-      </section>
 
-      <section className="admin-section-card !flex-none">
-        <div className="admin-section-card__head">
-          <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
-              <AppIcon name="globe" className="h-4 w-4" />
+          <div className="admin-tile flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]">
+                <AppIcon name="globe" className="h-4 w-4 text-[var(--film-gold)]" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-medium text-[var(--glass-text-primary)]">{t('language')}</h4>
+                <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">
+                  {t('languageDesc')}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="admin-section-card__title">{t('language')}</h3>
-              <p className="admin-section-card__desc">{t('languageDesc')}</p>
-            </div>
-          </div>
-        </div>
-        <div className="admin-section-card__body">
-          <div className="w-full max-w-[320px]">
-            <LanguageSwitcher hideIcon className="w-full justify-between min-h-[44px]" />
+            <LanguageSwitcher hideIcon className="w-full min-h-[44px] justify-between" />
           </div>
         </div>
       </section>

@@ -14,7 +14,7 @@ export default function VideoPanelCardFooter({ runtime }: VideoPanelCardFooterPr
     <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50" onClick={() => !lipSync.executingLipSync && lipSync.closeLipSyncPanel()}>
       <div className="glass-surface-modal rounded-xl p-6 max-w-md w-full mx-4" onClick={(event) => event.stopPropagation()}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">{t('panelCard.lipSyncTitle')}</h3>
+          <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">{t('panelCard.lipSyncTitle')}</h3>
           {!lipSync.executingLipSync && (
             <button onClick={lipSync.closeLipSyncPanel} className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">×</button>
           )}

@@ -6,7 +6,7 @@ import type { ProviderCardProps, ProviderCardTranslator } from './types'
 import { VERIFIABLE_PROVIDER_KEYS } from './types'
 import type { UseProviderCardStateResult } from './hooks/useProviderCardState'
 import { AppIcon } from '@/components/ui/icons'
-import { getProviderKey } from '../types'
+import { getProviderKey, getProviderVisualIcon } from '../types'
 
 interface ProviderCardShellProps {
   provider: ProviderCardProps['provider']
@@ -30,16 +30,6 @@ export function getCompatibilityLayerBadgeLabel(
   return null
 }
 
-// 连接状态图标
-function StatusIcon({ connected }: { connected: boolean }) {
-  if (connected) {
-    return <AppIcon name="bolt" className="h-3.5 w-3.5 text-[var(--glass-tone-success-fg)]" aria-hidden />
-  }
-  return <AppIcon name="unplug" className="h-3.5 w-3.5 text-[var(--glass-tone-danger-fg)]" aria-hidden />
-}
-
-// 使用统一的 VERIFIABLE_PROVIDER_KEYS（从 types 导入）
-
 export function ProviderCardShell({
   provider,
   dragHandle,
@@ -62,11 +52,9 @@ export function ProviderCardShell({
   const connectionLabel = provider.hasApiKey ? t('connected') : t('notConfigured')
 
   return (
-    <div className="glass-surface-soft overflow-hidden rounded-[var(--glass-radius-md)]">
-
-      {/* ── 头部：logo + 名称 + 心电图 + 右侧操作 ── */}
-      <div className="flex items-center justify-between px-3.5 py-2.5">
-        <div className="flex items-center gap-2">
+    <article className="admin-section-card admin-provider-card flex h-full !flex-none flex-col overflow-hidden">
+      <div className="admin-section-card__head">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {dragHandle}
           {onToggleProviderHidden && (
             <button
@@ -82,37 +70,43 @@ export function ProviderCardShell({
                   }
                 }
               }}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-[var(--glass-radius-md)] text-[var(--glass-text-secondary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--glass-radius-md)] text-[var(--glass-text-secondary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
             >
               <AppIcon name={isHidden ? 'plus' : 'minus'} className="h-3.5 w-3.5" />
             </button>
           )}
-          <h3 className="text-[15px] font-bold text-[var(--glass-text-primary)]">{provider.name}</h3>
-          {compatibilityLayerLabel && (
-            <span className="rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-2 py-0.5 text-[11px] font-semibold text-[var(--glass-text-secondary)]">
-              {compatibilityLayerLabel}
-            </span>
-          )}
-          <span
-            className="inline-flex items-center gap-1 rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-2 py-0.5 text-[11px] font-semibold text-[var(--glass-text-secondary)]"
-            role="status"
-            aria-label={connectionLabel}
-            title={connectionLabel}
-          >
-            <StatusIcon connected={!!provider.hasApiKey} />
-            <span>{connectionLabel}</span>
-          </span>
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+            <AppIcon name={getProviderVisualIcon(provider.id)} className="h-4 w-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h3 className="admin-section-card__title !mb-0 leading-tight">{provider.name}</h3>
+              {compatibilityLayerLabel && (
+                <span className="admin-badge admin-badge--neutral">
+                  {compatibilityLayerLabel}
+                </span>
+              )}
+              <span
+                className={`admin-badge ${provider.hasApiKey ? 'admin-badge--success' : 'admin-badge--danger'}`}
+                role="status"
+                aria-label={connectionLabel}
+                title={connectionLabel}
+              >
+                {connectionLabel}
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="admin-page-header__actions shrink-0">
           {isVerifiable && !state.isEditing && state.keyTestStatus === 'idle' && (
             <button
               onClick={state.handleTestOnly}
               disabled={!canTest}
               className={[
-                'inline-flex h-8 items-center gap-1 rounded-[var(--glass-radius-md)] border px-2.5 text-[12px] font-medium transition-all focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]',
+                'glass-btn-base inline-flex h-8 items-center gap-1 px-2.5 text-[length:var(--glass-font-size-caption)] font-medium',
                 canTest
-                  ? 'border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)] cursor-pointer'
-                  : 'border-[var(--glass-stroke-base)] cursor-not-allowed text-[var(--glass-text-disabled)] bg-[var(--glass-bg-muted)]',
+                  ? 'glass-btn-ghost border border-[var(--glass-stroke-base)] cursor-pointer'
+                  : 'glass-btn-ghost cursor-not-allowed text-[var(--glass-text-disabled)]',
               ].join(' ')}
             >
               <AppIcon name="refresh" className="h-3 w-3" />
@@ -122,7 +116,7 @@ export function ProviderCardShell({
           {!state.isPresetProvider && onDeleteProvider && (
             <button
               onClick={() => onDeleteProvider(provider.id)}
-              className="inline-flex h-8 items-center gap-1 rounded-[var(--glass-radius-md)] px-2 text-[12px] text-[var(--glass-text-secondary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
+              className="glass-btn-base glass-btn-ghost inline-flex h-8 items-center gap-1 px-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)] hover:text-[var(--glass-tone-danger-fg)]"
               title={t('delete')}
               aria-label={t('delete')}
             >
@@ -132,7 +126,7 @@ export function ProviderCardShell({
           {state.tutorial && (
             <button
               onClick={() => state.setShowTutorial(true)}
-              className="inline-flex h-8 cursor-pointer items-center gap-1 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] bg-transparent px-2.5 text-[12px] font-medium text-[var(--glass-text-primary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-muted)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
+              className="glass-btn-base glass-btn-ghost inline-flex h-8 items-center gap-1 border border-[var(--glass-stroke-base)] px-2.5 text-[length:var(--glass-font-size-caption)] font-medium"
             >
               <AppIcon name="bookOpen" className="h-3 w-3" />
               {t('tutorial.button')}
@@ -141,7 +135,6 @@ export function ProviderCardShell({
         </div>
       </div>
 
-      {/* ── 教程弹窗 ── */}
       {state.showTutorial && state.tutorial && typeof document !== 'undefined'
         ? createPortal(
           <div
@@ -154,7 +147,7 @@ export function ProviderCardShell({
             >
               <div className="flex items-center justify-between border-b border-[var(--glass-stroke-base)] px-5 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="glass-btn-base glass-btn-primary flex h-8 w-8 items-center justify-center rounded-lg text-white">
+                  <div className="glass-btn-base glass-btn-primary flex h-8 w-8 items-center justify-center rounded-lg text-[var(--glass-text-on-accent)]">
                     <AppIcon name="bookOpen" className="w-4 h-4" />
                   </div>
                   <div>
@@ -174,7 +167,7 @@ export function ProviderCardShell({
               <div className="space-y-4 p-5">
                 {state.tutorial.steps.map((step, index) => (
                   <div key={index} className="flex gap-3">
-                    <div className="glass-surface-soft flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--glass-stroke-base)] text-xs font-bold text-[var(--glass-text-secondary)]">
+                    <div className="glass-surface-soft flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--glass-stroke-base)] text-xs font-medium text-[var(--glass-text-secondary)]">
                       {index + 1}
                     </div>
                     <div className="flex-1 pt-0.5">
@@ -210,7 +203,9 @@ export function ProviderCardShell({
         )
         : null}
 
-      {children}
-    </div>
+      <div className="admin-section-card__body flex min-h-0 flex-1 flex-col gap-3 !py-3">
+        {children}
+      </div>
+    </article>
   )
 }

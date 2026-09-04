@@ -44,8 +44,10 @@ interface NovelInputStageProps {
   // 配置项 - 比例与风格
   videoRatio?: string
   artStyle?: string
+  genrePack?: string
   onVideoRatioChange?: (value: string) => void
   onArtStyleChange?: (value: string) => void
+  onGenrePackChange?: (value: string) => void
 }
 
 export default function NovelInputStage({
@@ -60,8 +62,10 @@ export default function NovelInputStage({
   onEnableNarrationChange,
   videoRatio = '9:16',
   artStyle = 'american-comic',
+  genrePack,
   onVideoRatioChange,
-  onArtStyleChange
+  onArtStyleChange,
+  onGenrePackChange,
 }: NovelInputStageProps) {
   const t = useTranslations('novelPromotion')
   const homeT = useTranslations('home')
@@ -73,7 +77,9 @@ export default function NovelInputStage({
   // 解决方案：组合期间仅更新本地 state，组合结束后再同步到父组件。
   const isComposingRef = useRef(false)
   const [localText, setLocalText] = useState(novelText)
-  const [stylePresetValue, setStylePresetValue] = useState<string>(DEFAULT_STYLE_PRESET_VALUE)
+  const [stylePresetValue, setStylePresetValue] = useState<string>(
+    genrePack || DEFAULT_STYLE_PRESET_VALUE,
+  )
   const [aiWriteOpen, setAiWriteOpen] = useState(false)
   const [aiWriteLoading, setAiWriteLoading] = useState(false)
 
@@ -83,6 +89,12 @@ export default function NovelInputStage({
       setLocalText(novelText)
     }
   }, [novelText])
+
+  useEffect(() => {
+    if (genrePack) {
+      setStylePresetValue(genrePack)
+    }
+  }, [genrePack])
 
   const handleCompositionStart = () => {
     isComposingRef.current = true
@@ -154,7 +166,7 @@ export default function NovelInputStage({
     : null
 
   return (
-    <div className="max-w-5xl mx-auto space-y-5">
+    <div className="mx-auto w-full max-w-6xl space-y-5 lg:max-w-7xl">
 
       {/* 当前编辑剧集提示 - 顶部居中醒目显示 */}
       {episodeName && (
@@ -166,8 +178,9 @@ export default function NovelInputStage({
         </div>
       )}
 
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start">
       {/* 主输入区域（含底部工具栏） */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-w-0 space-y-5">
         <StoryInputComposer
           value={localText}
           onValueChange={(value) => {
@@ -196,17 +209,20 @@ export default function NovelInputStage({
             recommended: option.value === 'realistic'
           }))}
           stylePresetValue={stylePresetValue}
-          onStylePresetChange={setStylePresetValue}
+          onStylePresetChange={(value) => {
+            setStylePresetValue(value)
+            onGenrePackChange?.(value)
+          }}
           stylePresetOptions={STYLE_PRESETS}
           textareaClassName="px-0 pt-0 pb-3 align-top"
           primaryAction={(
             <button
               onClick={handleStartClick}
               disabled={!hasContent || isSubmittingTask || isSwitchingStage}
-              className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm disabled:opacity-50 flex items-center gap-2"
+              className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm flex items-center gap-2"
             >
               {isSwitchingStage ? (
-                <TaskStatusInline state={stageSwitchingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={stageSwitchingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 <>
                   <span>{t("smartImport.manualCreate.button")}</span>
@@ -229,14 +245,8 @@ export default function NovelInputStage({
           )}
         />
       </div>
-      <AiWriteModal
-        open={aiWriteOpen}
-        loading={aiWriteLoading}
-        onClose={() => setAiWriteOpen(false)}
-        onStart={(prompt) => void handleAiWriteStart(prompt)}
-        t={(key: string) => homeT(`aiWrite.${key}`)}
-      />
 
+      <aside className="space-y-3 lg:sticky lg:top-4">
       {/* 资产库引导提示 */}
       <div className="glass-surface p-4">
         <div className="flex items-start gap-3">
@@ -252,32 +262,40 @@ export default function NovelInputStage({
         </div>
       </div>
 
-      {/* 旁白开关 */}
+      {/* 旁白开关 — 单层 inset，避免 surface 套 soft */}
       {onEnableNarrationChange && (
-        <div className="glass-surface p-6">
-          <div className="glass-surface-soft flex items-center justify-between p-4 rounded-xl">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] font-semibold text-sm">VO</span>
-              <div>
+        <div className="glass-inset flex items-center justify-between gap-3 p-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] font-semibold text-sm">VO</span>
+              <div className="min-w-0">
                 <div className="font-medium text-[var(--glass-text-primary)]">{t("storyInput.narration.title")}</div>
                 <div className="text-xs text-[var(--glass-text-tertiary)]">{t("storyInput.narration.description")}</div>
               </div>
             </div>
             <button
               onClick={() => onEnableNarrationChange(!enableNarration)}
-              className={`relative w-14 h-8 rounded-full transition-colors ${enableNarration
+              className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${enableNarration
                 ? 'bg-[var(--glass-accent-from)]'
                 : 'bg-[var(--glass-stroke-strong)]'
                 }`}
             >
               <span
-                className={`absolute top-1 left-1 w-6 h-6 bg-[var(--glass-bg-surface)] rounded-full shadow-sm transition-transform ${enableNarration ? 'translate-x-6' : 'translate-x-0'
+                className={`absolute top-1 left-1 h-6 w-6 rounded-full bg-[var(--glass-bg-surface)] shadow-sm transition-transform ${enableNarration ? 'translate-x-6' : 'translate-x-0'
                   }`}
               />
             </button>
-          </div>
         </div>
       )}
+      </aside>
+      </div>
+
+      <AiWriteModal
+        open={aiWriteOpen}
+        loading={aiWriteLoading}
+        onClose={() => setAiWriteOpen(false)}
+        onStart={(prompt) => void handleAiWriteStart(prompt)}
+        t={(key: string) => homeT(`aiWrite.${key}`)}
+      />
 
       <LongTextDetectionPrompt
         open={showLongTextPrompt}

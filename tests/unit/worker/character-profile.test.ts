@@ -10,14 +10,29 @@ const prismaMock = vi.hoisted(() => ({
     update: vi.fn(async () => ({})),
   },
   characterAppearance: {
-    create: vi.fn(async () => ({})),
+    create: vi.fn(async ({ data }: { data: { characterId: string; appearanceIndex: number } }) => ({
+      id: `appearance-${data.characterId}-${data.appearanceIndex}`,
+      appearanceIndex: data.appearanceIndex,
+    })),
     deleteMany: vi.fn(async () => ({ count: 1 })),
   },
 }))
 
 const llmMock = vi.hoisted(() => ({
-  chatCompletion: vi.fn(async () => ({ id: 'completion-1' })),
-  getCompletionContent: vi.fn(),
+  executeAiTextStep: vi.fn(async () => ({
+    text: JSON.stringify({
+      characters: [
+        {
+          appearances: [
+            {
+              change_reason: '默认形象',
+              descriptions: ['黑发，冷静，风衣'],
+            },
+          ],
+        },
+      ],
+    }),
+  })),
 }))
 
 const helperMock = vi.hoisted(() => ({
@@ -35,8 +50,16 @@ const workerMock = vi.hoisted(() => ({
   assertTaskActive: vi.fn(async () => undefined),
 }))
 
+const enqueueMock = vi.hoisted(() => ({
+  enqueueProjectCharacterAppearanceImages: vi.fn(async () => ({
+    submitted: 1,
+    skipped: 0,
+    errors: [],
+  })),
+}))
+
 vi.mock('@/lib/prisma', () => ({ prisma: prismaMock }))
-vi.mock('@/lib/llm-client', () => llmMock)
+vi.mock('@/lib/ai-runtime', () => llmMock)
 vi.mock('@/types/character-profile', () => ({
   validateProfileData: vi.fn(() => true),
   stringifyProfileData: vi.fn((value: unknown) => JSON.stringify(value)),
@@ -65,6 +88,7 @@ vi.mock('@/lib/workers/handlers/character-profile-helpers', async () => {
     resolveProjectModel: helperMock.resolveProjectModel,
   }
 })
+vi.mock('@/lib/workers/handlers/character-profile-enqueue-images', () => enqueueMock)
 vi.mock('@/lib/prompt-i18n', () => ({
   PROMPT_IDS: { NP_AGENT_CHARACTER_VISUAL: 'np_agent_character_visual' },
   buildPrompt: vi.fn(() => 'character-visual-prompt'),
@@ -95,21 +119,6 @@ describe('worker character-profile behavior', () => {
       return await callback(prismaMock)
     })
 
-    llmMock.getCompletionContent.mockReturnValue(
-      JSON.stringify({
-        characters: [
-          {
-            appearances: [
-              {
-                change_reason: '默认形象',
-                descriptions: ['黑发，冷静，风衣'],
-              },
-            ],
-          },
-        ],
-      }),
-    )
-
     prismaMock.novelPromotionCharacter.findFirst.mockImplementation(async (args: { where: { id: string } }) => ({
       id: args.where.id,
       name: args.where.id === 'character-2' ? 'Villain' : 'Hero',
@@ -139,7 +148,7 @@ describe('worker character-profile behavior', () => {
     await expect(handleCharacterProfileTask(job)).rejects.toThrow('Unsupported character profile task type')
   })
 
-  it('confirm profile success -> rebuilds appearances and marks profileConfirmed', async () => {
+  it('confirm profile success -> rebuilds appearances, marks confirmed, enqueues images', async () => {
     const job = buildJob(TASK_TYPE.CHARACTER_PROFILE_CONFIRM, { characterId: 'character-1' })
     const result = await handleCharacterProfileTask(job)
 
@@ -153,6 +162,7 @@ describe('worker character-profile behavior', () => {
         changeReason: '默认形象',
         description: '黑发，冷静，风衣',
       }),
+      select: { id: true, appearanceIndex: true },
     })
 
     expect(prismaMock.novelPromotionCharacter.update).toHaveBeenCalledWith({
@@ -163,6 +173,14 @@ describe('worker character-profile behavior', () => {
       },
     })
 
+    expect(enqueueMock.enqueueProjectCharacterAppearanceImages).toHaveBeenCalledWith(
+      expect.objectContaining({
+        characterId: 'character-1',
+        appearanceIds: ['appearance-character-1-0'],
+        count: 1,
+      }),
+    )
+
     expect(result).toEqual(expect.objectContaining({
       success: true,
       character: expect.objectContaining({
@@ -170,6 +188,15 @@ describe('worker character-profile behavior', () => {
         profileConfirmed: true,
       }),
     }))
+  })
+
+  it('confirm with generateImage:false -> skips image enqueue', async () => {
+    const job = buildJob(TASK_TYPE.CHARACTER_PROFILE_CONFIRM, {
+      characterId: 'character-1',
+      generateImage: false,
+    })
+    await handleCharacterProfileTask(job)
+    expect(enqueueMock.enqueueProjectCharacterAppearanceImages).not.toHaveBeenCalled()
   })
 
   it('batch confirm -> loops through all unconfirmed characters and returns count', async () => {
@@ -181,6 +208,7 @@ describe('worker character-profile behavior', () => {
       count: 2,
     })
     expect(prismaMock.characterAppearance.create).toHaveBeenCalledTimes(2)
+    expect(enqueueMock.enqueueProjectCharacterAppearanceImages).toHaveBeenCalledTimes(2)
   })
 
   it('reconfirm with existing appearances -> replaces old rows instead of colliding on unique index', async () => {

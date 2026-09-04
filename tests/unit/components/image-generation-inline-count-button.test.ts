@@ -25,7 +25,7 @@ describe('ImageGenerationInlineCountButton', () => {
     expect(html).toContain('role="button"')
     expect(html).toContain('aria-disabled="true"')
     expect(html).not.toContain('<select disabled=""')
-    expect(html).toContain('rounded-full bg-white/12')
+    expect(html).toContain('rounded-full bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)]')
     expect(html).toContain('inline-flex shrink-0 items-center whitespace-nowrap leading-none')
   })
 
@@ -47,9 +47,9 @@ describe('ImageGenerationInlineCountButton', () => {
     expect(html).toContain('重新生成')
     expect(html).toContain('张')
     expect(html).toContain('whitespace-nowrap')
-    expect(html).toContain('rounded-full bg-white/12')
+    expect(html).toContain('rounded-full bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)]')
     expect(html).toContain('right-2')
-    expect(html).toContain('hover:bg-white/16')
+    expect(html).toContain('hover:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_16%,transparent)]')
   })
 
   it('can render a regenerate action without exposing the count selector', () => {
@@ -72,6 +72,6 @@ describe('ImageGenerationInlineCountButton', () => {
     expect(html).toContain('重新生成')
     expect(html).toContain('type="button"')
     expect(html).not.toContain('<select')
-    expect(html).not.toContain('rounded-full bg-white/12')
+    expect(html).not.toContain('rounded-full bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)]')
   })
 })

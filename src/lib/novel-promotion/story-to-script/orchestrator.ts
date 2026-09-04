@@ -63,6 +63,8 @@ export type StoryToScriptOrchestratorInput = {
   baseLocations: string[]
   baseProps?: string[]
   baseCharacterIntroductions: Array<{ name: string; introduction?: string | null }>
+  /** Pre-resolved genre constraint text (from getGenrePackPrompt); empty skips injection */
+  genreConstraint?: string | null
   promptTemplates: StoryToScriptPromptTemplates
   runStep: (
     meta: StoryToScriptStepMeta,
@@ -72,6 +74,13 @@ export type StoryToScriptOrchestratorInput = {
   ) => Promise<StoryToScriptStepOutput>
   onStepError?: (meta: StoryToScriptStepMeta, message: string) => void
   onLog?: (message: string, details?: Record<string, unknown>) => void
+}
+
+/** Prepend genre constraint to an LLM step prompt when present. */
+export function applyGenreConstraint(prompt: string, genreConstraint?: string | null): string {
+  const constraint = typeof genreConstraint === 'string' ? genreConstraint.trim() : ''
+  if (!constraint) return prompt
+  return `${constraint}\n\n${prompt}`
 }
 
 export type StoryToScriptOrchestratorResult = {
@@ -251,6 +260,7 @@ export async function runStoryToScriptOrchestrator(
     baseLocations,
     baseProps = [],
     baseCharacterIntroductions,
+    genreConstraint,
     promptTemplates,
     runStep,
     onStepError,
@@ -268,19 +278,28 @@ export async function runStoryToScriptOrchestrator(
     ? baseCharacterIntroductions.map((item, index) => `${index + 1}. ${item.name}`).join('\n')
     : '暂无已有角色'
 
-  const characterPrompt = applyTemplate(promptTemplates.characterPromptTemplate, {
-    input: content,
-    characters_lib_name: baseCharactersText,
-    characters_lib_info: baseCharacterInfo,
-  })
-  const locationPrompt = applyTemplate(promptTemplates.locationPromptTemplate, {
-    input: content,
-    locations_lib_name: baseLocationsText,
-  })
-  const propPrompt = applyTemplate(promptTemplates.propPromptTemplate, {
-    input: content,
-    props_lib_name: basePropsText,
-  })
+  const characterPrompt = applyGenreConstraint(
+    applyTemplate(promptTemplates.characterPromptTemplate, {
+      input: content,
+      characters_lib_name: baseCharactersText,
+      characters_lib_info: baseCharacterInfo,
+    }),
+    genreConstraint,
+  )
+  const locationPrompt = applyGenreConstraint(
+    applyTemplate(promptTemplates.locationPromptTemplate, {
+      input: content,
+      locations_lib_name: baseLocationsText,
+    }),
+    genreConstraint,
+  )
+  const propPrompt = applyGenreConstraint(
+    applyTemplate(promptTemplates.propPromptTemplate, {
+      input: content,
+      props_lib_name: basePropsText,
+    }),
+    genreConstraint,
+  )
 
   onLog?.('开始步骤1：角色/场景/道具分析（并行）')
   const analysisResults = await mapWithConcurrency(
@@ -404,13 +423,16 @@ export async function runStoryToScriptOrchestrator(
     locationsLibName,
   })
 
-  const splitPromptBase = applyTemplate(promptTemplates.clipPromptTemplate, {
-    input: content,
-    locations_lib_name: locationsLibName || '无',
-    characters_lib_name: charactersLibName || '无',
-    props_lib_name: propsLibName || '无',
-    characters_introduction: charactersIntroduction || '暂无角色介绍',
-  })
+  const splitPromptBase = applyGenreConstraint(
+    applyTemplate(promptTemplates.clipPromptTemplate, {
+      input: content,
+      locations_lib_name: locationsLibName || '无',
+      characters_lib_name: charactersLibName || '无',
+      props_lib_name: propsLibName || '无',
+      characters_introduction: charactersIntroduction || '暂无角色介绍',
+    }),
+    genreConstraint,
+  )
   const splitPrompt = `${splitPromptBase}${CLIP_BOUNDARY_SUFFIX}`
 
   let splitStep: StoryToScriptStepOutput | null = null
@@ -525,14 +547,17 @@ export async function runStoryToScriptOrchestrator(
       }
 
       try {
-        const screenplayPrompt = applyTemplate(promptTemplates.screenplayPromptTemplate, {
-          clip_content: clip.content,
-          locations_lib_name: locationsLibName || '无',
-          characters_lib_name: charactersLibName || '无',
-          props_lib_name: propsLibName || '无',
-          characters_introduction: charactersIntroduction || '暂无角色介绍',
-          clip_id: clip.id,
-        })
+        const screenplayPrompt = applyGenreConstraint(
+          applyTemplate(promptTemplates.screenplayPromptTemplate, {
+            clip_content: clip.content,
+            locations_lib_name: locationsLibName || '无',
+            characters_lib_name: charactersLibName || '无',
+            props_lib_name: propsLibName || '无',
+            characters_introduction: charactersIntroduction || '暂无角色介绍',
+            clip_id: clip.id,
+          }),
+          genreConstraint,
+        )
 
         const { parsed: screenplay } = await runStepWithRetry(
           runStep,

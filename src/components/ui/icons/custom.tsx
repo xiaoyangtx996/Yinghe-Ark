@@ -622,8 +622,8 @@ export const IconGradientDefs = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement
     <svg ref={ref} {...props}>
       <defs>
                                 <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" stopColor="#3b82f6" />
-                                  <stop offset="100%" stopColor="#06b6d4" />
+                                  <stop offset="0%" stopColor="#8f5a28" />
+                                  <stop offset="100%" stopColor="#a56b32" />
                                 </linearGradient>
                               </defs>
     </svg>

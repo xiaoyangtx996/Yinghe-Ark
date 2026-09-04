@@ -16,7 +16,7 @@ export const GET = apiHandler(async () => {
     }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-    const filename = `waoowaoo-logs-${timestamp}.txt`
+    const filename = `yinghe-ark-logs-${timestamp}.txt`
 
     return new NextResponse(logs, {
         status: 200,

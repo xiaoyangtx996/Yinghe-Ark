@@ -44,7 +44,7 @@ export default function StepMapping({
               <div className="w-12 h-12 bg-[var(--glass-tone-danger-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
                 <AppIcon name="trash" className="w-6 h-6 text-[var(--glass-tone-danger-fg)]" />
               </div>
-              <h3 className="text-lg font-bold text-[var(--glass-text-primary)] mb-2">{t('preview.deleteConfirm.title')}</h3>
+              <h3 className="text-lg font-medium text-[var(--glass-text-primary)] mb-2">{t('preview.deleteConfirm.title')}</h3>
               <p className="text-[var(--glass-text-secondary)]">{t('preview.deleteConfirm.message', { title: deleteConfirm.title })}</p>
             </div>
             <div className="flex gap-3">
@@ -56,7 +56,7 @@ export default function StepMapping({
               </button>
               <button
                 onClick={onConfirmDeleteEpisode}
-                className="flex-1 px-4 py-2.5 bg-[var(--glass-tone-danger-fg)] text-white rounded-lg font-medium hover:bg-[var(--glass-tone-danger-fg)] transition-colors"
+                className="flex-1 px-4 py-2.5 bg-[var(--glass-tone-danger-fg)] text-[var(--glass-text-on-accent)] rounded-lg font-medium hover:bg-[var(--glass-tone-danger-fg)] transition-colors"
               >
                 {t('preview.deleteConfirm.confirm')}
               </button>
@@ -69,7 +69,7 @@ export default function StepMapping({
         <div className="lg:col-span-1">
           <div className="bg-[var(--glass-bg-surface)] rounded-2xl border border-[var(--glass-stroke-base)] p-6 sticky top-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-lg">{t('preview.episodeList')}</h3>
+              <h3 className="font-medium text-lg">{t('preview.episodeList')}</h3>
               <span className="text-sm text-[var(--glass-text-tertiary)]">{episodes.length} {t('preview.episodeList')}</span>
             </div>
 
@@ -98,7 +98,7 @@ export default function StepMapping({
                       className={`font-semibold bg-transparent border-b border-transparent hover:border-[var(--glass-stroke-strong)] focus:border-[var(--glass-stroke-focus)] focus:outline-none w-24 ${selectedEpisode === idx ? 'text-[var(--glass-tone-info-fg)]' : 'text-[var(--glass-text-secondary)]'}`}
                     />
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${selectedEpisode === idx ? 'bg-[var(--glass-accent-from)] text-white' : 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)]'
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${selectedEpisode === idx ? 'bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)]' : 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)]'
                         }`}>
                         {ep.wordCount.toLocaleString()} {t('upload.words')}
                       </span>

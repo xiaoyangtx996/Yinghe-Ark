@@ -16,6 +16,7 @@ function encode(value: string): string {
 }
 
 describe('provider contract - openai compatible media template', () => {
+  // Keeps provider-contract coverage when unused generators/audio adapters are removed.
   let server: Awaited<ReturnType<typeof startScenarioServer>> | null = null
 
   beforeEach(async () => {

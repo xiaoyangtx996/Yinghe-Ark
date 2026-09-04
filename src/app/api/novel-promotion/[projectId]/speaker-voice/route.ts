@@ -9,6 +9,7 @@ import {
   type SpeakerVoiceEntry,
   type SpeakerVoiceMap,
 } from '@/lib/voice/provider-voice-binding'
+import { requireEpisodeOwnedByProject } from '@/lib/novel-promotion/resource-ownership'
 
 function readTrimmedString(input: unknown): string | null {
   if (typeof input !== 'string') return null
@@ -40,13 +41,7 @@ export const GET = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  const episode = await prisma.novelPromotionEpisode.findUnique({
-    where: { id: episodeId },
-  })
-
-  if (!episode) {
-    throw new ApiError('NOT_FOUND')
-  }
+  const episode = await requireEpisodeOwnedByProject(episodeId, projectId)
 
   const storedSpeakerVoices = parseSpeakerVoiceMap(episode.speakerVoices)
   const speakerVoices: SpeakerVoiceMap = {}

@@ -58,7 +58,7 @@ export function WorldContextModal({ isOpen, onClose, text, onChange }: WorldCont
         <div className="flex justify-between items-center mb-6 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div>
-              <h2 className="text-2xl font-bold text-[var(--glass-text-primary)]">{t('title')}</h2>
+              <h2 className="text-2xl font-medium text-[var(--glass-text-primary)]">{t('title')}</h2>
               <p className="text-[var(--glass-text-tertiary)] text-sm">{t('description')}</p>
             </div>
           </div>

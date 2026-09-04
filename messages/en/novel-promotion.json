@@ -4,8 +4,15 @@
     "script": "Script",
     "storyboard": "Storyboard",
     "video": "Video",
+    "voice": "Voice",
     "editor": "AI Editor",
     "editorComingSoon": "Coming soon, follow us for updates"
+  },
+  "editorGate": {
+    "title": "Timeline editing is not available yet",
+    "description": "Fine-cut editing is still in progress. Preview and export videos on the Video stage for now.",
+    "goVideos": "Go to Video export",
+    "hint": "We keep unavailable features explicit instead of empty promises."
   },
   "buttons": {
     "assetLibrary": "Asset Library",

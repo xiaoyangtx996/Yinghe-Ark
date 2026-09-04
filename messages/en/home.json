@@ -7,6 +7,10 @@
   "recentProjects": "Recent Projects",
   "viewAll": "View All Projects",
   "noProjects": "No projects yet. Start your first creation from above!",
+  "statsEpisodesShort": "{n} ep",
+  "statsPanelsShort": "{n} panels",
+  "statsImagesShort": "{n} images",
+  "statsVideosShort": "{n} videos",
   "ago": {
     "justNow": "Just now",
     "minutesAgo": "{n}m ago",
@@ -22,5 +26,42 @@
     "hint": "💡 You can enter keywords, story outlines, or creative descriptions. AI will expand your input into a complete story",
     "startAiWrite": "Start AI Writing",
     "cancel": "Cancel"
+  },
+  "createFailed": "Failed to create project. Please try again.",
+  "confirmWizard": {
+    "title": "Confirm before starting",
+    "subtitle": "Take a moment to confirm your story and style",
+    "steps": {
+      "story": "Story",
+      "style": "Format & Style",
+      "plan": "Plan",
+      "summary": "Summary",
+      "launch": "Launch"
+    },
+    "storyHint": "Confirm your story. You can still edit it here.",
+    "ratioLabel": "Aspect ratio",
+    "styleLabel": "Art style",
+    "genreLabel": "Genre",
+    "plan": {
+      "step1": "Create a project and save your story",
+      "step2": "Auto-break the story into a script",
+      "step3": "Continue storyboard and video in the workspace",
+      "step4": "Re-open anytime from your project library"
+    },
+    "summary": {
+      "story": "Story",
+      "emptyStory": "(No story yet)",
+      "noGenre": "No genre selected",
+      "autoRun": "After confirm, you will enter the workspace and auto-start Story → Script."
+    },
+    "launchHint": "Ready. Confirming will create the project and start the first generation.",
+    "launchBullet1": "Nothing is queued before you confirm",
+    "launchBullet2": "You can follow stage progress in the workspace",
+    "launchBullet3": "Timeline editing is not available yet; export videos instead",
+    "back": "Back",
+    "next": "Next",
+    "cancel": "Cancel",
+    "confirmStart": "Confirm & Start",
+    "submitting": "Creating…"
   }
 }

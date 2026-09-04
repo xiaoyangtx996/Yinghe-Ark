@@ -82,7 +82,7 @@ export default function VoicePreviewSection({ runtime }: VoicePreviewSectionProp
                   void handleSaveDesigned()
                 }}
                 disabled={selectedIndex === null || isSaving || !voiceName.trim()}
-                className="glass-btn-base glass-btn-tone-success flex-1 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                className="glass-btn-base glass-btn-tone-success flex-1 py-2 rounded-lg disabled:cursor-not-allowed text-sm font-medium"
               >
                 {isSaving ? tHub('modal.adding') : tHub('save')}
               </button>
@@ -145,12 +145,12 @@ export default function VoicePreviewSection({ runtime }: VoicePreviewSectionProp
             <button
               onClick={handleSaveUploaded}
               disabled={isUploading || !voiceName.trim()}
-              className="glass-btn-base glass-btn-tone-success w-full py-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center gap-2"
+              className="glass-btn-base glass-btn-tone-success w-full py-2.5 rounded-lg disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center gap-2"
             >
               {isUploading ? (
                 <TaskStatusInline
                   state={uploadSubmittingState}
-                  className="text-white [&>span]:text-white [&_svg]:text-white"
+                  className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]"
                 />
               ) : (
                 tHub('save')

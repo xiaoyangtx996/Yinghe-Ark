@@ -138,7 +138,7 @@ export const ToolOutput = ({
       <div className="mb-1 text-xs text-[var(--glass-text-tertiary)]">
         {errorText ? "Error" : "Result"}
       </div>
-      <div className={errorText ? "text-red-500" : undefined}>
+      <div className={errorText ? "text-[var(--glass-tone-danger-fg)]" : undefined}>
         {errorText && (
           <div className="mb-2 whitespace-pre-wrap break-words text-xs leading-relaxed">
             {errorText}

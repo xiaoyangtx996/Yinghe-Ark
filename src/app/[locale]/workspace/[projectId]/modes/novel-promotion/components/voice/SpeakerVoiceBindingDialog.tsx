@@ -126,7 +126,7 @@ export default function SpeakerVoiceBindingDialog({
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]">
                     <div className="flex items-center gap-2 min-w-0">
                         <AppIcon name="mic" className="w-5 h-5 text-[var(--glass-tone-info-fg)] shrink-0" />
-                        <h2 className="font-semibold text-[var(--glass-text-primary)] truncate">
+                        <h2 className="font-medium text-[var(--glass-text-primary)] truncate">
                             {t('title', { speaker })}
                         </h2>
                     </div>

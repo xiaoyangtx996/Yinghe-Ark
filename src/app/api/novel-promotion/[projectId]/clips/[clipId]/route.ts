@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireProjectAuthLight, isErrorResponse } from '@/lib/api-auth'
-import { apiHandler } from '@/lib/api-errors'
+import { apiHandler, ApiError } from '@/lib/api-errors'
+import { requireClipOwnedByProject } from '@/lib/novel-promotion/resource-ownership'
 
 /**
  * PATCH /api/novel-promotion/[projectId]/clips/[clipId]
@@ -14,19 +15,13 @@ export const PATCH = apiHandler(async (
 ) => {
     const { projectId, clipId } = await context.params
 
-    // 🔐 统一权限验证
     const authResult = await requireProjectAuthLight(projectId)
     if (isErrorResponse(authResult)) return authResult
 
+    await requireClipOwnedByProject(clipId, projectId)
+
     const body = await request.json()
     const { characters, location, props, content, screenplay } = body
-    const clipModel = prisma.novelPromotionClip as unknown as {
-        update: (args: { where: { id: string }; data: Record<string, unknown> }) => Promise<unknown>
-    }
-
-    // 验证 Clip 是否存在且属于该项目（间接验证）
-    // 这里简化处理，直接通过 ID 更新，Prisma 会处理是否存在
-    // 严谨做法是先查 Clip -> Episode -> Project 确认归属，但考虑到 projectId 主要是路由参数校验，且用户只能删改自己的数据
 
     const updateData: {
         characters?: string | null
@@ -35,13 +30,17 @@ export const PATCH = apiHandler(async (
         content?: string
         screenplay?: string | null
     } = {}
-    if (characters !== undefined) updateData.characters = characters // JSON string
+    if (characters !== undefined) updateData.characters = characters
     if (location !== undefined) updateData.location = location
     if (props !== undefined) updateData.props = props
     if (content !== undefined) updateData.content = content
-    if (screenplay !== undefined) updateData.screenplay = screenplay // JSON string
+    if (screenplay !== undefined) updateData.screenplay = screenplay
 
-    const clip = await clipModel.update({
+    if (Object.keys(updateData).length === 0) {
+        throw new ApiError('INVALID_PARAMS')
+    }
+
+    const clip = await prisma.novelPromotionClip.update({
         where: { id: clipId },
         data: updateData
     })

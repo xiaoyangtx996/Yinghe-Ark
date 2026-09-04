@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { setProxy } from '../../../lib/prompts/proxy'
+import { sanitizeVendorProbeSteps } from '@/lib/user-api/vendor-probe-summary'
 
 export type TestStepName = 'models' | 'textGen' | 'imageGen' | 'credits' | 'audioGen'
 export type TestStepStatus = 'pass' | 'fail' | 'skip'
@@ -850,32 +851,48 @@ export async function testProviderConnection(payload: TestProviderPayload): Prom
     }
   }
 
+  let result: TestProviderResult
   switch (apiType) {
     case 'openai-compatible':
-      return testCompatibleProvider(baseUrl!, apiKey, llmModel)
+      result = await testCompatibleProvider(baseUrl!, apiKey, llmModel)
+      break
     case 'gemini-compatible':
-      return testCompatibleProvider(baseUrl!, apiKey, llmModel)
+      result = await testCompatibleProvider(baseUrl!, apiKey, llmModel)
+      break
     case 'ark':
-      return testArkProvider(apiKey)
+      result = await testArkProvider(apiKey)
+      break
     case 'google':
-      return testGoogleOfficial(apiKey)
+      result = await testGoogleOfficial(apiKey)
+      break
     case 'openrouter':
-      return testOpenRouterProvider(apiKey)
+      result = await testOpenRouterProvider(apiKey)
+      break
     case 'minimax':
-      return testMiniMaxProvider(apiKey)
+      result = await testMiniMaxProvider(apiKey)
+      break
     case 'fal':
-      return testFalProvider(apiKey)
+      result = await testFalProvider(apiKey)
+      break
     case 'vidu':
-      return testViduProvider(apiKey)
+      result = await testViduProvider(apiKey)
+      break
     case 'bailian':
-      return testBailianProvider(apiKey)
+      result = await testBailianProvider(apiKey)
+      break
     case 'siliconflow':
-      return testSiliconFlowProvider(apiKey)
+      result = await testSiliconFlowProvider(apiKey)
+      break
     default:
-      return {
+      result = {
         success: false,
         steps: [{ name: 'models', status: 'fail', message: `Unsupported API type: ${apiType}` }],
       }
+  }
+
+  return {
+    ...result,
+    steps: sanitizeVendorProbeSteps(result.steps),
   }
 }
 

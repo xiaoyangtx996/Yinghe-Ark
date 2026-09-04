@@ -16,6 +16,7 @@ import {
 } from '@/lib/query/hooks'
 import VoiceLineList from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/voice-stage/VoiceLineList'
 import VoiceControlPanel from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/voice-stage/VoiceControlPanel'
+import VoiceReviewChecklist from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/voice-stage/VoiceReviewChecklist'
 import SpeakerVoiceBindingDialog from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/voice/SpeakerVoiceBindingDialog'
 import type {
   Character,
@@ -316,6 +317,21 @@ export function useVoiceStageRuntime({
           onAnalyze={handleAnalyze}
         />
       </VoiceControlPanel>
+
+      <div className="mt-4">
+        <VoiceReviewChecklist
+          projectId={projectId}
+          episodeId={episodeId}
+          lines={voiceLines.map((line) => ({
+            lineId: line.id,
+            speaker: line.speaker,
+            content: line.content,
+            audioUrl: line.audioUrl,
+            matchedPanelId: line.matchedPanelId,
+            speakerHasVoice: !!getSpeakerVoiceUrl(line.speaker),
+          }))}
+        />
+      </div>
 
       {/* 内联音色绑定弹窗 */}
       <SpeakerVoiceBindingDialog

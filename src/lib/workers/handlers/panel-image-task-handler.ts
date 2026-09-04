@@ -1,6 +1,7 @@
 import { type Job } from 'bullmq'
 import { prisma } from '@/lib/prisma'
 import { getArtStylePrompt } from '@/lib/constants'
+import { resolveVisualGenerationPrompt } from '@/lib/genre-packs'
 import { createScopedLogger } from '@/lib/logging/core'
 import { type TaskJobData } from '@/lib/task/types'
 import { reportTaskProgress } from '../shared'
@@ -201,7 +202,11 @@ export async function handlePanelImageTask(job: Job<TaskJobData>) {
     },
   })
 
-  const artStyle = getArtStylePrompt(modelConfig.artStyle, job.data.locale)
+  const artStyle = resolveVisualGenerationPrompt({
+    artStylePrompt: getArtStylePrompt(modelConfig.artStyle, job.data.locale) || '',
+    genrePack: modelConfig.genrePack,
+    locale: job.data.locale,
+  })
   if (!projectData.videoRatio) throw new Error('Project videoRatio not configured')
   const aspectRatio = projectData.videoRatio
   const promptContext = buildPanelPromptContext({

@@ -17,7 +17,19 @@
     "currentStage": "Current Stage",
     "outputTitle": "Live AI Output · {stage}",
     "waitingModelOutput": "Waiting for model output...",
-    "reasoningNotProvided": "No reasoning was returned for this step"
+    "reasoningNotProvided": "No reasoning was returned for this step",
+    "viewSimple": "Simple",
+    "viewDetailed": "Detailed",
+    "activityTitle": "What is happening",
+    "outputHiddenHint": "Simple view hides raw model text; switch to Detailed when needed"
+  },
+  "activityFeed": {
+    "empty": "Waiting for steps to start…",
+    "layer": {
+      "understand": "Understand",
+      "craft": "Create",
+      "check": "Check"
+    }
   },
   "runtime": {
     "waitingExecution": "Waiting to start",
@@ -126,6 +138,15 @@
     "scriptToStoryboardSubtitle": "Script To Storyboard V2",
     "stop": "Stop",
     "minimize": "Minimize"
+  },
+  "pipelineChecklist": {
+    "title": "Creation progress",
+    "subtitle": "Readable stages instead of a spinner only",
+    "story": "Story input",
+    "script": "Script breakdown",
+    "storyboard": "Storyboard",
+    "video": "Video generation",
+    "voice": "Voice"
   },
   "streamStep": {
     "analyzeCharacters": "Analyze characters",

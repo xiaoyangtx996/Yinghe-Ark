@@ -7,12 +7,14 @@ import Navbar from '@/components/Navbar'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import TaskStatusInline from '@/components/task/TaskStatusInline'
 import { resolveTaskPresentationState } from '@/lib/task/presentation'
-import { AppIcon, IconGradientDefs } from '@/components/ui/icons'
+import { AppIcon } from '@/components/ui/icons'
 import { shouldGuideToModelSetup } from '@/lib/workspace/model-setup'
 import { Link, useRouter } from '@/i18n/navigation'
 import { apiFetch } from '@/lib/api-fetch'
 import { readApiErrorMessage } from '@/lib/api/read-error-message'
 import { validateProjectDraft } from '@/lib/projects/validation'
+import { formatProjectStatsLine } from '@/lib/projects/format-project-stats'
+import ProjectCardCover from '@/components/projects/ProjectCardCover'
 
 interface ProjectStats {
   episodes: number
@@ -20,6 +22,7 @@ interface ProjectStats {
   videos: number
   panels: number
   firstEpisodePreview: string | null
+  coverImageUrl?: string | null
 }
 
 interface Project {
@@ -29,6 +32,7 @@ interface Project {
   createdAt: string
   updatedAt: string
   totalCost?: number  // 项目总费用（CNY）
+  genrePack?: string | null
   stats?: ProjectStats
 }
 
@@ -336,7 +340,7 @@ export default function WorkspacePage() {
       <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-5 flex flex-col gap-4 border-b border-[var(--glass-stroke-base)] pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="font-display mb-1 text-[28px] font-semibold text-[var(--glass-text-primary)]">{t('title')}</h1>
+            <h1 className="font-display mb-1 text-[length:var(--glass-font-size-h1)] font-semibold text-[var(--glass-text-primary)]">{t('title')}</h1>
             <p className="text-sm text-[var(--glass-text-secondary)]">{t('subtitle')}</p>
           </div>
 
@@ -383,14 +387,14 @@ export default function WorkspacePage() {
             ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-[var(--glass-bg-muted)] rounded-xl flex items-center justify-center mx-auto mb-4">
-              <AppIcon name="folderCards" className="w-8 h-8 text-[var(--glass-text-tertiary)]" />
+          <div className="mx-auto max-w-md rounded-[var(--glass-radius-md)] border border-dashed border-[var(--glass-stroke-base)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_55%,transparent)] px-6 py-10 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-bg-muted)]">
+              <AppIcon name="folderCards" className="h-7 w-7 text-[var(--glass-text-secondary)]" />
             </div>
-            <h3 className="text-lg font-medium text-[var(--glass-text-primary)] mb-2">
+            <h3 className="mb-2 text-lg font-medium text-[var(--glass-text-primary)]">
               {searchQuery ? t('noResults') : t('noProjects')}
             </h3>
-            <p className="text-[var(--glass-text-secondary)] mb-6">
+            <p className="mb-6 text-[length:var(--glass-font-size-body)] text-[var(--glass-text-secondary)]">
               {searchQuery ? t('noResultsDesc') : t('noProjectsDesc')}
             </p>
             {!searchQuery && (
@@ -409,22 +413,36 @@ export default function WorkspacePage() {
               className="glass-surface group flex min-h-[180px] cursor-pointer items-center justify-center border-dashed transition-colors hover:border-[var(--film-gold)]/50"
             >
               <div className="flex flex-col items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-[var(--film-gold)] text-[var(--glass-text-on-accent)] transition-transform group-hover:scale-105">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--film-gold)] text-[var(--glass-text-on-accent)] transition-transform group-hover:scale-105">
                   <AppIcon name="plus" className="h-6 w-6" />
                 </div>
                 <span className="text-sm font-medium text-[var(--glass-text-secondary)] transition-colors group-hover:text-[var(--glass-text-primary)]">{t('newProject')}</span>
               </div>
             </div>
 
-            {projects.map((project) => (
+            {projects.map((project, index) => {
+              const statsLine = formatProjectStatsLine(project.stats, (key, n) => {
+                if (key === 'episodes') return t('statsEpisodesShort', { n })
+                if (key === 'panels') return t('statsPanelsShort', { n })
+                if (key === 'images') return t('statsImagesShort', { n })
+                return t('statsVideosShort', { n })
+              })
+              return (
               <Link
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
                 className="glass-surface group relative block cursor-pointer overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
               >
+                <ProjectCardCover
+                  name={project.name}
+                  coverImageUrl={project.stats?.coverImageUrl}
+                  genrePack={project.genrePack}
+                  seedIndex={index}
+                  className="aspect-[16/9]"
+                />
                 <div className="relative z-10 p-5">
                   {/* 操作按钮 */}
-                  <div className="absolute top-3 right-3 z-20 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="absolute top-3 right-3 z-20 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
                     <button
                       onClick={(e) => openEditModal(project, e)}
                       className="glass-btn-base glass-btn-secondary p-2 rounded-lg transition-colors"
@@ -455,7 +473,7 @@ export default function WorkspacePage() {
                   </div>
 
                   {/* 标题 */}
-                  <h3 className="mb-2 line-clamp-2 pr-20 text-lg font-bold text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
+                  <h3 className="mb-2 line-clamp-2 pr-20 text-lg font-medium text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
                     {project.name}
                   </h3>
 
@@ -469,54 +487,31 @@ export default function WorkspacePage() {
                     </div>
                   )}
 
-                  {/* 统计信息 - 整行统一渐变 */}
-                  {project.stats && (project.stats.episodes > 0 || project.stats.images > 0 || project.stats.videos > 0) ? (
-                    <div className="flex items-center gap-2 mb-3">
-                      <IconGradientDefs className="w-0 h-0 absolute" aria-hidden="true" />
-                      <AppIcon name="statsBarGradient" className="w-4 h-4 flex-shrink-0" />
-                      <div className="flex items-center gap-3 text-sm font-semibold text-[var(--glass-text-secondary)]">
-                        {project.stats.episodes > 0 && (
-                          <span className="flex items-center gap-1" title={t('statsEpisodes')}>
-                            <AppIcon name="statsEpisodeGradient" className="w-3.5 h-3.5" />
-                            {project.stats.episodes}
-                          </span>
-                        )}
-                        {project.stats.images > 0 && (
-                          <span className="flex items-center gap-1" title={t('statsImages')}>
-                            <AppIcon name="statsImageGradient" className="w-3.5 h-3.5" />
-                            {project.stats.images}
-                          </span>
-                        )}
-                        {project.stats.videos > 0 && (
-                          <span className="flex items-center gap-1" title={t('statsVideos')}>
-                            <AppIcon name="statsVideoGradient" className="w-3.5 h-3.5" />
-                            {project.stats.videos}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                  {/* 统计信息 — 可读文案 */}
+                  {statsLine ? (
+                    <p className="mb-3 text-sm font-semibold text-[var(--glass-text-secondary)]">
+                      {statsLine}
+                    </p>
                   ) : (
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <AppIcon name="statsBar" className="w-4 h-4 text-[var(--glass-text-tertiary)] flex-shrink-0" />
-                      <span className="text-xs text-[var(--glass-text-tertiary)]">{t('noContent')}</span>
-                    </div>
+                    <p className="mb-3 text-xs text-[var(--glass-text-tertiary)]">{t('noContent')}</p>
                   )}
 
                   {/* 底部信息 */}
-                  <div className="flex items-center justify-between text-[11px] text-[var(--glass-text-tertiary)]">
+                  <div className="flex items-center justify-between text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
                     <div className="flex items-center gap-1">
                       <AppIcon name="clock" className="w-3 h-3" />
                       {formatDate(project.updatedAt)}
                     </div>
                     {project.totalCost !== undefined && project.totalCost > 0 && (
-                      <span className="text-[11px] font-mono font-medium text-[var(--glass-text-secondary)]">
+                      <span className="font-mono text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">
                         {formatProjectCost(project.totalCost)}
                       </span>
                     )}
                   </div>
                 </div>
               </Link>
-            ))}
+              )
+            })}
           </div>
         )}
 
@@ -526,7 +521,7 @@ export default function WorkspacePage() {
             <button
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="glass-btn-base glass-btn-secondary px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="glass-btn-base glass-btn-secondary px-3 py-2 disabled:cursor-not-allowed"
             >
               <AppIcon name="chevronLeft" className="w-5 h-5" />
             </button>
@@ -560,7 +555,7 @@ export default function WorkspacePage() {
             <button
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="glass-btn-base glass-btn-secondary px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="glass-btn-base glass-btn-secondary px-3 py-2 disabled:cursor-not-allowed"
             >
               <AppIcon name="chevronRight" className="w-5 h-5" />
             </button>
@@ -576,11 +571,11 @@ export default function WorkspacePage() {
       {showCreateModal && (
         <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="glass-surface-modal p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold text-[var(--glass-text-primary)] mb-4">{t('createProject')}</h2>
+            <h2 className="text-xl font-medium text-[var(--glass-text-primary)] mb-4">{t('createProject')}</h2>
             {modelNotConfigured && (
               <div className="flex items-start gap-2 mb-4 px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400">
                 <AppIcon name="alert" className="w-4 h-4 shrink-0 mt-0.5" />
-                <span className="text-[12px] leading-relaxed">
+                <span className="text-[length:var(--glass-font-size-caption)] leading-relaxed">
                   {t('modelNotConfigured.before')}
                   <Link
                     href={{ pathname: '/profile' }}
@@ -635,7 +630,7 @@ export default function WorkspacePage() {
                 />
               </div>
               {createError && (
-                <p className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600">
+                <p className="mb-4 rounded-[var(--glass-radius-sm)] border border-[var(--glass-stroke-danger)] bg-[var(--glass-tone-danger-bg)] px-3 py-2 text-sm text-[var(--glass-tone-danger-fg)]">
                   {createError}
                 </p>
               )}
@@ -654,7 +649,7 @@ export default function WorkspacePage() {
                 </button>
                 <button
                   type="submit"
-                  className="glass-btn-base glass-btn-primary px-4 py-2 disabled:opacity-50"
+                  className="glass-btn-base glass-btn-primary px-4 py-2"
                   disabled={createLoading || !formData.name.trim()}
                 >
                   {createLoading ? t('creating') : t('createProject')}
@@ -669,7 +664,7 @@ export default function WorkspacePage() {
       {showEditModal && editingProject && (
         <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="glass-surface-modal p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold text-[var(--glass-text-primary)] mb-4">{t('editProject')}</h2>
+            <h2 className="text-xl font-medium text-[var(--glass-text-primary)] mb-4">{t('editProject')}</h2>
             <form onSubmit={handleEditProject}>
               <div className="mb-4">
                 <label htmlFor="edit-name" className="glass-field-label block mb-2">
@@ -711,7 +706,7 @@ export default function WorkspacePage() {
                 />
               </div>
               {editError && (
-                <p className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600">
+                <p className="mb-4 rounded-[var(--glass-radius-sm)] border border-[var(--glass-stroke-danger)] bg-[var(--glass-tone-danger-bg)] px-3 py-2 text-sm text-[var(--glass-tone-danger-fg)]">
                   {editError}
                 </p>
               )}
@@ -731,7 +726,7 @@ export default function WorkspacePage() {
                 </button>
                 <button
                   type="submit"
-                  className="glass-btn-base glass-btn-primary px-4 py-2 disabled:opacity-50"
+                  className="glass-btn-base glass-btn-primary px-4 py-2"
                   disabled={createLoading || !editFormData.name.trim()}
                 >
                   {createLoading ? t('saving') : tc('save')}

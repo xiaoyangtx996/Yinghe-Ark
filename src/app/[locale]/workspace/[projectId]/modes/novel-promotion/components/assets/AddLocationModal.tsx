@@ -137,7 +137,7 @@ export default function AddLocationModal({
         <div className="p-6 overflow-y-auto app-scrollbar flex-1 min-h-0">
           {/* 标题 */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+            <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">
               {t('modal.addLocation')}
             </h3>
             <button
@@ -209,10 +209,10 @@ export default function AddLocationModal({
                 <button
                   onClick={handleAiDesign}
                   disabled={isAiDesigning || !aiInstruction.trim()}
-                  className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm whitespace-nowrap"
+                  className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors disabled:cursor-not-allowed flex items-center gap-2 text-sm whitespace-nowrap"
                 >
                   {isAiDesigning ? (
-                    <TaskStatusInline state={aiDesigningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                    <TaskStatusInline state={aiDesigningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                   ) : (
                     <>
                       <SparklesIcon className="w-4 h-4" />
@@ -253,10 +253,10 @@ export default function AddLocationModal({
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || !name.trim() || !description.trim()}
-              className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors disabled:cursor-not-allowed text-sm flex items-center gap-2"
             >
               {isSubmitting ? (
-                <TaskStatusInline state={submitState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={submitState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 <span>{t('location.add')}</span>
               )}

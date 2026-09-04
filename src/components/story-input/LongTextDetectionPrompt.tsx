@@ -57,15 +57,15 @@ export default function LongTextDetectionPrompt({
         }
       }}
     >
-      <div className="glass-surface-modal w-full max-w-lg rounded-2xl border border-[var(--glass-stroke-base)] p-6 shadow-[0_20px_80px_-32px_rgba(15,23,42,0.45)]">
+      <div className="glass-surface-modal w-full max-w-lg rounded-2xl border border-[var(--glass-stroke-base)] p-6 shadow-[var(--glass-shadow-2)]">
         <div className="space-y-5">
           <div className="flex items-center gap-3">
             <div
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)]"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]"
             >
               <AppIcon name="sparkles" className="h-5 w-5 text-[var(--film-gold)]" />
             </div>
-            <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">
+            <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">
               {copy.title}
             </h3>
           </div>
@@ -75,7 +75,7 @@ export default function LongTextDetectionPrompt({
           </p>
 
           <div
-            className="rounded-[10px] border border-[rgba(224,163,106,0.25)] p-4 text-sm leading-relaxed"
+            className="rounded-[var(--glass-radius-sm)] border border-[rgba(224,163,106,0.25)] p-4 text-sm leading-relaxed"
             style={{ background: 'rgba(224,163,106,0.08)' }}
           >
             <p className="font-semibold text-[var(--film-gold)]">

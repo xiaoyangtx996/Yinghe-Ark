@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { executeAiTextStep } from '@/lib/ai-runtime'
 import { withInternalLLMStreamCallbacks } from '@/lib/llm-observe/internal-stream-context'
 import { getArtStylePrompt, removeLocationPromptSuffix } from '@/lib/constants'
+import { resolveVisualGenerationPrompt } from '@/lib/genre-packs'
 import { reportTaskProgress } from '@/lib/workers/shared'
 import { assertTaskActive } from '@/lib/workers/utils'
 import { createWorkerLLMStreamCallbacks, createWorkerLLMStreamContext } from './llm-stream'
@@ -370,7 +371,11 @@ export async function handleAnalyzeNovelTask(job: Job<TaskJobData>) {
   await prisma.novelPromotionProject.update({
     where: { id: novelData.id },
     data: {
-      artStylePrompt: getArtStylePrompt(novelData.artStyle, job.data.locale) || '',
+      artStylePrompt: resolveVisualGenerationPrompt({
+        artStylePrompt: getArtStylePrompt(novelData.artStyle, job.data.locale) || '',
+        genrePack: novelData.genrePack,
+        locale: job.data.locale,
+      }),
     },
   })
 

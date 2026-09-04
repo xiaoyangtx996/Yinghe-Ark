@@ -332,7 +332,7 @@ export function BillingRecordsPanel() {
                     <td>
                       <div className="text-[var(--glass-text-primary)]">{row.projectName || '—'}</div>
                       {row.episodeNumber != null ? (
-                        <div className="mt-0.5 text-[12px] text-[var(--glass-text-secondary)]">
+                        <div className="mt-0.5 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">
                           {tp('episodeLabel', { number: row.episodeNumber })}
                         </div>
                       ) : null}
@@ -360,7 +360,7 @@ export function BillingRecordsPanel() {
                 type="button"
                 disabled={pagination.page <= 1}
                 onClick={() => void fetchTransactions(pagination.page - 1, applied)}
-                className="glass-btn-base glass-btn-secondary px-3 py-1.5 disabled:opacity-40"
+                className="glass-btn-base glass-btn-secondary px-3 py-1.5"
               >
                 {tp('previousPage')}
               </button>
@@ -368,7 +368,7 @@ export function BillingRecordsPanel() {
                 type="button"
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => void fetchTransactions(pagination.page + 1, applied)}
-                className="glass-btn-base glass-btn-secondary px-3 py-1.5 disabled:opacity-40"
+                className="glass-btn-base glass-btn-secondary px-3 py-1.5"
               >
                 {tp('nextPage')}
               </button>

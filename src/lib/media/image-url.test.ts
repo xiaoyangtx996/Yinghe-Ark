@@ -20,4 +20,14 @@ describe('image-url helpers', () => {
     expect(toDisplayImageUrl('')).toBeNull()
     expect(resolveOriginalImageUrl(null)).toBeNull()
   })
+
+  it('passes through PENDING placeholders', () => {
+    expect(toDisplayImageUrl('PENDING:abc')).toBe('PENDING:abc')
+  })
+
+  it('maps panel-candidate storage keys to sign route (not relative /images/…)', () => {
+    expect(toDisplayImageUrl('images/panel-candidate-1-abc.jpg')).toBe(
+      '/api/storage/sign?key=images%2Fpanel-candidate-1-abc.jpg',
+    )
+  })
 })

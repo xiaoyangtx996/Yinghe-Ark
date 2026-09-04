@@ -172,7 +172,7 @@ export function CharacterCreationModal({
       <div className="glass-surface-modal max-w-lg w-full max-h-[85vh] flex flex-col">
         <div className="p-6 overflow-y-auto flex-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+            <h3 className="text-[length:var(--glass-font-size-h3)] font-medium text-[var(--glass-text-primary)]">
               {t('character.title')}
             </h3>
             <button
@@ -217,10 +217,10 @@ export function CharacterCreationModal({
           />
         </div>
 
-        <div className="flex items-center justify-end gap-2 p-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-b-xl flex-shrink-0">
+        <div className="flex items-center justify-end gap-2 p-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-b-[var(--glass-radius-sm)] flex-shrink-0">
           <button
             onClick={onClose}
-            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm"
+            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-[var(--glass-radius-sm)] text-[length:var(--glass-font-size-body)]"
             disabled={isSubmitting}
           >
             {t('common.cancel')}
@@ -236,14 +236,14 @@ export function CharacterCreationModal({
               actionDisabled={!name.trim() || referenceImagesBase64.length === 0}
               selectDisabled={isSubmitting}
               ariaLabel={t('character.selectReferenceGenerateCount')}
-              className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
+              className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-[var(--glass-radius-sm)] px-4 py-2 text-[length:var(--glass-font-size-body)] disabled:cursor-not-allowed"
+              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-body)] font-medium text-current outline-none cursor-pointer leading-none transition-colors"
             />
           ) : isSubAppearance ? (
             <button
               onClick={() => { void handleSubmit() }}
               disabled={isSubmitting || !selectedCharacterId.trim() || !changeReason.trim() || !description.trim()}
-              className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="glass-btn-base glass-btn-primary px-4 py-2 rounded-[var(--glass-radius-sm)] text-[length:var(--glass-font-size-body)] disabled:cursor-not-allowed"
             >
               {isSubmitting ? t('common.adding') : t('common.add')}
             </button>
@@ -252,7 +252,7 @@ export function CharacterCreationModal({
               <button
                 onClick={() => { void handleSubmit() }}
                 disabled={isSubmitting || !name.trim() || !description.trim()}
-                className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-[var(--glass-radius-sm)] text-[length:var(--glass-font-size-body)] disabled:cursor-not-allowed"
               >
                 {isSubmitting ? t('common.adding') : (mode === 'asset-hub' ? t('common.addOnlyToAssetHub') : t('common.addOnly'))}
               </button>
@@ -266,8 +266,8 @@ export function CharacterCreationModal({
                 actionDisabled={!name.trim() || !description.trim()}
                 selectDisabled={isSubmitting}
                 ariaLabel={t('common.selectGenerateCount')}
-                className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-                selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
+                className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-[var(--glass-radius-sm)] px-4 py-2 text-[length:var(--glass-font-size-body)] disabled:cursor-not-allowed"
+                selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-body)] font-medium text-current outline-none cursor-pointer leading-none transition-colors"
               />
             </>
           )}

@@ -72,10 +72,13 @@ export default function LogsPage() {
         ]}
       />
 
-      <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 pb-4 pt-4 sm:px-6">
+      <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 pb-4 pt-4 sm:px-6" aria-labelledby="logs-pane-title">
         <header className="admin-page-header">
           <div>
-            <h1 className="admin-page-header__title">{title}</h1>
+            <p className="mb-1 text-[length:var(--glass-font-size-caption)] font-medium uppercase tracking-[0.1em] text-[var(--film-gold)]">
+              {t('title')}
+            </p>
+            <h1 id="logs-pane-title" className="admin-page-header__title">{title}</h1>
             <p className="admin-page-header__desc">{description}</p>
           </div>
         </header>

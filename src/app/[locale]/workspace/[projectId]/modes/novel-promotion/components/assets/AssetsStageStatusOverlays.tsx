@@ -37,10 +37,10 @@ export default function AssetsStageStatusOverlays({
           <div
             className={`flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg ${
               toast.type === 'success'
-                ? 'bg-[var(--glass-tone-success-fg)] text-white'
+                ? 'bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)]'
                 : toast.type === 'warning'
-                  ? 'bg-[var(--glass-tone-warning-fg)] text-white'
-                  : 'bg-[var(--glass-tone-danger-fg)] text-white'
+                  ? 'bg-[var(--glass-tone-warning-fg)] text-[var(--glass-text-on-accent)]'
+                  : 'bg-[var(--glass-tone-danger-fg)] text-[var(--glass-text-on-accent)]'
             }`}
           >
             <span className="text-sm font-medium">{toast.message}</span>
@@ -57,11 +57,11 @@ export default function AssetsStageStatusOverlays({
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-6">
                 <div className="w-20 h-20 rounded-full bg-[var(--glass-accent-from)] flex items-center justify-center">
-                  <AppIcon name="ideaAlt" className="w-10 h-10 text-white" />
+                  <AppIcon name="ideaAlt" className="w-10 h-10 text-[var(--glass-text-on-accent)]" />
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold text-[var(--glass-text-primary)] mb-2">
+              <h3 className="text-xl font-medium text-[var(--glass-text-primary)] mb-2">
                 {globalAnalyzingTitle}
               </h3>
               <p className="text-[var(--glass-text-tertiary)] text-sm mb-4">{globalAnalyzingHint}</p>

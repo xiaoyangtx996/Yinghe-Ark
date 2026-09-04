@@ -221,12 +221,12 @@ export default function CharacterCard({
           prefix={isGroupTaskRunning ? (
             <>
               <TaskStatusInline state={displayTaskPresentation} className="[&_span]:sr-only [&_svg]:text-[var(--glass-tone-info-fg)]" />
-              <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)] ml-0.5">{t('image.regenCountPrefix')}</span>
+              <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)] ml-0.5">{t('image.regenCountPrefix')}</span>
             </>
           ) : (
             <>
               <AppIcon name="refresh" className="w-4 h-4 text-[var(--glass-tone-info-fg)]" />
-              <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)] ml-0.5">{t('image.regenCountPrefix')}</span>
+              <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)] ml-0.5">{t('image.regenCountPrefix')}</span>
             </>
           )}
           value={generationCount}
@@ -236,13 +236,13 @@ export default function CharacterCard({
           disabled={isAppearanceTaskRunning || isAnyTaskRunning || uploadImage.isPending}
           showCountControl={false}
           ariaLabel={t('image.regenCountPrefix')}
-          className="inline-flex h-6 items-center justify-center rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors disabled:opacity-50"
+          className="inline-flex h-6 items-center justify-center rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors"
         />
         {onUndo && (appearance.previousImageUrl || appearance.previousImageUrls.length > 0) && (
           <button
             onClick={onUndo}
             disabled={isAppearanceTaskRunning || isAnyTaskRunning}
-            className="w-6 h-6 rounded hover:bg-[var(--glass-tone-warning-bg)] flex items-center justify-center transition-colors disabled:opacity-50"
+            className="w-6 h-6 rounded hover:bg-[var(--glass-tone-warning-bg)] flex items-center justify-center transition-colors"
             title={t('image.undo')}
           >
             <AppIcon name="undo" className="w-4 h-4 text-[var(--glass-tone-warning-fg)]" />
@@ -328,7 +328,7 @@ export default function CharacterCard({
         <button
           onClick={() => triggerUpload(selectedIndex !== null ? selectedIndex : 0)}
           disabled={uploadImage.isPending || isAppearanceTaskRunning || isAnyTaskRunning}
-          className="w-7 h-7 rounded-full bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-tone-success-fg)] hover:text-white flex items-center justify-center transition-all shadow-sm disabled:opacity-50"
+          className="w-7 h-7 rounded-full bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-tone-success-fg)] hover:text-[var(--glass-text-on-accent)] flex items-center justify-center transition-all shadow-sm"
           title={currentImageUrl ? t('image.uploadReplace') : t('image.upload')}
         >
           {uploadImage.isPending ? (
@@ -357,19 +357,19 @@ export default function CharacterCard({
         title={(isAppearanceTaskRunning || isAnyTaskRunning) ? t('image.regenerateStuck') : t('location.regenerateImage')}
       >
         {isGroupTaskRunning ? (
-          <TaskStatusInline state={displayTaskPresentation} className="[&_span]:sr-only [&_svg]:text-white" />
+          <TaskStatusInline state={displayTaskPresentation} className="[&_span]:sr-only [&_svg]:text-[var(--glass-text-on-accent)]" />
         ) : (
-          <AppIcon name="refresh" className={`w-4 h-4 ${(isAppearanceTaskRunning || isAnyTaskRunning) ? 'text-white' : 'text-[var(--glass-text-secondary)]'}`} />
+          <AppIcon name="refresh" className={`w-4 h-4 ${(isAppearanceTaskRunning || isAnyTaskRunning) ? 'text-[var(--glass-text-on-accent)]' : 'text-[var(--glass-text-secondary)]'}`} />
         )}
       </button>
       {!isAppearanceTaskRunning && !isAnyTaskRunning && currentImageUrl && onUndo && (appearance.previousImageUrl || appearance.previousImageUrls.length > 0) && (
         <button
           onClick={onUndo}
           disabled={isAppearanceTaskRunning || isAnyTaskRunning}
-          className="w-7 h-7 rounded-full bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-tone-warning-fg)] hover:text-white flex items-center justify-center transition-all shadow-sm disabled:opacity-50"
+          className="w-7 h-7 rounded-full bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-tone-warning-fg)] hover:text-[var(--glass-text-on-accent)] flex items-center justify-center transition-all shadow-sm"
           title={t('image.undo')}
         >
-          <AppIcon name="undo" className="w-4 h-4 text-[var(--glass-tone-warning-fg)] hover:text-white" />
+          <AppIcon name="undo" className="w-4 h-4 text-[var(--glass-tone-warning-fg)] hover:text-[var(--glass-text-on-accent)]" />
         </button>
       )}
     </>

@@ -12,9 +12,11 @@ import TaskStatusOverlay from '@/components/task/TaskStatusOverlay'
 import { useStoryboardGroupTaskErrors } from './hooks/useStoryboardGroupTaskErrors'
 import { useStoryboardInsertVariantRuntime } from './hooks/useStoryboardInsertVariantRuntime'
 import StoryboardGroupFailedAlert from './StoryboardGroupFailedAlert'
+import StoryboardGroupStaleAlert from './StoryboardGroupStaleAlert'
 import StoryboardGroupDialogs from './StoryboardGroupDialogs'
 import type { StoryboardGroupProps } from './StoryboardGroup.types'
 import { AppIcon } from '@/components/ui/icons'
+import { resolveStoryboardErrorPresentation } from '@/lib/novel-promotion/storyboard-script-stale'
 
 export default function StoryboardGroup({
   storyboard,
@@ -116,6 +118,7 @@ export default function StoryboardGroup({
 
   const currentRunningCount = textPanels.filter(isPanelTaskRunning).length
   const pendingCount = textPanels.filter((panel) => !panel.imageUrl && !isPanelTaskRunning(panel)).length
+  const { scriptStale, failedError: realFailedError } = resolveStoryboardErrorPresentation(failedError)
 
   const groupOverlayState = useMemo(() => {
     if (!isSubmittingStoryboardTask && !isSelectingCandidate) return null
@@ -136,15 +139,27 @@ export default function StoryboardGroup({
   )
 
   return (
-    <div className={`glass-surface-elevated p-6 relative ${failedError ? 'border-2 border-[var(--glass-stroke-danger)] bg-[var(--glass-danger-ring)]' : ''}`}>
-      {failedError && (
+    <div className={`glass-surface-elevated p-6 relative ${realFailedError ? 'border-2 border-[var(--glass-stroke-danger)] bg-[var(--glass-danger-ring)]' : scriptStale ? 'border border-[var(--film-gold)]/50' : ''}`}>
+      {realFailedError && (
         <StoryboardGroupFailedAlert
-          failedError={failedError}
+          failedError={realFailedError}
           title={`警告 ${t('group.failed')}`}
           closeTitle={t('common.cancel')}
           onClose={onCloseError}
         />
       )}
+
+      {scriptStale ? (
+        <StoryboardGroupStaleAlert
+          title={t('group.scriptStaleTitle')}
+          detail={t('group.scriptStaleDetail')}
+          regenerateLabel={t('group.regenerateText')}
+          dismissLabel={t('group.scriptStaleDismiss')}
+          regenerating={isSubmittingStoryboardTextTask}
+          onRegenerate={onRegenerateText}
+          onDismiss={onCloseError}
+        />
+      ) : null}
 
       {(isSubmittingStoryboardTask || isSelectingCandidate) && (
         <TaskStatusOverlay

@@ -30,6 +30,7 @@ import {
   resolveClipRecordId,
 } from './story-to-script-helpers'
 import { getPromptTemplate, PROMPT_IDS } from '@/lib/prompt-i18n'
+import { getGenrePackPrompt } from '@/lib/genre-packs'
 import { resolveAnalysisModel } from './resolve-analysis-model'
 import { createArtifact, listArtifacts } from '@/lib/run-runtime/service'
 import { assertWorkflowRunActive, withWorkflowRunLease } from '@/lib/run-runtime/workflow-lease'
@@ -421,6 +422,7 @@ export async function handleStoryToScriptTask(job: Job<TaskJobData>) {
                 name: item.name,
                 introduction: item.introduction || '',
               })),
+              genreConstraint: getGenrePackPrompt(novelData.genrePack, job.data.locale),
               promptTemplates: {
                 characterPromptTemplate,
                 locationPromptTemplate,

@@ -337,7 +337,7 @@ export function SettingsModal({
         >
             <div className="glass-surface-modal p-7 w-full max-w-3xl transform transition-all scale-100 max-h-[90vh] flex flex-col">
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-2xl font-bold text-[var(--glass-text-primary)]">{t('title')}</h2>
+                    <h2 className="text-2xl font-medium text-[var(--glass-text-primary)]">{t('title')}</h2>
                     <div className="flex items-center gap-3">
                         <div className={`glass-chip text-xs transition-all duration-300 ${saveStatus === 'saved'
                             ? 'glass-chip-success'
@@ -363,7 +363,7 @@ export function SettingsModal({
                         </button>
                     </div>
                 </div>
-                <p className="text-[12px] text-[var(--glass-text-tertiary)] mb-6">{t('subtitle')}</p>
+                <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mb-6">{t('subtitle')}</p>
                 <div className="space-y-5 flex-1 min-h-0 overflow-y-auto app-scrollbar">
                     <div className="glass-surface-soft p-5 sm:p-6 space-y-4">
                         <h3 className="text-sm font-semibold text-[var(--glass-text-tertiary)]">{t('visualSettings')}</h3>

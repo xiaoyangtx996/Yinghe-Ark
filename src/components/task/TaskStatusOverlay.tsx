@@ -26,9 +26,9 @@ export default function TaskStatusOverlay({ state, className }: TaskStatusOverla
       {state.isError ? (
         <AppIcon name="alertSolid" className="h-7 w-7 text-[var(--glass-tone-danger-fg)]" />
       ) : (
-        <AppIcon name="loader" className="h-7 w-7 animate-spin text-white" />
+        <AppIcon name="loader" className="h-7 w-7 animate-spin text-[var(--glass-text-on-accent)]" />
       )}
-      <span className="mt-2 text-xs text-white">{label}</span>
+      <span className="mt-2 text-xs text-[var(--glass-text-on-accent)]">{label}</span>
     </div>
   )
 }

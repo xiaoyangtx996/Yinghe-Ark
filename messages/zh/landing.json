@@ -1,27 +1,140 @@
 {
-  "title": "waoowaoo",
+  "title": "影核 Ark",
   "subtitle": "AI影视Studio",
   "enterWorkspace": "进入工作区",
   "loading": "加载中...",
   "getStarted": "立即体验",
   "learnMore": "了解更多",
+  "hero": {
+    "eyebrow": "OPEN SOURCE FILM SUITE",
+    "headline": "从剧本到成片",
+    "support": "面向短剧与漫剧的 AI 创作台：解析文本、生成角色与场景、排分镜、配音并导出成片。"
+  },
+  "workflow": {
+    "title": "一条完整制作管线",
+    "subtitle": "按创作顺序推进，每一步都能回看与重跑，而不是一次性黑盒出片。",
+    "steps": {
+      "analyze": {
+        "title": "文本解析",
+        "description": "导入小说或剧本草稿，自动抽出角色、场次、冲突与对白结构。"
+      },
+      "assets": {
+        "title": "角色与场景",
+        "description": "生成可复用的人物与场景资产，后续镜头共用同一套造型与空间。"
+      },
+      "board": {
+        "title": "分镜排镜",
+        "description": "文字转分镜，调整镜头节奏、景别与画面提示词后再生成。"
+      },
+      "produce": {
+        "title": "配音与成片",
+        "description": "多角色配音、镜头视频合成，最终导出可发布的成片。"
+      }
+    }
+  },
   "features": {
-    "title": "释放无限创造力",
-    "subtitle": "全流程 AI 辅助，从剧本到成片",
+    "title": "工作台能力",
+    "subtitle": "覆盖短剧制作里最耗时的几段：一致性资产、可控分镜、配音与导出。",
     "character": {
       "title": "角色工坊",
-      "description": "打造独一无二的动漫角色，保持高度一致性"
+      "description": "人物设定与形象生成，跨镜头保持外貌与服装一致。"
+    },
+    "world": {
+      "title": "场景构建",
+      "description": "按场次生成环境画面，给分镜提供稳定的空间参考。"
     },
     "storyboard": {
       "title": "智能分镜",
-      "description": "文字一键转分镜，精准把控叙事节奏"
+      "description": "从文本排镜头，可改提示词、重跑单镜，不必整集推倒重来。"
     },
-    "world": {
-      "title": "世界构建",
-      "description": "沉浸式场景生成，构建宏大的故事背景"
+    "voice": {
+      "title": "配音成片",
+      "description": "多角色语音合成，与画面合成后导出成片。"
+    },
+    "script": {
+      "title": "剧本分析",
+      "description": "自动识别角色、场景与剧情节点，减少手工拆本。"
+    },
+    "assets": {
+      "title": "资产中心",
+      "description": "角色、场景、道具集中管理，跨项目复用已生成素材。"
+    }
+  },
+  "useCases": {
+    "title": "适合谁用",
+    "subtitle": "面向需要把文字快速推进到可看画面的创作者与小团队。",
+    "items": {
+      "shortDrama": {
+        "title": "短剧预演",
+        "description": "用 AI 先跑通分镜与配音，验证节奏再投入精修。"
+      },
+      "comic": {
+        "title": "漫剧转化",
+        "description": "从小说或大纲拉出角色与分镜，缩短漫剧前期筹备。"
+      },
+      "team": {
+        "title": "小团队协作",
+        "description": "资产与镜头集中在同一工作台，减少素材散落在网盘和聊天里。"
+      }
+    }
+  },
+  "highlights": {
+    "title": "本地可部署，界面中英切换",
+    "items": {
+      "open": {
+        "title": "开源可自建",
+        "description": "支持本地或私有环境部署，密钥与素材留在你自己的基础设施。"
+      },
+      "locale": {
+        "title": "中英双语",
+        "description": "界面一键切换简体中文 / English，方便中外团队共用。"
+      },
+      "iterate": {
+        "title": "可单步重跑",
+        "description": "角色、分镜、配音都能按任务重跑，不必整条流水线推倒。"
+      }
+    }
+  },
+  "cta": {
+    "title": "从第一个项目开始",
+    "subtitle": "注册后即可进入工作区，导入文本试跑解析与分镜。",
+    "primary": "免费注册",
+    "secondary": "已有账号登录"
+  },
+  "pipeline": {
+    "story": "故事",
+    "script": "剧本",
+    "storyboard": "分镜",
+    "output": "成片 · 配音",
+    "previewTitle": "工作台预览",
+    "stages": {
+      "story": {
+        "label": "故事",
+        "hint": "立住人物与冲突",
+        "body": "从文本抽出主角、对手与核心冲突，先定叙事骨架再进资产。",
+        "tiles": ["主角设定", "对手设定", "冲突节点"]
+      },
+      "script": {
+        "label": "剧本",
+        "hint": "结构化场次与对白",
+        "body": "拆成可执行场次：场景、人物进出与对白行，方便后续排镜。",
+        "tiles": ["场次表", "对白行", "场景标注"]
+      },
+      "storyboard": {
+        "label": "分镜",
+        "hint": "镜头节奏与画面",
+        "body": "按镜头生成画面提示，可单独改一镜重跑，不必整集推倒。",
+        "tiles": ["镜头 01", "镜头 02", "镜头 03"]
+      },
+      "output": {
+        "label": "成片",
+        "hint": "配音合成与导出",
+        "body": "多角色配音贴上时间线，合成视频后导出可发布成片。",
+        "tiles": ["角色配音", "镜头合成", "导出成片"]
+      }
     }
   },
   "footer": {
-    "copyright": "2026 waoowaoo AI. All rights reserved."
+    "copyright": "2026 影核 Ark. All rights reserved."
   }
 }

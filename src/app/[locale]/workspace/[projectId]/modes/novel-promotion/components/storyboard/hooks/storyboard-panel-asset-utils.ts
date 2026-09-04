@@ -62,24 +62,43 @@ export function buildDefaultAssetsForClip({
   }
 
   if (clip.location) {
-    const location = locations.find(
-      (item) => item.name.toLowerCase() === clip.location?.toLowerCase(),
-    )
-    if (!location?.images) return assets
+    let locationNames: string[] = []
+    try {
+      const parsed = JSON.parse(clip.location)
+      if (Array.isArray(parsed)) {
+        locationNames = parsed
+          .map((item) => (typeof item === 'string' ? item.trim() : ''))
+          .filter(Boolean)
+      } else if (typeof parsed === 'string' && parsed.trim()) {
+        locationNames = [parsed.trim()]
+      }
+    } catch {
+      locationNames = clip.location
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean)
+    }
 
-    const selectedImage = location.selectedImageId
-      ? location.images.find((image) => image.id === location.selectedImageId)
-      : location.images.find((image) => image.isSelected) ||
-        location.images.find((image) => image.imageUrl) ||
-        location.images[0]
+    for (const locationName of locationNames) {
+      const location = locations.find(
+        (item) => item.name.toLowerCase() === locationName.toLowerCase(),
+      )
+      if (!location?.images) continue
 
-    if (selectedImage?.imageUrl) {
-      assets.push({
-        id: location.id,
-        name: location.name,
-        type: 'location',
-        imageUrl: selectedImage.imageUrl,
-      })
+      const selectedImage = location.selectedImageId
+        ? location.images.find((image) => image.id === location.selectedImageId)
+        : location.images.find((image) => image.isSelected) ||
+          location.images.find((image) => image.imageUrl) ||
+          location.images[0]
+
+      if (selectedImage?.imageUrl) {
+        assets.push({
+          id: location.id,
+          name: location.name,
+          type: 'location',
+          imageUrl: selectedImage.imageUrl,
+        })
+      }
     }
   }
 

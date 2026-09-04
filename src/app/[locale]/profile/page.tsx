@@ -32,7 +32,11 @@ export default function ProfilePage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="glass-page flex min-h-dvh items-center justify-center">
+      <div className="glass-page flex min-h-dvh flex-col items-center justify-center gap-3">
+        <span
+          className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--glass-stroke-strong)] border-t-[var(--film-gold)]"
+          aria-hidden
+        />
         <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
       </div>
     )
@@ -51,8 +55,8 @@ export default function ProfilePage() {
     <div className="glass-page min-h-dvh">
       <Navbar />
       <SecondarySidebar
-        title={tn('railSettings')}
-        description={`${displayName} · ${t('personalAccount')}`}
+        title={t('personalAccount')}
+        description={displayName}
         items={[
           {
             id: 'basic',
@@ -88,10 +92,16 @@ export default function ProfilePage() {
         )}
       />
 
-      <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 pb-4 pt-4 sm:px-6">
+      <main
+        className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 pb-4 pt-4 sm:px-6"
+        aria-labelledby="settings-pane-title"
+      >
         <header className="admin-page-header">
           <div>
-            <h1 className="admin-page-header__title">{paneTitle}</h1>
+            <p className="mb-1 text-[length:var(--glass-font-size-caption)] font-medium uppercase tracking-[0.1em] text-[var(--film-gold)]">
+              {tn('railSettings')}
+            </p>
+            <h1 id="settings-pane-title" className="admin-page-header__title">{paneTitle}</h1>
             <p className="admin-page-header__desc">
               {pane === 'basic'
                 ? t('basicSettingsDesc')

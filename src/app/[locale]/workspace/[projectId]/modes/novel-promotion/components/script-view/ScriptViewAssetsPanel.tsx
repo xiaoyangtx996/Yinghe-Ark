@@ -426,9 +426,9 @@ export default function ScriptViewAssetsPanel({
   }
 
   return (
-    <div className="col-span-12 lg:col-span-4 flex flex-col min-h-[300px] lg:h-full gap-4">
+    <div className="col-span-12 lg:col-span-3 flex flex-col min-h-[300px] lg:h-full gap-4">
       <div className="relative z-20 flex flex-col gap-2 px-2">
-        <h2 className="text-xl font-bold text-[var(--glass-text-primary)] flex items-center gap-2">
+        <h2 className="text-xl font-medium text-[var(--glass-text-primary)] flex items-center gap-2">
           <span className="w-1.5 h-6 bg-[var(--glass-accent-from)] rounded-full" /> {tScript('inSceneAssets')}
         </h2>
         <div className="px-1 pt-2">
@@ -436,7 +436,7 @@ export default function ScriptViewAssetsPanel({
             <button
               onClick={() => setAssetViewMode('all')}
               className={`glass-btn-base px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-all ${assetViewMode === 'all'
-                ? 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-white shadow-none'
+                ? 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-[var(--glass-text-on-accent)] shadow-none'
                 : 'glass-btn-secondary text-[var(--glass-text-secondary)]'
                 }`}
             >
@@ -450,7 +450,7 @@ export default function ScriptViewAssetsPanel({
                   setSelectedClipId(clip.id)
                 }}
                 className={`glass-btn-base px-3 py-1.5 text-xs font-medium rounded-full whitespace-nowrap transition-all ${assetViewMode === clip.id
-                  ? 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-white shadow-none'
+                  ? 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-[var(--glass-text-on-accent)] shadow-none'
                   : 'glass-btn-secondary text-[var(--glass-text-secondary)]'
                   }`}
               >
@@ -461,8 +461,8 @@ export default function ScriptViewAssetsPanel({
         </div>
       </div>
 
-      <div className="relative z-10 flex-1 min-h-0 glass-surface-modal overflow-hidden p-4 pr-3">
-        <div className="flex h-full flex-col gap-6 overflow-y-auto pr-1 app-scrollbar">
+      <div className="relative z-10 flex-1 min-h-0 glass-surface-modal overflow-hidden p-3 pr-2">
+        <div className="flex h-full flex-col gap-5 overflow-y-auto pr-1 app-scrollbar">
           {assetsLoading && characters.length === 0 && locations.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-[var(--glass-text-tertiary)] animate-pulse">
               <TaskStatusInline state={assetsLoadingState} />
@@ -470,8 +470,8 @@ export default function ScriptViewAssetsPanel({
           )}
 
           <div className="relative">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-[var(--glass-text-secondary)] flex items-center gap-2">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-sm font-medium text-[var(--glass-text-secondary)] flex items-center gap-2">
                 {tScript('asset.activeCharacters')} ({characters.filter((c) => activeCharIds.includes(c.id)).reduce((sum, char) => sum + getSelectedAppearances(char).length, 0)})
               </h3>
               <button
@@ -492,7 +492,7 @@ export default function ScriptViewAssetsPanel({
               <div className="shrink-0 text-xs text-[var(--glass-text-tertiary)]">{tCommon('edit')} · {tScript('asset.activeCharacters')}</div>
               <div className="mt-3 flex-1 min-h-0 space-y-4 overflow-y-auto pr-1 app-scrollbar">
                 {isAllClipsMode && (
-                  <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]/40 p-2 text-[11px] text-[var(--glass-text-tertiary)]">
+                  <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]/40 p-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
                     当前为“全部片段”视图，文案要求仅在单片段视图可编辑
                   </div>
                 )}
@@ -501,7 +501,7 @@ export default function ScriptViewAssetsPanel({
                   const sortedAppearances = [...appearances].sort((a, b) => a.appearanceIndex - b.appearanceIndex)
                   return (
                     <div key={c.id} className="space-y-2">
-                      <div className="text-xs font-semibold text-[var(--glass-text-primary)]">{c.name}</div>
+                      <div className="text-xs font-medium text-[var(--glass-text-primary)]">{c.name}</div>
                       <div className="grid grid-cols-3 gap-2">
                         {sortedAppearances.map((appearance) => {
                           const currentAppearanceName = appearance.changeReason || tAssets('character.primary')
@@ -544,7 +544,7 @@ export default function ScriptViewAssetsPanel({
                                   ) : null}
                                 </div>
                                 {isThisAppearanceSelected && (
-                                  <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-white shadow-md">
+                                  <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] shadow-md">
                                     <AppIcon name="checkMicro" className="h-3 w-3" />
                                   </span>
                                 )}
@@ -557,7 +557,7 @@ export default function ScriptViewAssetsPanel({
                                     const value = event.target.value
                                     setPendingAppearanceLabels((prev) => ({ ...prev, [appearanceKey]: value }))
                                   }}
-                                  className="w-full rounded border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-2 py-1 text-xs text-[var(--glass-text-secondary)] outline-none focus:border-[var(--glass-stroke-focus)] disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="w-full rounded border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-2 py-1 text-xs text-[var(--glass-text-secondary)] outline-none focus:border-[var(--glass-stroke-focus)] disabled:cursor-not-allowed disabled:text-[var(--glass-text-disabled)]"
                                 />
                               )}
                             </div>
@@ -579,7 +579,7 @@ export default function ScriptViewAssetsPanel({
                 <button
                   onClick={() => void handleConfirmCharacterSelection()}
                   disabled={isSavingCharacterSelection || !hasCharacterSelectionChanges}
-                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed"
                 >
                   {tCommon('confirm')}
                 </button>
@@ -591,18 +591,19 @@ export default function ScriptViewAssetsPanel({
             {activeCharIds.length === 0 ? (
               <div className="text-center text-[var(--glass-text-tertiary)] text-sm py-4">{tScript('screenplay.noCharacter')}</div>
             ) : (
-              <div className="grid grid-cols-3 gap-3 px-1 py-1">
+              <div className="flex flex-wrap gap-2 px-1 py-1">
                 {characters
                   .filter((c) => activeCharIds.includes(c.id))
                   .flatMap((char) => {
                     const selectedApps = getSelectedAppearances(char)
                     if (selectedApps.length === 0) {
                       return (
-                        <div key={`${char.id}-missing`} className="min-w-0">
+                        <div key={`${char.id}-missing`} className="w-[76px] shrink-0">
                           <SpotlightCharCard
                             char={char}
                             appearance={undefined}
                             isActive={true}
+                            compact
                             onClick={() => { }}
                             onOpenAssetLibrary={onOpenAssetLibrary}
                             onRemove={() => void onUpdateClipAssets('character', 'remove', char.id, tScript('asset.defaultAppearance'))}
@@ -611,11 +612,12 @@ export default function ScriptViewAssetsPanel({
                       )
                     }
                     return selectedApps.map((appearance) => (
-                      <div key={`${char.id}-${appearance.id}`} className="min-w-0">
+                      <div key={`${char.id}-${appearance.id}`} className="w-[76px] shrink-0">
                         <SpotlightCharCard
                           char={char}
                           appearance={appearance}
                           isActive={true}
+                          compact
                           onClick={() => { }}
                           onOpenAssetLibrary={onOpenAssetLibrary}
                           onRemove={() => void onUpdateClipAssets('character', 'remove', char.id, appearance.changeReason || tScript('asset.defaultAppearance'))}
@@ -629,7 +631,7 @@ export default function ScriptViewAssetsPanel({
 
           <div className="relative">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-[var(--glass-text-secondary)]">{tScript('asset.activeLocations')} ({activeLocationIds.length})</h3>
+              <h3 className="text-sm font-medium text-[var(--glass-text-secondary)]">{tScript('asset.activeLocations')} ({activeLocationIds.length})</h3>
               <button
                 ref={locEditorTriggerRef}
                 onClick={() => {
@@ -648,7 +650,7 @@ export default function ScriptViewAssetsPanel({
               <div className="shrink-0 text-xs text-[var(--glass-text-tertiary)]">{tCommon('edit')} · {tScript('asset.activeLocations')}</div>
               <div className="mt-3 flex-1 min-h-0 overflow-y-auto pr-1 app-scrollbar">
                 {isAllClipsMode && (
-                  <div className="mb-3 rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]/40 p-2 text-[11px] text-[var(--glass-text-tertiary)]">
+                  <div className="mb-3 rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]/40 p-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
                     当前为“全部片段”视图，场景文案要求仅在单片段视图可编辑
                   </div>
                 )}
@@ -695,7 +697,7 @@ export default function ScriptViewAssetsPanel({
                             {location.name}
                           </div>
                           {isSelected && (
-                            <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-white shadow-md">
+                            <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] shadow-md">
                               <AppIcon name="checkMicro" className="h-3 w-3" />
                             </span>
                           )}
@@ -708,7 +710,7 @@ export default function ScriptViewAssetsPanel({
                               const value = event.target.value
                               setPendingLocationLabels((prev) => ({ ...prev, [location.id]: value }))
                             }}
-                            className="w-full rounded border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-2 py-1 text-xs text-[var(--glass-text-secondary)] outline-none focus:border-[var(--glass-stroke-focus)] disabled:cursor-not-allowed disabled:opacity-60"
+                            className="w-full rounded border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-2 py-1 text-xs text-[var(--glass-text-secondary)] outline-none focus:border-[var(--glass-stroke-focus)] disabled:cursor-not-allowed disabled:text-[var(--glass-text-disabled)]"
                           />
                         )}
                       </div>
@@ -727,7 +729,7 @@ export default function ScriptViewAssetsPanel({
                 <button
                   onClick={() => void handleConfirmLocationSelection()}
                   disabled={isSavingLocationSelection || !hasLocationSelectionChanges}
-                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed"
                 >
                   {tCommon('confirm')}
                 </button>
@@ -739,9 +741,9 @@ export default function ScriptViewAssetsPanel({
             {activeLocationIds.length === 0 ? (
               <div className="text-center text-[var(--glass-text-tertiary)] text-sm py-4">{tScript('screenplay.noLocation')}</div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 px-1 py-1">
+              <div className="flex flex-wrap gap-2 px-1 py-1">
                 {locations.filter((l) => activeLocationIds.includes(l.id)).map((loc) => (
-                  <div key={loc.id} className="min-w-0">
+                  <div key={loc.id} className="w-[calc(50%-0.25rem)] min-w-[88px] max-w-[120px] shrink-0">
                     <SpotlightLocationCard
                       location={loc}
                       isActive={true}
@@ -758,7 +760,7 @@ export default function ScriptViewAssetsPanel({
           {hasProjectProps ? (
           <div className="relative">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-[var(--glass-text-secondary)]">道具 ({activePropIds.length})</h3>
+              <h3 className="text-sm font-medium text-[var(--glass-text-secondary)]">道具 ({activePropIds.length})</h3>
               <button
                 ref={propEditorTriggerRef}
                 onClick={() => {
@@ -810,7 +812,7 @@ export default function ScriptViewAssetsPanel({
                           {prop.name}
                         </div>
                         {isSelected && (
-                          <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-white shadow-md">
+                          <span className="absolute right-1.5 top-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] shadow-md">
                             <AppIcon name="checkMicro" className="h-3 w-3" />
                           </span>
                         )}
@@ -830,7 +832,7 @@ export default function ScriptViewAssetsPanel({
                 <button
                   onClick={() => void handleConfirmPropSelection()}
                   disabled={isSavingPropSelection || !hasPropSelectionChanges}
-                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                  className="glass-btn-base glass-btn-primary rounded-lg px-3 py-1.5 text-xs disabled:cursor-not-allowed"
                 >
                   {tCommon('confirm')}
                 </button>
@@ -877,7 +879,7 @@ export default function ScriptViewAssetsPanel({
         <button
           onClick={onGenerateStoryboard}
           disabled={isSubmittingStoryboardBuild || clips.length === 0 || !allAssetsHaveImages}
-          className="glass-btn-base glass-btn-primary w-full py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="glass-btn-base glass-btn-primary w-full py-4 text-lg font-medium disabled:cursor-not-allowed transition-all"
         >
           {isSubmittingStoryboardBuild ? tScript('generate.generating') : tScript('generate.startGenerate')}
         </button>

@@ -3,9 +3,85 @@
     "scriptBreakdown": "Script Breakdown",
     "splitCount": "{count} clips split",
     "noClips": "No clips yet, please generate from story view",
+    "eventGraph": {
+        "title": "Story beats",
+        "hint": "Tap · drag to reorder · Earlier/Later · merge with next",
+        "nodeIndex": "Beat {index}",
+        "location": "Location · {name}",
+        "noMeta": "No character/location tags yet",
+        "kind": {
+            "opening": "Opening",
+            "beat": "Beat",
+            "ending": "Payoff"
+        },
+        "moveEarlier": "Earlier",
+        "moveLater": "Later",
+        "moveFailed": "Failed to reorder: {error}",
+        "mergeWithNext": "Merge with next",
+        "merging": "Merging…",
+        "mergeConfirm": "Merge with the next beat into one node? The next beat’s storyboard (if any) will be deleted. The current beat’s storyboard will not auto-update to the merged script.",
+        "mergeFailed": "Merge failed: {error}"
+    },
+    "review": {
+        "title": "Pre-export self-check",
+        "subtitle": "Check items you already verified — hints never block storyboard",
+        "progress": "{checked}/{total}",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "empty": "Self-check appears after script clips are generated",
+        "llmRun": "AI review",
+        "llmRunning": "Reviewing…",
+        "llmNeedEpisode": "Select an episode before running AI review",
+        "llmFailed": "AI review failed: {error}",
+        "llmEmpty": "AI found no major issues — still worth a quick manual check.",
+        "llmFindingsTitle": "AI suggestions",
+        "llmUnavailable": "AI review unavailable",
+        "hints": {
+            "no_clips": "No clips yet — run Story→Script from the story stage first.",
+            "single_clip": "Only one clip: make sure opening pressure and outgoing hook both land here.",
+            "missing_summary": "Some clips lack a summary — add one line on what happens.",
+            "missing_characters": "Some clips have no characters tagged — add who appears.",
+            "missing_location": "Some clips have no location — optional, but helps storyboard."
+        },
+        "gates": {
+            "opening_pressure": {
+                "label": "Does the opening have pressure?",
+                "tip": "Can the audience feel something at stake right away?"
+            },
+            "want_vs_block": {
+                "label": "What does the lead want — and what blocks it?",
+                "tip": "Desire and resistance should both be concrete"
+            },
+            "turn_choice": {
+                "label": "Is the turn caused by the lead's choice?",
+                "tip": "Major turns feel stronger when the protagonist chooses, not only gets rescued"
+            },
+            "local_payoff": {
+                "label": "Is there a local payoff before the hook?",
+                "tip": "Deliver something visible before withholding the next episode"
+            },
+            "next_state": {
+                "label": "What state enters the next episode?",
+                "tip": "Name at least one: relationship, information, cost, or time"
+            },
+            "scene_change": {
+                "label": "Does each clip change something?",
+                "tip": "Info, relationship, ownership, risk, or irreversibility"
+            },
+            "dialogue_want": {
+                "label": "Is dialogue trying to get something?",
+                "tip": "Avoid pure exposition dumps; prefer threat, bargain, withhold, or prove"
+            },
+            "turn_setup": {
+                "label": "Are big turns set up?",
+                "tip": "Coincidence should not carry the main turn alone"
+            }
+        }
+    },
     "segment": {
         "title": "Clip {index}",
-        "selected": "(Selected)"
+        "selected": "(Selected)",
+        "collapsedHint": "Click to expand"
     },
     "inSceneAssets": "In-Scene Assets",
     "currentSelected": "Selected: Clip {number}",

@@ -48,10 +48,10 @@ export function FolderSidebar({
         <div className="w-[220px] flex-shrink-0 border-r border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)]">
             <div className="p-3">
                 <div className="mb-2 flex items-center justify-between px-1">
-                    <h3 className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--glass-text-secondary)]">{t('folders')}</h3>
+                    <h3 className="text-[length:var(--glass-font-size-caption)] font-medium uppercase tracking-[0.1em] text-[var(--glass-text-secondary)]">{t('folders')}</h3>
                     <button
                         onClick={onCreateFolder}
-                        className="glass-btn-base glass-btn-primary flex h-6 w-6 items-center justify-center rounded-[8px]"
+                        className="glass-btn-base glass-btn-primary flex h-6 w-6 items-center justify-center rounded-[var(--glass-radius-sm)]"
                         title={t('newFolder')}
                     >
                         <PlusIcon className="h-4 w-4" />
@@ -63,7 +63,7 @@ export function FolderSidebar({
                     <button
                         onClick={() => onSelectFolder(null)}
                         className={`flex w-full items-center gap-2 border-l-2 px-3 py-2 text-left text-sm transition-colors ${selectedFolderId === null
-                                ? 'border-[var(--film-gold)] bg-[rgba(224,163,106,0.1)] text-[var(--glass-text-primary)]'
+                                ? 'border-[var(--film-gold)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-text-primary)]'
                                 : 'border-transparent text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)]'
                             }`}
                     >
@@ -76,7 +76,7 @@ export function FolderSidebar({
                         <div
                             key={folder.id}
                             className={`group flex items-center gap-2 border-l-2 px-3 py-2 transition-colors ${selectedFolderId === folder.id
-                                    ? 'border-[var(--film-gold)] bg-[rgba(224,163,106,0.1)] text-[var(--glass-text-primary)]'
+                                    ? 'border-[var(--film-gold)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-text-primary)]'
                                     : 'border-transparent text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)]'
                                 }`}
                         >

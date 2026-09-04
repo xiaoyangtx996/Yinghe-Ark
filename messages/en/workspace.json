@@ -33,6 +33,10 @@
   "statsEpisodes": "Episodes",
   "statsImages": "Images",
   "statsVideos": "Videos",
+  "statsEpisodesShort": "{n} ep",
+  "statsPanelsShort": "{n} panels",
+  "statsImagesShort": "{n} images",
+  "statsVideosShort": "{n} videos",
   "noContent": "No content yet",
   "modelNotConfigured": {
     "before": "No models configured yet. Please go to",

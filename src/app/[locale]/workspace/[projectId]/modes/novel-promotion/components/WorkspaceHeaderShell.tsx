@@ -6,6 +6,7 @@ import WorkspaceTopActions from './WorkspaceTopActions'
 import type { NovelPromotionPanel } from '@/types/project'
 import type { CapabilitySelections, ModelCapabilities } from '@/lib/model-config-contract'
 import { resolveEpisodeStageArtifacts } from '@/lib/novel-promotion/stage-readiness'
+import { resolveCapsuleActiveId } from '@/lib/novel-promotion/capsule-active-id'
 
 interface EpisodeSummary {
   id: string
@@ -195,7 +196,7 @@ export default function WorkspaceHeaderShell({
 
       <CapsuleNav
         items={capsuleNavItems}
-        activeId={currentStage}
+        activeId={resolveCapsuleActiveId(currentStage)}
         onItemClick={onStageChange}
         projectId={projectId}
         episodeId={episodeId}

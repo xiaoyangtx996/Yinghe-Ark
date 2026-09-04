@@ -36,6 +36,7 @@ describe('createHomeProjectLaunch', () => {
       storyText: '第一章内容',
       videoRatio: '9:16',
       artStyle: 'american-comic',
+      genrePack: 'romance_mogul',
       episodeName: '第 1 集',
     })
 
@@ -52,6 +53,7 @@ describe('createHomeProjectLaunch', () => {
       body: JSON.stringify({
         videoRatio: '9:16',
         artStyle: 'american-comic',
+        genrePack: 'romance_mogul',
       }),
     })
     expect(apiFetch).toHaveBeenNthCalledWith(3, '/api/novel-promotion/project-1/episodes', {
@@ -88,6 +90,7 @@ describe('createHomeProjectLaunch', () => {
       .mockResolvedValueOnce(buildJsonResponse({
         episode: {},
       }, 201))
+      .mockResolvedValueOnce(buildJsonResponse({ success: true }, 200))
 
     await expect(createHomeProjectLaunch({
       apiFetch,
@@ -97,6 +100,91 @@ describe('createHomeProjectLaunch', () => {
       artStyle: 'american-comic',
       episodeName: '第 1 集',
     })).rejects.toThrow('Episode creation response missing episode id')
+
+    expect(apiFetch).toHaveBeenNthCalledWith(4, '/api/projects/project-1', {
+      method: 'DELETE',
+    })
+  })
+
+  it('deletes the project when config save fails after project creation', async () => {
+    const apiFetch = vi
+      .fn<(
+        input: string,
+        init?: RequestInit,
+      ) => Promise<Response>>()
+      .mockResolvedValueOnce(buildJsonResponse({
+        project: { id: 'project-orphan' },
+      }, 201))
+      .mockResolvedValueOnce(buildJsonResponse({ error: 'bad config' }, 400))
+      .mockResolvedValueOnce(buildJsonResponse({ success: true }, 200))
+
+    await expect(createHomeProjectLaunch({
+      apiFetch,
+      projectName: '孤儿项目',
+      storyText: '第一章内容',
+      videoRatio: '9:16',
+      artStyle: 'american-comic',
+      episodeName: '第 1 集',
+    })).rejects.toThrow(/Failed to save project config|bad config/)
+
+    expect(apiFetch).toHaveBeenCalledTimes(3)
+    expect(apiFetch).toHaveBeenNthCalledWith(3, '/api/projects/project-orphan', {
+      method: 'DELETE',
+    })
+  })
+
+  it('deletes the project when episode creation fails after project creation', async () => {
+    const apiFetch = vi
+      .fn<(
+        input: string,
+        init?: RequestInit,
+      ) => Promise<Response>>()
+      .mockResolvedValueOnce(buildJsonResponse({
+        project: { id: 'project-orphan-2' },
+      }, 201))
+      .mockResolvedValueOnce(buildJsonResponse({ success: true }, 200))
+      .mockResolvedValueOnce(buildJsonResponse({ error: 'episode failed' }, 500))
+      .mockResolvedValueOnce(buildJsonResponse({ success: true }, 200))
+
+    await expect(createHomeProjectLaunch({
+      apiFetch,
+      projectName: '孤儿项目2',
+      storyText: '第一章内容',
+      videoRatio: '9:16',
+      artStyle: 'american-comic',
+      episodeName: '第 1 集',
+    })).rejects.toThrow(/Failed to create first episode|episode failed/)
+
+    expect(apiFetch).toHaveBeenNthCalledWith(4, '/api/projects/project-orphan-2', {
+      method: 'DELETE',
+    })
+  })
+
+  it('still throws the original error when compensation delete fails', async () => {
+    const apiFetch = vi
+      .fn<(
+        input: string,
+        init?: RequestInit,
+      ) => Promise<Response>>()
+      .mockResolvedValueOnce(buildJsonResponse({
+        project: { id: 'project-orphan-3' },
+      }, 201))
+      .mockResolvedValueOnce(buildJsonResponse({ success: true }, 200))
+      .mockResolvedValueOnce(buildJsonResponse({ error: 'episode failed' }, 500))
+      .mockResolvedValueOnce(buildJsonResponse({ error: 'delete failed' }, 500))
+
+    await expect(createHomeProjectLaunch({
+      apiFetch,
+      projectName: '孤儿项目3',
+      storyText: '第一章内容',
+      videoRatio: '9:16',
+      artStyle: 'american-comic',
+      episodeName: '第 1 集',
+    })).rejects.toThrow(/Failed to create first episode|episode failed/)
+
+    expect(apiFetch).toHaveBeenNthCalledWith(4, '/api/projects/project-orphan-3', {
+      method: 'DELETE',
+    })
   })
 })
 

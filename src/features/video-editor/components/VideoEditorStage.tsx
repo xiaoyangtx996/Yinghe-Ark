@@ -117,7 +117,7 @@ export function VideoEditorStage({
 
                 <button
                     onClick={handleSave}
-                    className={`glass-btn-base px-4 py-2 ${isDirty ? 'glass-btn-primary text-white' : 'glass-btn-secondary'}`}
+                    className={`glass-btn-base px-4 py-2 ${isDirty ? 'glass-btn-primary text-[var(--glass-text-on-accent)]' : 'glass-btn-secondary'}`}
                 >
                     {isDirty ? t('editor.toolbar.saveDirty') : t('editor.toolbar.saved')}
                 </button>

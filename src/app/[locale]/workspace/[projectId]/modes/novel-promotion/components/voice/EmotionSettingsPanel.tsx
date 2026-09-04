@@ -65,7 +65,7 @@ export default function EmotionSettingsPanel({
             {/* 情绪强度滑块 */}
             <div>
                 <label className="block text-xs text-[var(--glass-tone-info-fg)] mb-1.5 font-medium">
-                    {t("emotionStrength")}: <span className="font-bold">{strength.toFixed(1)}</span>
+                    {t("emotionStrength")}: <span className="font-medium">{strength.toFixed(1)}</span>
                 </label>
                 <input
                     type="range"
@@ -76,7 +76,7 @@ export default function EmotionSettingsPanel({
                     onChange={(e) => handleStrengthChange(parseFloat(e.target.value))}
                     className="w-full h-2 bg-[var(--glass-tone-info-bg)] rounded-lg appearance-none cursor-pointer accent-[var(--glass-accent-from)]"
                 />
-                <div className="flex justify-between text-[10px] text-[var(--glass-text-tertiary)] mt-1">
+                <div className="flex justify-between text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mt-1">
                     <span>{t("flat")}</span>
                     <span>{t("intense")}</span>
                 </div>
@@ -86,10 +86,10 @@ export default function EmotionSettingsPanel({
             <button
                 onClick={handleGenerate}
                 disabled={isVoiceGenerationRunning}
-                className="w-full py-2 text-sm bg-[var(--glass-tone-success-fg)] text-white rounded-xl hover:bg-[var(--glass-tone-success-fg)] font-medium transition-all shadow-[var(--glass-shadow-sm)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2 text-sm bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] rounded-xl hover:bg-[var(--glass-tone-success-fg)] font-medium transition-all shadow-[var(--glass-shadow-sm)] disabled:cursor-not-allowed"
             >
                 {isVoiceGenerationRunning ? (
-                    <TaskStatusInline state={voiceGenerationState} className="justify-center text-white [&>span]:text-white [&_svg]:text-white" />
+                    <TaskStatusInline state={voiceGenerationState} className="justify-center text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                 ) : t("generateVoice")}
             </button>
         </div>

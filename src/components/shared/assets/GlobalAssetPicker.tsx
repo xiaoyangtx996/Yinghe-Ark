@@ -275,7 +275,7 @@ export default function GlobalAssetPicker({
                 <div className="glass-surface-modal w-[600px] max-h-[80vh] flex flex-col">
                 {/* 头部 */}
                 <div className="flex items-center justify-between px-6 py-4">
-                    <h2 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+                    <h2 className="text-[length:var(--glass-font-size-h3)] font-medium text-[var(--glass-text-primary)]">
                         {type === 'character' ? t('selectCharacter') : type === 'location' ? t('selectLocation') : type === 'prop' ? t('selectProp') : t('selectVoice')}
                     </h2>
                     <button onClick={onClose} className="glass-btn-base glass-btn-soft text-[var(--glass-text-tertiary)]">
@@ -328,7 +328,7 @@ export default function GlobalAssetPicker({
                                         <div
                                             key={char.id}
                                             onClick={() => setSelectedId(char.id)}
-                                            className={`relative cursor-pointer rounded-xl border-2 p-2 transition-all hover:shadow-md ${selectedId === char.id
+                                            className={`relative cursor-pointer rounded-[var(--glass-radius-sm)] border-2 p-2 transition-all hover:shadow-md ${selectedId === char.id
                                                 ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)]'
                                                 : 'border-[var(--glass-stroke-base)] hover:border-[var(--glass-stroke-focus)]'
                                                 }`}
@@ -339,7 +339,7 @@ export default function GlobalAssetPicker({
                                             )}
 
                                             {/* 预览图 */}
-                                            <div className="aspect-[3/2] rounded-lg overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
+                                            <div className="aspect-[3/2] rounded-[var(--glass-radius-sm)] overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
                                                 {charPreview ? (
                                                     <MediaImageWithLoading
                                                         src={charPreview}
@@ -372,7 +372,7 @@ export default function GlobalAssetPicker({
                                         <div
                                             key={loc.id}
                                             onClick={() => setSelectedId(loc.id)}
-                                            className={`relative cursor-pointer rounded-xl border-2 p-2 transition-all hover:shadow-md ${selectedId === loc.id
+                                            className={`relative cursor-pointer rounded-[var(--glass-radius-sm)] border-2 p-2 transition-all hover:shadow-md ${selectedId === loc.id
                                                 ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)]'
                                                 : 'border-[var(--glass-stroke-base)] hover:border-[var(--glass-stroke-focus)]'
                                                 }`}
@@ -383,7 +383,7 @@ export default function GlobalAssetPicker({
                                             )}
 
                                             {/* 预览图 */}
-                                            <div className="aspect-video rounded-lg overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
+                                            <div className="aspect-video rounded-[var(--glass-radius-sm)] overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
                                                 {locPreview ? (
                                                     <MediaImageWithLoading
                                                         src={locPreview}
@@ -419,7 +419,7 @@ export default function GlobalAssetPicker({
                                         <div
                                             key={prop.id}
                                             onClick={() => setSelectedId(prop.id)}
-                                            className={`relative cursor-pointer rounded-xl border-2 p-2 transition-all hover:shadow-md ${selectedId === prop.id
+                                            className={`relative cursor-pointer rounded-[var(--glass-radius-sm)] border-2 p-2 transition-all hover:shadow-md ${selectedId === prop.id
                                                 ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)]'
                                                 : 'border-[var(--glass-stroke-base)] hover:border-[var(--glass-stroke-focus)]'
                                                 }`}
@@ -427,7 +427,7 @@ export default function GlobalAssetPicker({
                                             {selectedId === prop.id && (
                                                 <CheckCircleIcon className="absolute -top-2 -right-2 w-6 h-6 text-[var(--glass-tone-info-fg)] bg-[var(--glass-bg-surface)] rounded-full" />
                                             )}
-                                            <div className="aspect-video rounded-lg overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
+                                            <div className="aspect-video rounded-[var(--glass-radius-sm)] overflow-hidden bg-[var(--glass-bg-muted)] mb-2 relative">
                                                 {propPreview ? (
                                                     <MediaImageWithLoading
                                                         src={propPreview}
@@ -472,7 +472,7 @@ export default function GlobalAssetPicker({
                                             {/* 选中标记 */}
                                             {selectedId === voice.id && (
                                                 <div className="absolute top-2 right-2 w-6 h-6 glass-chip glass-chip-info rounded-full flex items-center justify-center z-10 p-0">
-                                                    <AppIcon name="checkSolid" className="w-4 h-4 text-white" />
+                                                    <AppIcon name="checkSolid" className="w-4 h-4 text-[var(--glass-text-on-accent)]" />
                                                 </div>
                                             )}
 
@@ -536,9 +536,9 @@ export default function GlobalAssetPicker({
                     <button
                         onClick={handleConfirm}
                         disabled={!selectedId || externalLoading}
-                        className="glass-btn-base glass-btn-primary px-4 py-2 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="glass-btn-base glass-btn-primary px-4 py-2 text-sm rounded-[var(--glass-radius-sm)] disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        {externalLoading && <TaskStatusInline state={copyingState} className="text-white [&>span]:sr-only [&_svg]:text-white" />}
+                        {externalLoading && <TaskStatusInline state={copyingState} className="text-[var(--glass-text-on-accent)] [&>span]:sr-only [&_svg]:text-[var(--glass-text-on-accent)]" />}
                         {t('confirmCopy')}
                     </button>
                 </div>

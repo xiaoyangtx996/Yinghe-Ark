@@ -243,6 +243,114 @@ export function useUpdateProjectClip(projectId: string) {
 }
 
 /**
+ * Merge selected clip with the next clip
+ */
+export function useMergeProjectClips(projectId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: { episodeId: string; keepClipId: string }) =>
+      await requestJsonWithError(
+        `/api/novel-promotion/${projectId}/clips/merge`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+        'merge clips failed',
+      ),
+    onSettled: (_data, _error, variables) => {
+      invalidateQueryTemplates(queryClient, [
+        queryKeys.episodeData(projectId, variables.episodeId),
+        queryKeys.projectData(projectId),
+        queryKeys.projectAssets.all(projectId),
+      ])
+    },
+  })
+}
+
+/**
+ * Sync LLM script review (findings only — does not mutate clips)
+ */
+export function useScriptLlmReview(projectId: string) {
+  return useMutation({
+    mutationFn: async (payload: { episodeId: string }) =>
+      await requestJsonWithError<{
+        success?: boolean
+        findings?: Array<{
+          gateId: string | null
+          severity: 'info' | 'warn'
+          title: string
+          detail: string
+          clipIds: string[]
+        }>
+      }>(
+        `/api/novel-promotion/${projectId}/script-review`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+        'script review failed',
+      ),
+  })
+}
+
+/**
+ * Sync LLM storyboard review (findings only — does not mutate panels)
+ */
+export function useStoryboardLlmReview(projectId: string) {
+  return useMutation({
+    mutationFn: async (payload: { episodeId: string }) =>
+      await requestJsonWithError<{
+        success?: boolean
+        findings?: Array<{
+          gateId: string | null
+          severity: 'info' | 'warn'
+          title: string
+          detail: string
+          panelIds: string[]
+        }>
+      }>(
+        `/api/novel-promotion/${projectId}/storyboard-review`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+        'storyboard review failed',
+      ),
+  })
+}
+
+/**
+ * Sync LLM video review (findings only — does not mutate panels)
+ */
+export function useVideoLlmReview(projectId: string) {
+  return useMutation({
+    mutationFn: async (payload: { episodeId: string }) =>
+      await requestJsonWithError<{
+        success?: boolean
+        findings?: Array<{
+          gateId: string | null
+          severity: 'info' | 'warn'
+          title: string
+          detail: string
+          panelIds: string[]
+        }>
+      }>(
+        `/api/novel-promotion/${projectId}/video-review`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+        'video review failed',
+      ),
+  })
+}
+
+/**
  * 下载远程文件 blob（避免组件层直接 fetch）
  */
 export function useDownloadRemoteBlob() {

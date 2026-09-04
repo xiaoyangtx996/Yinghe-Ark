@@ -10,6 +10,19 @@ const nextConfig: NextConfig = {
     'http://192.168.31.218:3000',
     'http://192.168.31.*:3000',
   ],
+  // Hide Next.js dev indicator overlay during visual QA / product screenshots.
+  // React Grab stays opt-in via NEXT_PUBLIC_ENABLE_REACT_GRAB=1.
+  devIndicators: false,
+  // Brand assets use ?v= cache-bust; required for Next 16 localPatterns.
+  images: {
+    localPatterns: [
+      { pathname: '/brand/**' },
+      { pathname: '/logo.png' },
+      { pathname: '/logo-small.png' },
+      { pathname: '/icon.png' },
+      { pathname: '/favicon.png' },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

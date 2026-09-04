@@ -1,0 +1,12 @@
+Hybrid composition notes
+========================
+Mode: Hybrid SVG composition using existing Yinghe Ark brand PNGs (no ImageGen).
+Layout source: assets/readme/source/hero-layout.svg
+Compose script: assets/readme/source/compose_hero.py
+Raster subjects:
+  - public/brand/logo-on-dark.png (primary wordmark)
+  - public/brand/icons/pipe-*.png (pipeline stages)
+  - public/brand/logo-icon-app.png (watermark)
+Published: assets/readme/hero.png
+Palette: Film DI — #14110e / #f7f1ea / #d4a06a / #8f5a28 / #8a7b6c
+Motif: five-stage film pipeline

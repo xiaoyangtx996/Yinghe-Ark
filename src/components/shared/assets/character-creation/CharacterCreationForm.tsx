@@ -219,7 +219,7 @@ export default function CharacterCreationForm({
             <button
               onClick={handleExtractDescription}
               disabled={isExtracting || referenceImagesBase64.length === 0}
-              className="glass-btn-base glass-btn-tone-info w-full px-3 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="glass-btn-base glass-btn-tone-info w-full px-3 py-2 rounded-lg disabled:cursor-not-allowed text-sm"
             >
               {isExtracting ? t('aiDesign.generating') : t('character.extractFirst')}
             </button>
@@ -262,7 +262,7 @@ export default function CharacterCreationForm({
                 <button
                   onClick={handleAiDesign}
                   disabled={isAiDesigning || !aiInstruction.trim()}
-                  className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+                  className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg disabled:cursor-not-allowed text-sm whitespace-nowrap"
                 >
                   {isAiDesigning ? t('aiDesign.generating') : t('aiDesign.generate')}
                 </button>

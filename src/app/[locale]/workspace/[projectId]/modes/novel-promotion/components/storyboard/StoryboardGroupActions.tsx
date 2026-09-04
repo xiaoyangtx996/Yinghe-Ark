@@ -84,7 +84,7 @@ export default function StoryboardGroupActions({
             <>
               <AppIcon name="plus" className="h-3 w-3" />
               <span>{t('group.generateAll')}</span>
-              <span className="px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-white/25 text-white">{pendingCount}</span>
+              <span className="px-1.5 py-0.5 text-[length:var(--glass-font-size-caption)] font-medium rounded-full bg-[color-mix(in_srgb,var(--glass-text-on-accent)_25%,transparent)] text-[var(--glass-text-on-accent)]">{pendingCount}</span>
             </>
           )}
         </GlassButton>

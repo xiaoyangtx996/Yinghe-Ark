@@ -171,7 +171,7 @@ export default function Sidebar({
                         <div className="p-4 border-b border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="font-bold text-[var(--glass-text-primary)] text-sm flex items-center gap-1.5">
+                                    <h3 className="font-medium text-[var(--glass-text-primary)] text-sm flex items-center gap-1.5">
                                         <AppIcon name="monitor" className="w-4 h-4 text-[var(--glass-tone-info-fg)]" />
                                         <span>{t('sidebar.listTitle')}</span>
                                     </h3>
@@ -263,14 +263,14 @@ export default function Sidebar({
                                                         : 'hover:bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)]'
                                                     }`}
                                             >
-                                                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${currentEpisodeId === ep.id && !isGlobalAssetsView ? 'bg-[var(--glass-bg-surface)]/25' : 'bg-[var(--glass-bg-muted)]'
+                                                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${currentEpisodeId === ep.id && !isGlobalAssetsView ? 'bg-[var(--glass-bg-surface)]/25' : 'bg-[var(--glass-bg-muted)]'
                                                     }`}>
                                                     {ep.episodeNumber}
                                                 </span>
                                                 <span className="truncate flex-1">{ep.name}</span>
 
                                                 {/* 操作按钮 */}
-                                                <div className={`flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${currentEpisodeId === ep.id && !isGlobalAssetsView ? 'text-white/80' : 'text-[var(--glass-text-tertiary)]'
+                                                <div className={`flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${currentEpisodeId === ep.id && !isGlobalAssetsView ? 'text-[color-mix(in_srgb,var(--glass-text-on-accent)_80%,transparent)]' : 'text-[var(--glass-text-tertiary)]'
                                                     }`}>
                                                     <button
                                                         type="button"
@@ -326,7 +326,7 @@ export default function Sidebar({
                                         <button
                                             onClick={handleCreate}
                                             disabled={!newEpisodeName.trim()}
-                                            className="glass-btn-base glass-btn-primary flex-1 py-1.5 text-sm rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="glass-btn-base glass-btn-primary flex-1 py-1.5 text-sm rounded-lg disabled:cursor-not-allowed"
                                         >
                                             {t('sidebar.create')}
                                         </button>

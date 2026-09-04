@@ -47,7 +47,7 @@ export function DefaultModelSection({
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)]">
                     <AppIcon name="sparklesAlt" className="w-4 h-4" />
                 </span>
-                <h3 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('defaultModel.title')}</h3>
+                <h3 className="text-sm font-medium text-[var(--glass-text-primary)]">{t('defaultModel.title')}</h3>
             </div>
 
             <p className="mb-4 text-xs text-[var(--glass-text-secondary)]">{t('defaultModel.hint')}</p>

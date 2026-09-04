@@ -6,8 +6,6 @@ import { createPortal } from 'react-dom'
 import { CharacterCard } from './CharacterCard'
 import { LocationCard } from './LocationCard'
 import { VoiceCard } from './VoiceCard'
-import TaskStatusInline from '@/components/task/TaskStatusInline'
-import { resolveTaskPresentationState } from '@/lib/task/presentation'
 import { AppIcon } from '@/components/ui/icons'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { groupAssetsByKind } from '@/lib/assets/grouping'
@@ -101,7 +99,7 @@ function AddAssetDropdown({
             {open && menuPos && createPortal(
                 <div
                     ref={menuRef}
-                    className="fixed z-[9999] min-w-[160px] py-1.5 rounded-xl bg-white dark:bg-[#2c2c2e] shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.08)] border border-[var(--glass-stroke-base)] animate-in fade-in-0 zoom-in-95 duration-150"
+                    className="fixed z-[9999] min-w-[160px] py-1.5 rounded-xl bg-[var(--glass-bg-surface-modal)] shadow-[var(--glass-shadow-md)] border border-[var(--glass-stroke-base)] animate-in fade-in-0 zoom-in-95 duration-150"
                     style={{ top: menuPos.top, right: menuPos.right }}
                 >
                     {menuItems.map((item) => (
@@ -145,14 +143,6 @@ export function AssetGrid({
     onVoiceSelect
 }: AssetGridProps) {
     const t = useTranslations('assetHub')
-    const loadingState = loading
-        ? resolveTaskPresentationState({
-            phase: 'processing',
-            intent: 'generate',
-            resource: 'image',
-            hasOutput: false,
-        })
-        : null
     void _selectedFolderId
 
     const [filter, setFilter] = useState<'all' | 'character' | 'location' | 'prop' | 'voice'>('all')
@@ -255,7 +245,7 @@ export function AssetGrid({
                 <button
                     onClick={() => setPage(type, page - 1)}
                     disabled={page <= 1}
-                    className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:cursor-not-allowed"
                 >
                     {t('pagination.previous')}
                 </button>
@@ -265,7 +255,7 @@ export function AssetGrid({
                 <button
                     onClick={() => setPage(type, page + 1)}
                     disabled={page >= totalPages}
-                    className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:cursor-not-allowed"
                 >
                     {t('pagination.next')}
                 </button>
@@ -275,8 +265,22 @@ export function AssetGrid({
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center py-20">
-                <TaskStatusInline state={loadingState} />
+            <div className="flex-1 min-w-0">
+                <div className="mb-6 flex items-center justify-between gap-3">
+                    <div className="h-9 w-64 max-w-full animate-pulse rounded-lg bg-[var(--glass-bg-muted)]" />
+                    <div className="h-9 w-28 animate-pulse rounded-lg bg-[var(--glass-bg-muted)]" />
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="overflow-hidden rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)]">
+                            <div className="aspect-square animate-pulse bg-[var(--glass-bg-muted)]" />
+                            <div className="space-y-2 p-3">
+                                <div className="h-3.5 w-3/4 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
+                                <div className="h-3 w-1/2 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }
@@ -326,7 +330,7 @@ export function AssetGrid({
                             onClick={onDownloadAll}
                             disabled={isDownloading || isEmpty}
                             title={t('downloadAllTitle')}
-                            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm disabled:cursor-not-allowed"
                         >
                             <AppIcon name={isDownloading ? 'refresh' : 'download'} className={`w-4 h-4 ${isDownloading ? 'animate-spin' : ''}`} />
                             <span>{isDownloading ? t('downloading') : t('downloadAll')}</span>
@@ -343,10 +347,10 @@ export function AssetGrid({
 
             {isEmpty ? (
                 /* 空状态 */
-                <div className="px-4 py-16 text-center">
-                    <PlusIcon className="mx-auto mb-4 h-8 w-8 text-[var(--glass-text-tertiary)]" />
-                    <p className="mb-2 text-[var(--glass-text-secondary)]">{t('emptyState')}</p>
-                    <p className="text-sm text-[var(--glass-text-tertiary)]">{t('emptyStateHint')}</p>
+                <div className="mx-auto max-w-md rounded-[var(--glass-radius-md)] border border-dashed border-[var(--glass-stroke-base)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_55%,transparent)] px-6 py-10 text-center">
+                    <PlusIcon className="mx-auto mb-4 h-8 w-8 text-[var(--glass-text-secondary)]" />
+                    <p className="mb-2 text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">{t('emptyState')}</p>
+                    <p className="mx-auto max-w-sm text-[length:var(--glass-font-size-body)] leading-[var(--glass-line-height-body)] text-[var(--glass-text-secondary)]">{t('emptyStateHint')}</p>
                     <div className="mt-6 flex justify-center">
                         <AddAssetDropdown
                             onAddCharacter={onAddCharacter}
@@ -367,7 +371,7 @@ export function AssetGrid({
                     {/* 角色区块 */}
                     {(filter === 'all' || filter === 'character') && characters.length > 0 && (
                         <section>
-                            <h2 className="text-sm font-semibold text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
+                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
                                 {t('characters')}
                                 <span className="glass-chip glass-chip-neutral px-2 py-0.5">{characters.length}</span>
                             </h2>
@@ -391,7 +395,7 @@ export function AssetGrid({
                     {/* 场景区块 */}
                     {(filter === 'all' || filter === 'location') && locations.length > 0 && (
                         <section>
-                            <h2 className="text-sm font-semibold text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
+                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
                                 {t('locations')}
                                 <span className="glass-chip glass-chip-neutral px-2 py-0.5">{locations.length}</span>
                             </h2>
@@ -412,7 +416,7 @@ export function AssetGrid({
 
                     {(filter === 'all' || filter === 'prop') && props.length > 0 && (
                         <section>
-                            <h2 className="text-sm font-semibold text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
+                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
                                 {t('props')}
                                 <span className="glass-chip glass-chip-neutral px-2 py-0.5">{props.length}</span>
                             </h2>
@@ -435,7 +439,7 @@ export function AssetGrid({
                     {/* 音色区块 */}
                     {(filter === 'all' || filter === 'voice') && voices.length > 0 && (
                         <section>
-                            <h2 className="text-sm font-semibold text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
+                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
                                 {t('voices')}
                                 <span className="glass-chip glass-chip-info px-2 py-0.5">{voices.length}</span>
                             </h2>

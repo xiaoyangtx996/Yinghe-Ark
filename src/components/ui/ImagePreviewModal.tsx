@@ -20,15 +20,17 @@ export default function ImagePreviewModal({ imageUrl, onClose }: ImagePreviewMod
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopPropagation()
         onClose()
       }
     }
 
-    document.addEventListener('keydown', handleEscape)
+    // Capture phase so parent overlays (e.g. asset library) do not also close on Escape.
+    document.addEventListener('keydown', handleEscape, true)
 
     return () => {
       document.body.style.overflow = 'unset'
-      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('keydown', handleEscape, true)
     }
   }, [onClose])
 
@@ -47,7 +49,7 @@ export default function ImagePreviewModal({ imageUrl, onClose }: ImagePreviewMod
         {/* 关闭按钮 */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay)] text-white transition-colors"
+          className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] transition-colors"
         >
           <AppIcon name="close" className="w-6 h-6" />
         </button>
@@ -57,7 +59,7 @@ export default function ImagePreviewModal({ imageUrl, onClose }: ImagePreviewMod
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="absolute top-6 right-20 z-10 px-3 h-10 inline-flex items-center rounded-full bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay)] text-white text-sm transition-colors"
+            className="absolute top-6 right-20 z-10 px-3 h-10 inline-flex items-center rounded-full bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] text-sm transition-colors"
           >
             {t('viewOriginal')}
           </a>

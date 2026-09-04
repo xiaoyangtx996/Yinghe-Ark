@@ -106,7 +106,7 @@ export default function CharacterProfileDialog({
             >
                 {/* 头部 */}
                 <div className="bg-[var(--glass-bg-surface)] border-b border-[var(--glass-stroke-base)] px-6 py-4 flex items-center justify-between shrink-0">
-                    <h2 className="text-xl font-semibold text-[var(--glass-text-primary)]">{t('characterProfile.editDialogTitle', { name: characterName })}</h2>
+                    <h2 className="text-xl font-medium text-[var(--glass-text-primary)]">{t('characterProfile.editDialogTitle', { name: characterName })}</h2>
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-[var(--glass-bg-muted)] rounded-lg transition-colors"
@@ -167,7 +167,7 @@ export default function CharacterProfileDialog({
                                 placeholder={t('characterProfile.addTagPlaceholder')}
                                 className="flex-1 px-3 py-2 border border-[var(--glass-stroke-strong)] rounded-lg"
                             />
-                            <button onClick={addTag} className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)]">
+                            <button onClick={addTag} className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)]">
                                 {t("common.add")}
                             </button>
                         </div>
@@ -211,7 +211,7 @@ export default function CharacterProfileDialog({
                                 placeholder={t('characterProfile.colorPlaceholder')}
                                 className="flex-1 px-3 py-2 border border-[var(--glass-stroke-strong)] rounded-lg"
                             />
-                            <button onClick={addColor} className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)]">
+                            <button onClick={addColor} className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)]">
                                 {t("common.add")}
                             </button>
                         </div>
@@ -253,7 +253,7 @@ export default function CharacterProfileDialog({
                                 placeholder={t('characterProfile.keywordsPlaceholder')}
                                 className="flex-1 px-3 py-2 border border-[var(--glass-stroke-strong)] rounded-lg"
                             />
-                            <button onClick={addKeyword} className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)]">
+                            <button onClick={addKeyword} className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)]">
                                 {t("common.add")}
                             </button>
                         </div>
@@ -265,16 +265,16 @@ export default function CharacterProfileDialog({
                     <button
                         onClick={onClose}
                         disabled={isSaving}
-                        className="px-6 py-2 border border-[var(--glass-stroke-strong)] rounded-lg hover:bg-[var(--glass-bg-muted)] transition-colors disabled:opacity-50"
+                        className="px-6 py-2 border border-[var(--glass-stroke-strong)] rounded-lg hover:bg-[var(--glass-bg-muted)] transition-colors"
                     >
                         {t("common.cancel")}
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={isSaving}
-                        className="px-6 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors disabled:opacity-50 flex items-center gap-2"
+                        className="px-6 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)] transition-colors flex items-center gap-2"
                     >
-                        {isSaving && <TaskStatusInline state={savingState} className="text-white [&>span]:sr-only [&_svg]:text-white" />}
+                        {isSaving && <TaskStatusInline state={savingState} className="text-[var(--glass-text-on-accent)] [&>span]:sr-only [&_svg]:text-[var(--glass-text-on-accent)]" />}
                         {t('characterProfile.confirmAndGenerate')}
                     </button>
                 </div>

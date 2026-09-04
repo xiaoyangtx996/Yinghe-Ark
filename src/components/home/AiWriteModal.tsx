@@ -49,20 +49,20 @@ export default function AiWriteModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* 模态框容器 */}
-        <div className="glass-surface-modal rounded-2xl p-6 space-y-5">
+        <div className="glass-surface-modal space-y-5 rounded-[var(--glass-radius-xl)] p-6">
           {/* 头部 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
-                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)]"
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]"
               >
                 <AppIcon name="sparkles" className="h-5 w-5 text-[var(--film-gold)]" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">
+                <h3 className="text-[length:var(--glass-font-size-h3)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">
                   {t('modalTitle')}
                 </h3>
-                <p className="text-xs text-[var(--glass-text-tertiary)]">
+                <p className="text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
                   {t('modalSubtitle')}
                 </p>
               </div>
@@ -78,14 +78,14 @@ export default function AiWriteModal({
 
           {/* 输入区域 */}
           <div>
-            <label className="text-sm font-medium text-[var(--glass-text-secondary)] mb-2 block">
+            <label className="mb-2 block text-sm font-medium text-[var(--glass-text-secondary)]">
               {t('inputLabel')}
             </label>
             <textarea
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               placeholder={t('placeholder')}
-              className="glass-textarea-base app-scrollbar h-36 px-4 py-3 text-sm resize-none placeholder:text-[var(--glass-text-tertiary)]"
+              className="glass-textarea-base app-scrollbar h-36 resize-none px-4 py-3 text-sm placeholder:text-[var(--glass-placeholder)]"
               disabled={loading}
               autoFocus
             />
@@ -93,8 +93,7 @@ export default function AiWriteModal({
 
           {/* 提示文案 */}
           <div
-            className="rounded-[8px] px-3 py-2 text-xs leading-relaxed text-[var(--glass-text-tertiary)]"
-            style={{ background: 'rgba(224,163,106,0.08)', border: '1px solid rgba(224,163,106,0.2)' }}
+            className="rounded-[var(--glass-radius-sm)] border border-[var(--glass-stroke-warning)] bg-[var(--glass-tone-warning-bg)] px-3 py-2 text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-tone-warning-fg)]"
           >
             {t('hint')}
           </div>
@@ -104,14 +103,14 @@ export default function AiWriteModal({
             <button
               onClick={handleClose}
               disabled={loading}
-              className="flex-1 rounded-[10px] py-2.5 text-sm text-[var(--glass-text-tertiary)] transition-colors hover:text-[var(--glass-text-secondary)]"
+              className="glass-btn-base glass-btn-ghost flex-1 py-2.5 text-sm"
             >
               {t('cancel')}
             </button>
             <button
               onClick={handleStart}
               disabled={!promptText.trim() || loading}
-              className="glass-btn-base glass-btn-primary flex flex-1 items-center justify-center gap-2 py-3 text-sm font-semibold disabled:opacity-50"
+              className="glass-btn-base glass-btn-primary glass-btn-comfortable flex flex-1 items-center justify-center gap-2 text-sm disabled:pointer-events-none"
             >
               <AppIcon name="sparkles" className="h-4 w-4" />
               <span>{loading ? '...' : t('startAiWrite')}</span>

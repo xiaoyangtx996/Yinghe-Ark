@@ -61,7 +61,7 @@ export default function ImageSectionCandidateMode({
         sizes="(max-width: 768px) 100vw, 33vw"
       />
 
-      <div className="absolute bottom-2 left-2 right-2 glass-surface-soft border border-[var(--glass-stroke-base)] p-2 rounded-xl">
+      <div className="absolute bottom-2 left-2 right-2 glass-surface-soft p-2 rounded-xl shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex gap-1">
             {validCandidates.map((url, idx) => (
@@ -100,7 +100,7 @@ export default function ImageSectionCandidateMode({
             <button
               onClick={() => onCancelCandidate(panelId)}
               disabled={isConfirming}
-              className="glass-btn-base glass-btn-secondary px-2 py-1 text-xs rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              className="glass-btn-base glass-btn-secondary px-2 py-1 text-xs rounded disabled:cursor-not-allowed"
             >
               取消候选
             </button>
@@ -121,10 +121,10 @@ export default function ImageSectionCandidateMode({
                 }
               }}
               disabled={isConfirming}
-              className="glass-btn-base glass-btn-primary flex items-center gap-1 rounded px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              className="glass-btn-base glass-btn-primary flex items-center gap-1 rounded px-2 py-1 text-xs disabled:cursor-not-allowed"
             >
               {isConfirming ? (
-                <TaskStatusInline state={confirmingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={confirmingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 t('common.confirm')
               )}

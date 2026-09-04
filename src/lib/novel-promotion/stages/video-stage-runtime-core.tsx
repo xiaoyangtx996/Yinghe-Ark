@@ -21,6 +21,7 @@ import ImagePreviewModal from '@/components/ui/ImagePreviewModal'
 import { ModelCapabilityDropdown } from '@/components/ui/config-modals/ModelCapabilityDropdown'
 import VideoTimelinePanel from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/video-stage/VideoTimelinePanel'
 import VideoRenderPanel from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/video-stage/VideoRenderPanel'
+import VideoReviewChecklist from '@/app/[locale]/workspace/[projectId]/modes/novel-promotion/components/video-stage/VideoReviewChecklist'
 import type { VideoStageShellProps } from './video-stage-runtime/types'
 import {
   type EffectiveVideoCapabilityDefinition,
@@ -574,6 +575,18 @@ export function useVideoStageRuntime({
         savePrompt={savePrompt}
       />
 
+      <VideoReviewChecklist
+        projectId={projectId}
+        episodeId={episodeId}
+        panels={projectedPanels.map((panel) => ({
+          panelId: panel.panelId,
+          imageUrl: panel.imageUrl,
+          videoUrl: panel.videoUrl,
+          videoPrompt: panel.textPanel?.video_prompt || panel.firstLastFramePrompt,
+          videoErrorMessage: panel.videoErrorMessage || panel.lipSyncErrorMessage,
+        }))}
+      />
+
       {isBatchConfigOpen && (
         <div
           className="fixed inset-0 z-[120] glass-overlay flex items-center justify-center p-4"
@@ -619,7 +632,7 @@ export function useVideoStageRuntime({
                 type="button"
                 onClick={() => { void handleConfirmBatchGenerate() }}
                 disabled={!canSubmitBatchGenerate || isConfirming}
-                className="glass-btn-base glass-btn-primary px-4 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="glass-btn-base glass-btn-primary px-4 py-2 text-sm font-medium disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isConfirming ? (
                   <>

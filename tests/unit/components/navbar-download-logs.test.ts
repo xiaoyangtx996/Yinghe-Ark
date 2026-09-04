@@ -21,10 +21,6 @@ vi.mock('@/components/LanguageSwitcher', () => ({
   default: () => createElement('div', null, 'LanguageSwitcher'),
 }))
 
-vi.mock('@/components/AboutModal', () => ({
-  default: () => null,
-}))
-
 vi.mock('@/i18n/navigation', () => ({
   usePathname: () => '/home',
   Link: ({
@@ -55,7 +51,7 @@ const messages = {
     railSettings: '设置',
   },
   common: {
-    appName: 'waoowaoo',
+    appName: 'Yinghe Ark',
     betaVersion: 'Beta v{version}',
     about: {
       title: '关于',

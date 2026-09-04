@@ -165,40 +165,32 @@ export function ProviderAdvancedFields({
   const shouldShowVideoHint = shouldShowOpenAICompatVideoHint(provider.id, currentType)
 
   return useTabbedLayout ? (
-    <div className="space-y-2.5 p-3">
-      <SegmentedControl
-        aria-label={t('modelTypeTabs')}
-        options={visibleTypes.map((type) => ({
-          value: type,
-          label: <><TypeIcon type={type} className="h-3.5 w-3.5" /><span>{typeLabel(type, t)}</span></>,
-        }))}
-        value={currentType ?? visibleTypes[0]}
-        onChange={(val) => setActiveType(val as ProviderCardModelType)}
-      />
-
-      {currentType && (
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2 text-[12px] font-semibold text-[var(--glass-text-primary)]">
-            <TypeIcon type={currentType} className="h-3 w-3" />
-            <span>{typeLabel(currentType, t)}</span>
-            <span className="rounded-full bg-[var(--glass-tone-neutral-bg)] px-1.5 py-0.5 text-[11px] font-semibold text-[var(--glass-tone-neutral-fg)]">
-              {currentModels.length}
-            </span>
-          </div>
-          {shouldShowAddButton && (
-            <button
-              onClick={() => state.setShowAddForm(currentType)}
-              className="glass-btn-base glass-btn-soft px-2 py-1 text-[12px] font-medium"
-            >
-              <AppIcon name="plus" className="h-3.5 w-3.5" />
-              {t('add')}
-            </button>
-          )}
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <SegmentedControl
+            aria-label={t('modelTypeTabs')}
+            options={visibleTypes.map((type) => ({
+              value: type,
+              label: <><TypeIcon type={type} className="h-3.5 w-3.5" /><span>{typeLabel(type, t)}</span></>,
+            }))}
+            value={currentType ?? visibleTypes[0]}
+            onChange={(val) => setActiveType(val as ProviderCardModelType)}
+          />
         </div>
-      )}
+        {currentType && shouldShowAddButton ? (
+          <button
+            onClick={() => state.setShowAddForm(currentType)}
+            className="glass-btn-base glass-btn-ghost shrink-0 border border-[var(--glass-stroke-base)] px-2.5 py-1 text-[length:var(--glass-font-size-caption)] font-medium"
+          >
+            <AppIcon name="plus" className="h-3.5 w-3.5" />
+            {t('add')}
+          </button>
+        ) : null}
+      </div>
 
       {currentType && state.showAddForm === currentType && addableModelTypes.has(currentType) && (
-        <div className="glass-surface-soft rounded-xl p-3">
+        <div className="admin-tile space-y-2.5">
           <div className="mb-2.5 flex items-center gap-2">
             <input
               type="text"
@@ -207,7 +199,7 @@ export function ProviderAdvancedFields({
                 state.setNewModel({ ...state.newModel, name: event.target.value })
               }
               placeholder={t('modelDisplayName')}
-              className="glass-input-base px-3 py-1.5 text-[12px]"
+              className="glass-input-base px-3 py-1.5 text-[length:var(--glass-font-size-caption)]"
               autoFocus
             />
             <button
@@ -227,17 +219,17 @@ export function ProviderAdvancedFields({
                 state.setNewModel({ ...state.newModel, modelId: event.target.value })
               }
               placeholder={t('modelActualId')}
-              className={`glass-input-base flex-1 px-3 py-1.5 text-[12px] font-mono ${currentType === 'video' && state.batchMode && provider.id === 'ark' ? 'rounded-r-none' : ''}`}
+              className={`glass-input-base flex-1 px-3 py-1.5 text-[length:var(--glass-font-size-caption)] font-mono ${currentType === 'video' && state.batchMode && provider.id === 'ark' ? 'rounded-r-none' : ''}`}
             />
             {currentType === 'video' && state.batchMode && provider.id === 'ark' && (
-              <span className="rounded-r-lg bg-[var(--glass-bg-muted)] px-2 py-1.5 font-mono text-[12px] text-[var(--glass-text-secondary)]">
+              <span className="rounded-r-lg bg-[var(--glass-bg-muted)] px-2 py-1.5 font-mono text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">
                 -batch
               </span>
             )}
             <button
               onClick={() => state.handleAddModel(currentType)}
               disabled={state.isModelSavePending}
-              className="glass-btn-base glass-btn-primary px-3 py-1.5 text-[12px] font-medium"
+              className="glass-btn-base glass-btn-primary px-3 py-1.5 text-[length:var(--glass-font-size-caption)] font-medium"
             >
               {state.isModelSavePending ? t('saving') : t('save')}
             </button>
@@ -270,12 +262,12 @@ export function ProviderAdvancedFields({
         </div>
       )}
 
-      <div className="rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] p-2">
-        <div className="app-scrollbar h-[280px] overflow-y-auto pr-1">
+      <div className="admin-tile admin-provider-card__model-list flex min-h-0 flex-1 flex-col p-2">
+        <div className="app-scrollbar admin-provider-card__model-scroll min-h-0 flex-1 overflow-y-auto pr-1">
           <div className="space-y-1.5">
             {currentModels.length === 0 ? (
               <div className="admin-empty py-10">
-                <p className="admin-empty__title text-[13px]">{t('noModelsForProvider')}</p>
+                <p className="admin-empty__title text-[length:var(--glass-font-size-body)]">{t('noModelsForProvider')}</p>
               </div>
             ) : (
               currentModels.map((model, index) => (
@@ -296,14 +288,14 @@ export function ProviderAdvancedFields({
       </div>
     </div>
   ) : (
-    <div className="p-3">
+    <div>
       {state.showAddForm === null ? (
-        <div className="text-center">
-          <p className="mb-3 text-[12px] text-[var(--glass-text-secondary)]">{t('noModelsForProvider')}</p>
-          <div className="flex items-center justify-center">
+        <div className="admin-empty py-10">
+          <p className="admin-empty__title">{t('noModelsForProvider')}</p>
+          <div className="mt-4 flex items-center justify-center">
             <button
               onClick={() => state.setShowAddForm(defaultAddType)}
-              className="glass-btn-base glass-btn-soft px-3 py-1.5 text-[12px]"
+              className="glass-btn-base glass-btn-soft px-3 py-1.5 text-[length:var(--glass-font-size-caption)]"
             >
               <AppIcon name="plus" className="h-3.5 w-3.5" />
               {t('addModel')}
@@ -311,7 +303,7 @@ export function ProviderAdvancedFields({
           </div>
         </div>
       ) : (
-        <div className="glass-surface-soft rounded-xl p-3">
+        <div className="admin-tile space-y-2.5">
           <div className="mb-2.5 flex items-center gap-2">
             <input
               type="text"
@@ -320,7 +312,7 @@ export function ProviderAdvancedFields({
                 state.setNewModel({ ...state.newModel, name: event.target.value })
               }
               placeholder={t('modelDisplayName')}
-              className="glass-input-base px-3 py-1.5 text-[12px]"
+              className="glass-input-base px-3 py-1.5 text-[length:var(--glass-font-size-caption)]"
               autoFocus
             />
             <button
@@ -340,12 +332,12 @@ export function ProviderAdvancedFields({
                 state.setNewModel({ ...state.newModel, modelId: event.target.value })
               }
               placeholder={t('modelActualId')}
-              className="glass-input-base flex-1 px-3 py-1.5 text-[12px] font-mono"
+              className="glass-input-base flex-1 px-3 py-1.5 text-[length:var(--glass-font-size-caption)] font-mono"
             />
             <button
               onClick={() => state.showAddForm && state.handleAddModel(state.showAddForm)}
               disabled={state.isModelSavePending}
-              className="glass-btn-base glass-btn-primary px-3 py-1.5 text-[12px] font-medium"
+              className="glass-btn-base glass-btn-primary px-3 py-1.5 text-[length:var(--glass-font-size-caption)] font-medium"
             >
               {state.isModelSavePending ? t('saving') : t('save')}
             </button>
@@ -388,10 +380,8 @@ function ModelRow({
 
   return (
     <div
-      className={`group flex items-center justify-between gap-2 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] px-3 py-2.5 transition-colors hover:border-[var(--glass-stroke-strong)] ${
-        model.enabled
-          ? 'bg-[var(--glass-bg-surface-strong)]'
-          : 'bg-[color-mix(in_srgb,var(--glass-bg-surface-strong)_70%,var(--glass-bg-muted))]'
+      className={`admin-tile flex items-center justify-between gap-2 !p-3 transition-colors ${
+        model.enabled ? '' : 'opacity-85'
       }`}
     >
       {state.editingModelId === model.modelKey ? (
@@ -403,7 +393,7 @@ function ModelRow({
               onChange={(event) =>
                 state.setEditModel({ ...state.editModel, name: event.target.value })
               }
-              className="glass-input-base w-full px-3 py-1.5 text-[12px]"
+              className="glass-input-base w-full px-3 py-1.5 text-[length:var(--glass-font-size-caption)]"
               placeholder={t('modelDisplayName')}
             />
             <input
@@ -412,7 +402,7 @@ function ModelRow({
               onChange={(event) =>
                 state.setEditModel({ ...state.editModel, modelId: event.target.value })
               }
-              className="glass-input-base w-full px-3 py-1.5 text-[12px] font-mono"
+              className="glass-input-base w-full px-3 py-1.5 text-[length:var(--glass-font-size-caption)] font-mono"
               placeholder={t('modelActualId')}
             />
             {hasPriceText && (
@@ -446,7 +436,7 @@ function ModelRow({
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <div className="flex flex-wrap items-center gap-2">
               <span
-                className={`text-[13px] font-semibold leading-snug ${
+                className={`text-[length:var(--glass-font-size-body)] font-medium leading-snug ${
                   model.enabled
                     ? 'text-[var(--glass-text-primary)]'
                     : 'text-[var(--glass-text-secondary)]'
@@ -455,17 +445,17 @@ function ModelRow({
                 {model.name}
               </span>
               {state.isDefaultModel(model) && model.enabled && (
-                <span className="shrink-0 rounded-md bg-[var(--glass-text-primary)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--glass-bg-surface-strong)]">
+                <span className="shrink-0 rounded-md bg-[var(--glass-text-primary)] px-1.5 py-0.5 text-[length:var(--glass-font-size-caption)] leading-none text-[var(--glass-bg-surface-strong)]">
                   {t('default')}
                 </span>
               )}
               {hasPriceText && (
-                <span className="shrink-0 text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                <span className="shrink-0 text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">
                   {priceText}
                 </span>
               )}
             </div>
-            <span className="break-all font-mono text-[12px] leading-snug text-[var(--glass-text-secondary)]">
+            <span className="break-all font-mono text-[length:var(--glass-font-size-caption)] leading-snug text-[var(--glass-text-secondary)]">
               {model.modelId}
             </span>
           </div>

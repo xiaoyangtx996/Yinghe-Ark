@@ -17,7 +17,19 @@
     "currentStage": "当前阶段",
     "outputTitle": "AI 实时输出 · {stage}",
     "waitingModelOutput": "等待模型输出...",
-    "reasoningNotProvided": "该步骤未返回思考过程"
+    "reasoningNotProvided": "该步骤未返回思考过程",
+    "viewSimple": "简单",
+    "viewDetailed": "详细",
+    "activityTitle": "过程说明",
+    "outputHiddenHint": "简单视图隐藏模型原文；需要时可切换到「详细」"
+  },
+  "activityFeed": {
+    "empty": "等待步骤开始…",
+    "layer": {
+      "understand": "理解",
+      "craft": "创作",
+      "check": "核对"
+    }
   },
   "runtime": {
     "waitingExecution": "等待执行",
@@ -126,6 +138,15 @@
     "scriptToStoryboardSubtitle": "Script To Storyboard V2",
     "stop": "停止",
     "minimize": "最小化"
+  },
+  "pipelineChecklist": {
+    "title": "创作进度",
+    "subtitle": "按阶段查看，而不是只有转圈",
+    "story": "故事输入",
+    "script": "剧本拆解",
+    "storyboard": "分镜画面",
+    "video": "视频合成",
+    "voice": "配音"
   },
   "streamStep": {
     "analyzeCharacters": "角色分析",

@@ -24,6 +24,7 @@ import {
     useSSE,
 } from '@/lib/query/hooks'
 import { queryKeys } from '@/lib/query/keys'
+import BrandOpIcon from '@/components/brand/BrandOpIcon'
 import { AppIcon } from '@/components/ui/icons'
 import { Link } from '@/i18n/navigation'
 import { useImageGenerationCount } from '@/lib/image-generation/use-image-generation-count'
@@ -463,10 +464,11 @@ export default function AssetHubPage() {
                             setEditingFolder(null)
                             setShowFolderModal(true)
                         }}
-                        className="glass-btn-base glass-btn-primary flex h-7 w-7 items-center justify-center rounded-[8px]"
+                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
                         title={t('newFolder')}
+                        aria-label={t('newFolder')}
                     >
-                        <AppIcon name="plus" className="h-4 w-4" />
+                        <BrandOpIcon name="new" size={32} />
                     </button>
                 )}
                 items={[
@@ -516,15 +518,18 @@ export default function AssetHubPage() {
 
             <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 py-4 sm:px-6">
                 <header className="mb-4 border-b border-[var(--glass-stroke-base)] pb-4">
-                    <h1 className="font-display text-[22px] font-semibold text-[var(--glass-text-primary)]">
+                    <h1 className="font-display text-[length:var(--glass-font-size-h2)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">
                         {selectedFolderId
                             ? (folders.find((folder) => folder.id === selectedFolderId)?.name || t('title'))
                             : t('allAssets')}
                     </h1>
-                    <p className="mt-2 flex items-center gap-1 text-xs text-[var(--glass-text-tertiary)]">
-                        <AppIcon name="info" className="h-3.5 w-3.5" />
+                    <p className="mt-2 max-w-3xl text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-secondary)]">
+                        {t('scopeHint')}
+                    </p>
+                    <p className="mt-2 flex flex-wrap items-center gap-1 text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
+                        <AppIcon name="info" className="h-3.5 w-3.5 shrink-0" />
                         {t('modelHint')}
-                        <Link href={{ pathname: '/profile' }} className="text-[var(--film-gold)] hover:underline">{t('modelHintLink')}</Link>
+                        <Link href={{ pathname: '/profile' }} className="text-[var(--film-gold)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--glass-stroke-focus)]">{t('modelHintLink')}</Link>
                         {t('modelHintSuffix')}
                     </p>
                 </header>

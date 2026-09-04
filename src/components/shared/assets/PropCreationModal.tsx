@@ -89,7 +89,7 @@ export function PropCreationModal({
       <div className="glass-surface-modal max-w-2xl w-full max-h-[85vh] flex flex-col">
         <div className="p-6 overflow-y-auto flex-1">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+            <h3 className="text-[length:var(--glass-font-size-h3)] font-medium text-[var(--glass-text-primary)]">
               {t('prop.title')}
             </h3>
             <button
@@ -110,7 +110,7 @@ export function PropCreationModal({
                 value={name}
                 onChange={(event) => setName(event.target.value)}
                 placeholder={t('prop.namePlaceholder')}
-                className="glass-input-base w-full px-3 py-2 text-sm"
+                className="glass-input-base w-full px-3 py-2 text-[length:var(--glass-font-size-body)]"
               />
             </div>
 
@@ -122,7 +122,7 @@ export function PropCreationModal({
                 value={summary}
                 onChange={(event) => setSummary(event.target.value)}
                 placeholder={t('prop.summaryPlaceholder')}
-                className="glass-textarea-base w-full h-36 px-3 py-2 text-sm resize-none"
+                className="glass-textarea-base w-full h-36 px-3 py-2 text-[length:var(--glass-font-size-body)] resize-none"
               />
             </div>
 
@@ -134,16 +134,16 @@ export function PropCreationModal({
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder={t('prop.descriptionPlaceholder')}
-                className="glass-textarea-base w-full h-36 px-3 py-2 text-sm resize-none"
+                className="glass-textarea-base w-full h-36 px-3 py-2 text-[length:var(--glass-font-size-body)] resize-none"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 justify-end p-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-b-xl flex-shrink-0">
+        <div className="flex gap-3 justify-end p-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-b-[var(--glass-radius-sm)] flex-shrink-0">
           <button
             onClick={onClose}
-            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm"
+            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-[var(--glass-radius-sm)] text-[length:var(--glass-font-size-body)]"
             disabled={isSubmitting}
           >
             {t('common.cancel')}
@@ -151,10 +151,10 @@ export function PropCreationModal({
           <button
             onClick={() => void handleSubmit(false)}
             disabled={isSubmitting || !name.trim() || !summary.trim() || !description.trim()}
-            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm flex items-center gap-2"
+            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-[var(--glass-radius-sm)] disabled:cursor-not-allowed text-[length:var(--glass-font-size-body)] flex items-center gap-2"
           >
             {isSubmitting ? (
-              <TaskStatusInline state={submittingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+              <TaskStatusInline state={submittingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
             ) : (
               <span>{mode === 'asset-hub' ? t('common.addOnlyToAssetHubProp') : t('common.addOnlyProp')}</span>
             )}
@@ -169,8 +169,8 @@ export function PropCreationModal({
             actionDisabled={!name.trim() || !summary.trim() || !description.trim()}
             selectDisabled={isSubmitting}
             ariaLabel={t('common.selectGenerateCount')}
-            className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-            selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
+            className="glass-btn-base glass-btn-primary flex items-center justify-center gap-1 rounded-[var(--glass-radius-sm)] px-4 py-2 text-[length:var(--glass-font-size-body)] disabled:cursor-not-allowed"
+            selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-body)] font-medium text-current outline-none cursor-pointer leading-none transition-colors"
           />
         </div>
       </div>

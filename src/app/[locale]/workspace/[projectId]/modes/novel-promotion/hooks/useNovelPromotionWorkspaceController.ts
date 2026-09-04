@@ -21,6 +21,7 @@ import { buildWorkspaceControllerViewModel } from './workspace-controller-view-m
 import type { NovelPromotionWorkspaceProps } from '../types'
 import { useRouter } from '@/i18n/navigation'
 import { resolveEpisodeStageArtifacts } from '@/lib/novel-promotion/stage-readiness'
+import { usePipelineMediaTaskActivity } from './usePipelineMediaTaskActivity'
 
 export function useNovelPromotionWorkspaceController({
   project,
@@ -111,6 +112,11 @@ export function useNovelPromotionWorkspaceController({
     t,
   })
 
+  const { videoRunning, voiceRunning, mediaRunning } = usePipelineMediaTaskActivity(
+    projectId,
+    episodeId,
+  )
+
   const isStartingStoryToScript = rebuildState.pendingActionType === 'storyToScript'
   const isStartingScriptToStoryboard = rebuildState.pendingActionType === 'scriptToStoryboard'
   const isStoryToScriptRunning =
@@ -131,7 +137,8 @@ export function useNovelPromotionWorkspaceController({
     execution.isConfirmingAssets ||
     execution.isTransitioning ||
     isStoryToScriptRunning ||
-    isScriptToStoryboardRunning
+    isScriptToStoryboardRunning ||
+    mediaRunning
 
   useWorkspaceAutoRun({
     searchParams,
@@ -159,6 +166,7 @@ export function useNovelPromotionWorkspaceController({
     isStartingScriptToStoryboard,
     videoRatio: projectSnapshot.videoRatio,
     artStyle: projectSnapshot.artStyle,
+    genrePack: projectSnapshot.genrePack,
     videoModel: projectSnapshot.videoModel,
     capabilityOverrides: projectSnapshot.capabilityOverrides,
     userVideoModels: userModels.userVideoModels || [],
@@ -221,6 +229,8 @@ export function useNovelPromotionWorkspaceController({
     runStoryToScriptFlow: execution.runStoryToScriptFlow,
     runScriptToStoryboardFlow: execution.runScriptToStoryboardFlow,
     showCreatingToast: execution.showCreatingToast,
+    videoRunning,
+    voiceRunning,
   }
 
   const videoState = {

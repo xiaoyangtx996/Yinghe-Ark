@@ -1,4 +1,60 @@
 {
+    "review": {
+        "title": "Pre-video self-check",
+        "subtitle": "Check items you verified — hints never block video generation",
+        "progress": "{checked}/{total}",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "empty": "Self-check appears after storyboards are generated",
+        "llmRun": "AI review",
+        "llmRunning": "Reviewing…",
+        "llmNeedEpisode": "Select an episode before running AI review",
+        "llmFailed": "AI review failed: {error}",
+        "llmEmpty": "AI found no major issues — still worth a quick manual check.",
+        "llmFindingsTitle": "AI suggestions",
+        "hints": {
+            "no_storyboards": "No storyboard groups yet — generate from the script stage first.",
+            "no_panels": "Storyboard groups have no panels — add or regenerate.",
+            "panels_missing_image": "Some panels have no image — fill key frames before video.",
+            "panels_missing_description": "Some panels lack description/prompt — add what this shot shows.",
+            "panels_missing_characters": "Some panels have no characters tagged — bind assets when possible.",
+            "single_panel": "Only one panel — confirm action, reaction, and information are covered."
+        },
+        "gates": {
+            "shot_purpose": {
+                "label": "What changes by the end of this shot?",
+                "tip": "Audience should gain info or feel pressure/relationship shift — not decoration only"
+            },
+            "covers_action": {
+                "label": "Are action / dialogue / reaction covered?",
+                "tip": "Do not drop source moves or listener reactions"
+            },
+            "still_keyframe": {
+                "label": "Can the frame exist in one instant?",
+                "tip": "Avoid first/then/finally in still descriptions"
+            },
+            "continuity": {
+                "label": "Do adjacent shots stay continuous?",
+                "tip": "Facing, held props, injury/emotion should not jump without reason"
+            },
+            "shot_variety": {
+                "label": "Is there shot variety?",
+                "tip": "Do not use the same close-up/push for every emotion"
+            },
+            "asset_bound": {
+                "label": "Are characters/locations bound to assets?",
+                "tip": "Avoid anonymous extras for key roles"
+            },
+            "no_invented_fact": {
+                "label": "Any invented story facts?",
+                "tip": "Do not add grabs, injuries, relationship flips, or new lines"
+            },
+            "images_ready": {
+                "label": "Key images ready before video?",
+                "tip": "Check frames and descriptions before generating video"
+            }
+        }
+    },
     "phases": {
         "planning": "Planning Storyboard",
         "cinematography": "Cinematography Design",
@@ -44,6 +100,9 @@
         "regenerating": "Regenerating...",
         "aiAnalyzing": "AI Analyzing...",
         "regenerateText": "Regenerate Text",
+        "scriptStaleTitle": "Script merged — storyboard may be outdated",
+        "scriptStaleDetail": "This storyboard still reflects the pre-merge script. Regenerate text before images/video.",
+        "scriptStaleDismiss": "Later",
         "generateMissingImages": "Generate all panels without images in this segment",
         "segment": "Segment",
         "addAtStart": "Add new storyboard group at the start",

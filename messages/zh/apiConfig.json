@@ -125,6 +125,7 @@
   "testing": "正在测试...",
   "testPassed": "连接测试通过",
   "testFailed": "连接测试未通过",
+  "testPartial": "部分能力可用",
   "testWarning": "建议检查配置后再添加",
   "testRetry": "重试",
   "addAnyway": "仍然添加",

@@ -65,7 +65,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
           <div className="mb-2 flex flex-wrap gap-1.5">
             {showsIncomingLinkBadge && (
               <span
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${showsOutgoingLinkBadge
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[length:var(--glass-font-size-caption)] font-medium ${showsOutgoingLinkBadge
                     ? 'bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]'
                     : 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)] border border-[var(--glass-stroke-base)]'
                   }`}
@@ -75,7 +75,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
               </span>
             )}
             {showsOutgoingLinkBadge && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[length:var(--glass-font-size-caption)] font-medium bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]">
                 <AppIcon name="link" className="w-3 h-3" />
                 {t('firstLastFrame.asFirstFrameFor', { number: panelIndex + 2 })}
               </span>
@@ -105,8 +105,8 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                   placeholder={t('promptModal.placeholder')}
                 />
                 <div className="absolute right-1 top-1 flex flex-col gap-1">
-                  <button onClick={promptEditor.handleSave} disabled={promptEditor.isSavingPrompt} className="px-2 py-1 text-[10px] bg-[var(--glass-accent-from)] text-white rounded">{promptEditor.isSavingPrompt ? '...' : t('panelCard.save')}</button>
-                  <button onClick={promptEditor.handleCancelEdit} disabled={promptEditor.isSavingPrompt} className="px-2 py-1 text-[10px] bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)] rounded">{t('panelCard.cancel')}</button>
+                  <button onClick={promptEditor.handleSave} disabled={promptEditor.isSavingPrompt} className="px-2 py-1 text-[length:var(--glass-font-size-caption)] bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded">{promptEditor.isSavingPrompt ? '...' : t('panelCard.save')}</button>
+                  <button onClick={promptEditor.handleCancelEdit} disabled={promptEditor.isSavingPrompt} className="px-2 py-1 text-[length:var(--glass-font-size-caption)] bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)] rounded">{t('panelCard.cancel')}</button>
                 </div>
               </div>
             ) : (
@@ -136,7 +136,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                       || !layout.flModel
                       || layout.flMissingCapabilityFields.length > 0
                     }
-                    className="flex-shrink-0 min-w-[120px] py-2 px-3 text-sm font-medium rounded-lg shadow-sm transition-all disabled:opacity-50 bg-[var(--glass-accent-from)] text-white"
+                    className="flex-shrink-0 min-w-[120px] py-2 px-3 text-sm font-medium rounded-lg shadow-sm transition-all bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)]"
                   >
                     {isFirstLastFrameGenerated ? t('firstLastFrame.generated') : taskStatus.isVideoTaskRunning ? taskStatus.taskRunningVideoLabel : t('firstLastFrame.generate')}
                   </button>
@@ -178,7 +178,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                       || !videoModel.selectedModel
                       || videoModel.missingCapabilityFields.length > 0
                     }
-                    className="flex-shrink-0 min-w-[90px] py-2 px-3 text-sm font-medium rounded-lg shadow-sm transition-all disabled:opacity-50 bg-[var(--glass-accent-from)] text-white"
+                    className="flex-shrink-0 min-w-[90px] py-2 px-3 text-sm font-medium rounded-lg shadow-sm transition-all bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)]"
                   >
                     {panel.videoUrl ? t('stage.hasSynced') : taskStatus.isVideoTaskRunning ? taskStatus.taskRunningVideoLabel : t('panelCard.generateVideo')}
                   </button>
@@ -209,24 +209,24 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                       <button
                         onClick={computed.canLipSync ? lipSync.handleStartLipSync : undefined}
                         disabled={!computed.canLipSync || taskStatus.isLipSyncTaskRunning || lipSync.executingLipSync}
-                        className="flex-1 py-1.5 text-xs rounded-lg transition-all flex items-center justify-center gap-1 bg-[var(--glass-accent-from)] text-white disabled:opacity-50"
+                        className="flex-1 py-1.5 text-xs rounded-lg transition-all flex items-center justify-center gap-1 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)]"
                       >
                         {taskStatus.isLipSyncTaskRunning || lipSync.executingLipSync ? (
-                          <TaskStatusInline state={taskStatus.lipSyncInlineState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                          <TaskStatusInline state={taskStatus.lipSyncInlineState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                         ) : (
                           <>{t('panelCard.lipSync')}</>
                         )}
                       </button>
 
                       {(taskStatus.isLipSyncTaskRunning || panel.lipSyncVideoUrl) && voiceManager.hasMatchedAudio && (
-                        <button onClick={lipSync.handleStartLipSync} disabled={lipSync.executingLipSync} className="flex-shrink-0 px-3 py-1.5 text-xs rounded-lg bg-[var(--glass-tone-warning-fg)] text-white">
+                        <button onClick={lipSync.handleStartLipSync} disabled={lipSync.executingLipSync} className="flex-shrink-0 px-3 py-1.5 text-xs rounded-lg bg-[var(--glass-tone-warning-fg)] text-[var(--glass-text-on-accent)]">
                           {t('panelCard.redo')}
                         </button>
                       )}
                     </div>
 
                     {voiceManager.audioGenerateError && (
-                      <div className="mt-1 p-1.5 bg-[var(--glass-tone-danger-bg)] border border-[var(--glass-stroke-danger)] rounded text-[10px] text-[var(--glass-tone-danger-fg)]">
+                      <div className="mt-1 p-1.5 bg-[var(--glass-tone-danger-bg)] border border-[var(--glass-stroke-danger)] rounded text-[length:var(--glass-font-size-caption)] text-[var(--glass-tone-danger-fg)]">
                         {voiceManager.audioGenerateError}
                       </div>
                     )}
@@ -240,7 +240,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                             : null
 
                           return (
-                            <div key={voiceLine.id} className="flex items-start gap-1.5 p-1.5 bg-[var(--glass-bg-muted)] rounded text-[10px]">
+                            <div key={voiceLine.id} className="flex items-start gap-1.5 p-1.5 bg-[var(--glass-bg-muted)] rounded text-[length:var(--glass-font-size-caption)]">
                               {voiceLine.audioUrl ? (
                                 <button
                                   onClick={(event) => {
@@ -259,11 +259,11 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                                     void voiceManager.handleGenerateAudio(voiceLine)
                                   }}
                                   disabled={isVoiceTaskRunning}
-                                  className="flex-shrink-0 px-1.5 py-0.5 bg-[var(--glass-accent-from)] text-white rounded disabled:opacity-50"
+                                  className="flex-shrink-0 px-1.5 py-0.5 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded"
                                   title={t('panelCard.generateAudio')}
                                 >
                                   {isVoiceTaskRunning ? (
-                                    <TaskStatusInline state={voiceAudioRunningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                    <TaskStatusInline state={voiceAudioRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                                   ) : (
                                     tCommon('generate')
                                   )}

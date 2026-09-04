@@ -33,6 +33,10 @@
   "statsEpisodes": "章节数",
   "statsImages": "图片数",
   "statsVideos": "视频数",
+  "statsEpisodesShort": "{n} 集",
+  "statsPanelsShort": "{n} 镜",
+  "statsImagesShort": "{n} 图",
+  "statsVideosShort": "{n} 视频",
   "noContent": "暂无内容",
   "modelNotConfigured": {
     "before": "检测到尚未配置模型，请先前往",

@@ -27,7 +27,7 @@ export default function VoiceCreationForm({ runtime, children }: VoiceCreationFo
       <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]">
         <div className="flex items-center gap-2">
           <AppIcon name="mic" className="w-5 h-5 text-[var(--glass-tone-info-fg)]" />
-          <h2 className="font-semibold text-[var(--glass-text-primary)]">{tHub('addVoice')}</h2>
+          <h2 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">{tHub('addVoice')}</h2>
         </div>
         <button onClick={handleClose} className="glass-btn-base glass-btn-soft p-1 text-[var(--glass-text-tertiary)]">
           <AppIcon name="close" className="w-5 h-5" />

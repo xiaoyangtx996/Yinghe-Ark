@@ -199,7 +199,7 @@ export default function VoiceDesignDialogBase({
                 <button
                   onClick={handleConfirmSelection}
                   disabled={selectedIndex === null}
-                  className="glass-btn-base glass-btn-tone-success flex-1 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                  className="glass-btn-base glass-btn-tone-success flex-1 py-2 rounded-lg disabled:cursor-not-allowed text-sm font-medium"
                 >
                   {tv('confirmUse')}
                 </button>

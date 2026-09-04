@@ -213,7 +213,7 @@ export function SystemLogsPanel() {
                 {t('closePreview')}
               </button>
             </div>
-            <pre className="min-h-0 flex-1 overflow-auto bg-[var(--glass-bg-canvas)] p-4 font-mono text-[12px] leading-relaxed text-[var(--glass-text-secondary)] whitespace-pre-wrap break-words">
+            <pre className="min-h-0 flex-1 overflow-auto bg-[var(--glass-bg-canvas)] p-4 font-mono text-[length:var(--glass-font-size-caption)] leading-relaxed text-[var(--glass-text-secondary)] whitespace-pre-wrap break-words">
               {preview.content || '—'}
             </pre>
           </div>

@@ -1,4 +1,60 @@
 {
+  "review": {
+    "title": "导出前自检",
+    "subtitle": "勾选表示已核对；建议不阻断生成视频",
+    "progress": "{checked}/{total}",
+    "collapse": "收起",
+    "expand": "展开",
+    "empty": "有分镜镜头后，这里会出现自检清单",
+    "llmRun": "AI 核对",
+    "llmRunning": "核对中…",
+    "llmNeedEpisode": "请先选择剧集后再核对",
+    "llmFailed": "AI 核对失败：{error}",
+    "llmEmpty": "AI 未发现明显问题，可再人工勾选确认。",
+    "llmFindingsTitle": "AI 建议",
+    "hints": {
+      "no_panels": "还没有可生成的镜头，先回分镜页补齐。",
+      "single_panel": "目前只有 1 个镜头：确认动作与对白是否都盖住。",
+      "panels_missing_image": "有镜头缺静帧图：建议先补图再生成视频。",
+      "panels_missing_video": "有镜头还没成片：可批量生成或逐镜生成。",
+      "panels_missing_prompt": "有镜头缺视频提示词：补一句「这一镜怎么动」。",
+      "panels_failed": "有镜头生成失败：先看错误信息再重试。"
+    },
+    "gates": {
+      "motion_from_frame": {
+        "label": "运动是从静帧出发吗？",
+        "tip": "别另起一套造型；应接着分镜画面动起来"
+      },
+      "action_small_clear": {
+        "label": "动作短而清楚吗？",
+        "tip": "一次少做几件事，表演变化要看得出原因"
+      },
+      "no_new_story": {
+        "label": "有没有凭空加剧情？",
+        "tip": "别擅自加抓取、换关系、新台词"
+      },
+      "dialogue_match": {
+        "label": "对白归属对吗？",
+        "tip": "说话人、口型需求与内心独白别混"
+      },
+      "cut_continuity": {
+        "label": "相邻成片衔接顺吗？",
+        "tip": "朝向、手中道具、情绪别无故硬切"
+      },
+      "prompt_focused": {
+        "label": "提示词在说「怎么动」吗？",
+        "tip": "别把整本人物设定再贴一遍"
+      },
+      "audio_intent": {
+        "label": "音效/配音意图清楚吗？",
+        "tip": "需要配音或口型时，先确认音频就绪"
+      },
+      "playback_ready": {
+        "label": "关键镜头能连播了吗？",
+        "tip": "失败的已重试，再考虑导出/进编辑"
+      }
+    }
+  },
   "panelCard": {
     "play": "播放",
     "pause": "暂停",

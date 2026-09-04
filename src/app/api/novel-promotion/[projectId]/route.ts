@@ -4,6 +4,7 @@ import { logProjectAction } from '@/lib/logging/semantic'
 import { requireProjectAuthLight, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
 import { isArtStyleValue } from '@/lib/constants'
+import { isGenrePackId } from '@/lib/genre-packs'
 import { attachMediaFieldsToProject } from '@/lib/media/attach'
 import {
   parseModelKeyStrict,
@@ -130,6 +131,27 @@ function validateArtStyleField(value: unknown): string {
     })
   }
   return artStyle
+}
+
+function validateGenrePackField(value: unknown): string | null {
+  if (value === null || value === '') return null
+  if (typeof value !== 'string') {
+    throw new ApiError('INVALID_PARAMS', {
+      code: 'INVALID_GENRE_PACK',
+      field: 'genrePack',
+      message: 'genrePack must be a supported value',
+    })
+  }
+  const genrePack = value.trim()
+  if (!genrePack) return null
+  if (!isGenrePackId(genrePack)) {
+    throw new ApiError('INVALID_PARAMS', {
+      code: 'INVALID_GENRE_PACK',
+      field: 'genrePack',
+      message: 'genrePack must be a supported value',
+    })
+  }
+  return genrePack
 }
 
 function getNextProjectModelMap(
@@ -294,6 +316,7 @@ export const PATCH = apiHandler(async (
   const allowedProjectFields = [
     'analysisModel', 'characterModel', 'locationModel', 'storyboardModel',
     'editModel', 'videoModel', 'audioModel', 'videoRatio', 'artStyle',
+    'genrePack',
     'ttsRate', 'lipSyncEnabled', 'lipSyncMode', 'capabilityOverrides',
   ] as const
 
@@ -307,6 +330,11 @@ export const PATCH = apiHandler(async (
 
     if (field === 'artStyle') {
       updateData[field] = validateArtStyleField(body[field])
+      continue
+    }
+
+    if (field === 'genrePack') {
+      updateData[field] = validateGenrePackField(body[field])
       continue
     }
 

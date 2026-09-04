@@ -77,15 +77,15 @@ export function SecondarySidebar({
         aria-label={title}
       >
         <div className="theater-secondary__header">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h2 className="theater-secondary__title">{title}</h2>
+          <div className="flex min-w-0 items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h2 className="theater-secondary__title truncate">{title}</h2>
               {description ? (
                 <p className="theater-secondary__desc">{description}</p>
               ) : null}
             </div>
             {headerAction ? (
-              <div className="shrink-0 pt-0.5">{headerAction}</div>
+              <div className="relative z-10 shrink-0">{headerAction}</div>
             ) : null}
           </div>
         </div>

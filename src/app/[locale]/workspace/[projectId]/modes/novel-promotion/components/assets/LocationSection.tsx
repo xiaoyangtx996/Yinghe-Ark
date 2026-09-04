@@ -78,7 +78,7 @@ export default function LocationSection({
                     <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]">
                         <AppIcon name="imageLandscape" className="h-5 w-5" />
                     </span>
-                    <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">
+                    <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">
                         {assetType === 'prop' ? t('stage.propAssets') : t("stage.locationAssets")}
                     </h3>
                     <span className="text-sm text-[var(--glass-text-tertiary)] bg-[var(--glass-bg-muted)]/50 px-2 py-1 rounded-lg">

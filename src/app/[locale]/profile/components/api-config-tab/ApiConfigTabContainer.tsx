@@ -17,6 +17,7 @@ import { ApiConfigProviderList } from './ApiConfigProviderList'
 import { DefaultModelCards } from './DefaultModelCards'
 import { useApiConfigFilters } from './hooks/useApiConfigFilters'
 import { AppIcon } from '@/components/ui/icons'
+import { redactSensitiveText } from '@/lib/user-api/vendor-probe-summary'
 
 type TestStepStatus = 'pass' | 'fail' | 'skip'
 interface TestStep {
@@ -265,7 +266,7 @@ export function ApiConfigTabContainer({
 
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <ApiConfigToolbar
         title={t('title')}
         saveStatus={saveStatus}
@@ -371,7 +372,7 @@ export function ApiConfigTabContainer({
         <div className="space-y-3">
           <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400">
             <AppIcon name="alert" className="w-4 h-4 shrink-0 mt-0.5" />
-            <span className="text-[12px] leading-relaxed">{t('customProviderTip')}</span>
+            <span className="text-[length:var(--glass-font-size-caption)] leading-relaxed">{t('customProviderTip')}</span>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-medium text-[var(--glass-text-primary)]">
@@ -492,17 +493,17 @@ export function ApiConfigTabContainer({
                         {stepLabel}
                       </span>
                       {step.model && (
-                        <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--glass-text-secondary)]">
+                        <span className="rounded bg-[var(--glass-bg-surface)] px-1.5 py-0.5 font-mono text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">
                           {step.model}
                         </span>
                       )}
                     </div>
-                    <p className={`pl-5 text-[12px] ${step.status === 'fail' ? 'text-[var(--glass-tone-danger-fg)]' : 'text-[var(--glass-text-secondary)]'}`}>
-                      {step.message}
+                    <p className={`pl-5 text-[length:var(--glass-font-size-caption)] ${step.status === 'fail' ? 'text-[var(--glass-tone-danger-fg)]' : 'text-[var(--glass-text-secondary)]'}`}>
+                      {redactSensitiveText(step.message)}
                     </p>
                     {step.detail && (
-                      <p className="pl-5 text-[12px] text-[var(--glass-text-secondary)] break-all line-clamp-3">
-                        {step.detail}
+                      <p className="pl-5 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)] break-all line-clamp-3">
+                        {redactSensitiveText(step.detail)}
                       </p>
                     )}
                   </div>
@@ -510,14 +511,14 @@ export function ApiConfigTabContainer({
               })}
 
               {testStatus === 'failed' && (
-                <div className="flex items-start gap-2 rounded-lg bg-[var(--glass-tone-warning-bg)] px-2.5 py-2 text-[12px] text-[var(--glass-tone-warning-fg)]">
+                <div className="flex items-start gap-2 rounded-lg bg-[var(--glass-tone-warning-bg)] px-2.5 py-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-tone-warning-fg)]">
                   <span className="mt-0.5 shrink-0">⚠</span>
                   <span>{t('testWarning')}</span>
                 </div>
               )}
 
               {testStatus === 'passed' && (
-                <div className="flex items-center gap-2 rounded-lg bg-[var(--glass-tone-success-bg)] px-2.5 py-2 text-[12px] text-[var(--glass-tone-success-fg)]">
+                <div className="flex items-center gap-2 rounded-lg bg-[var(--glass-tone-success-bg)] px-2.5 py-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-tone-success-fg)]">
                   <AppIcon name="check" className="h-3.5 w-3.5" />
                   {t('testPassed')}
                 </div>

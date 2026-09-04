@@ -1,4 +1,60 @@
 {
+    "review": {
+        "title": "出镜前自检",
+        "subtitle": "勾选表示已核对；建议不阻断生成视频",
+        "progress": "{checked}/{total}",
+        "collapse": "收起",
+        "expand": "展开",
+        "empty": "生成分镜后，这里会出现自检清单",
+        "llmRun": "AI 核对",
+        "llmRunning": "核对中…",
+        "llmNeedEpisode": "请先选择剧集后再核对",
+        "llmFailed": "AI 核对失败：{error}",
+        "llmEmpty": "AI 未发现明显问题，可再人工勾选确认。",
+        "llmFindingsTitle": "AI 建议",
+        "hints": {
+            "no_storyboards": "还没有分镜组，先从剧本页生成分镜。",
+            "no_panels": "分镜组里没有镜头，先补充或重新生成。",
+            "panels_missing_image": "有镜头还没出图：建议先补齐关键画面再进视频。",
+            "panels_missing_description": "有镜头缺少画面描述/提示词：补一句「这一镜看见什么」。",
+            "panels_missing_characters": "有镜头未标角色：绑上人物资产更稳。",
+            "single_panel": "目前只有 1 个镜头：确认动作、反应与信息是否都盖住了。"
+        },
+        "gates": {
+            "shot_purpose": {
+                "label": "这一镜结束时多了什么？",
+                "tip": "观众是否多知道一点、压力或关系是否变一点；别只为了好看"
+            },
+            "covers_action": {
+                "label": "动作/对白/反应盖住了吗？",
+                "tip": "源里的关键动作与人物反应别丢；有说话也要有听者反应"
+            },
+            "still_keyframe": {
+                "label": "画面是一瞬间能站住吗？",
+                "tip": "描述里避免「先…再…最后…」；静帧应是一个可定格的瞬间"
+            },
+            "continuity": {
+                "label": "相邻镜头连贯吗？",
+                "tip": "朝向、手中道具、伤情/情绪别无故跳变"
+            },
+            "shot_variety": {
+                "label": "镜头有变化吗？",
+                "tip": "别每个情绪都用同一种特写+推进"
+            },
+            "asset_bound": {
+                "label": "人物/场景绑到资产了吗？",
+                "tip": "避免匿名路人；关键角色应对上资产库形象"
+            },
+            "no_invented_fact": {
+                "label": "有没有凭空加剧情？",
+                "tip": "镜头别擅自加抓伤、换关系、新台词"
+            },
+            "images_ready": {
+                "label": "关键镜头图齐了再出视频？",
+                "tip": "先核对图与描述，再点生成视频更省返工"
+            }
+        }
+    },
     "phases": {
         "planning": "规划分镜",
         "cinematography": "设计摄影",
@@ -44,6 +100,9 @@
         "regenerating": "重新生成中...",
         "aiAnalyzing": "AI 分析中...",
         "regenerateText": "重新生成文字",
+        "scriptStaleTitle": "剧本已合并，分镜可能过期",
+        "scriptStaleDetail": "当前分镜仍对应合并前的剧本内容。建议重新生成文字后再出图/视频。",
+        "scriptStaleDismiss": "稍后处理",
         "generateMissingImages": "生成该片段所有未有图片的镜头",
         "segment": "片段",
         "addAtStart": "在开头添加新分镜组",

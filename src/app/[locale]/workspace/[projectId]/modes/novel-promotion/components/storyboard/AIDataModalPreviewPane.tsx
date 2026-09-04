@@ -80,7 +80,7 @@ export default function AIDataModalPreviewPane({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        <pre className="text-[11px] font-mono leading-relaxed text-[var(--glass-text-secondary)] whitespace-pre-wrap break-all">
+        <pre className="text-[length:var(--glass-font-size-caption)] font-mono leading-relaxed text-[var(--glass-text-secondary)] whitespace-pre-wrap break-all">
           {JSON.stringify(previewJson, null, 2)}
         </pre>
       </div>

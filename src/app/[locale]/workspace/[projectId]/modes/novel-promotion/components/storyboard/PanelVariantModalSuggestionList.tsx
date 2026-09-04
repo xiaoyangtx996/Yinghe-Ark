@@ -79,7 +79,7 @@ export default function PanelVariantModalSuggestionList({
               </div>
               <button
                 disabled={isSubmittingVariantTask}
-                className={`glass-btn-base px-3 py-1 text-xs rounded-lg ${isSubmittingVariantTask && selectedVariantId === suggestion.id ? 'glass-btn-soft text-[var(--glass-text-tertiary)]' : 'glass-btn-primary text-white'}`}
+                className={`glass-btn-base px-3 py-1 text-xs rounded-lg ${isSubmittingVariantTask && selectedVariantId === suggestion.id ? 'glass-btn-soft text-[var(--glass-text-tertiary)]' : 'glass-btn-primary text-[var(--glass-text-on-accent)]'}`}
               >
                 {isSubmittingVariantTask && selectedVariantId === suggestion.id ? (
                   <TaskStatusInline

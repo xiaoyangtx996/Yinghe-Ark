@@ -1,27 +1,28 @@
 'use client'
 
-import { useState } from "react"
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import Navbar from "@/components/Navbar"
-import PasswordStrengthIndicator from "@/components/auth/PasswordStrengthIndicator"
+import Navbar from '@/components/Navbar'
+import BrandLogo from '@/components/brand/BrandLogo'
+import PasswordStrengthIndicator from '@/components/auth/PasswordStrengthIndicator'
 import { apiFetch } from '@/lib/api-fetch'
 import { Link, useRouter } from '@/i18n/navigation'
 
 export default function SignUp() {
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [name, setName] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const router = useRouter()
   const t = useTranslations('auth')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError("")
-    setSuccess("")
+    setError('')
+    setSuccess('')
 
     if (password !== confirmPassword) {
       setError(t('passwordMismatch'))
@@ -36,10 +37,10 @@ export default function SignUp() {
     }
 
     try {
-      const response = await apiFetch("/api/auth/register", {
-        method: "POST",
+      const response = await apiFetch('/api/auth/register', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name,
@@ -65,111 +66,98 @@ export default function SignUp() {
   }
 
   return (
-    <div className="glass-page min-h-dvh">
+    <div className="auth-apple glass-page min-h-dvh">
       <Navbar />
-      <div
-        className="flex items-center justify-center px-4 py-12"
-        style={{
-          background:
-            'radial-gradient(ellipse at 50% 0%, rgba(224,163,106,.08), transparent 45%)',
-        }}
-      >
-        <div className="w-full max-w-[400px]">
-          <div className="glass-surface p-7 sm:p-8">
-            <div className="mb-6">
-              <h1 className="font-display text-[28px] font-semibold text-[var(--glass-text-primary)]">
-                {t('createAccount')}
-              </h1>
-              <p className="mt-1.5 text-sm text-[var(--glass-text-secondary)]">{t('joinPlatform')}</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="name" className="glass-field-label mb-2 block text-xs font-medium text-[var(--glass-text-secondary)]">
-                  {t('phoneNumber')}
-                </label>
-                <input
-                  id="name"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="glass-input-base w-full px-3 py-2.5"
-                  placeholder={t('phoneNumberPlaceholder')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="glass-field-label mb-2 block text-xs font-medium text-[var(--glass-text-secondary)]">
-                  {t('password')}
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="glass-input-base w-full px-3 py-2.5"
-                  placeholder={t('passwordMinPlaceholder')}
-                />
-                <PasswordStrengthIndicator password={password} />
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="glass-field-label mb-2 block text-xs font-medium text-[var(--glass-text-secondary)]">
-                  {t('confirmPassword')}
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="glass-input-base w-full px-3 py-2.5"
-                  placeholder={t('confirmPasswordPlaceholder')}
-                />
-              </div>
-
-              {error && (
-                <div className="rounded-[8px] border border-[color:color-mix(in_srgb,var(--glass-tone-danger-fg)_22%,transparent)] bg-[var(--glass-tone-danger-bg)] px-4 py-3 text-sm text-[var(--glass-tone-danger-fg)]">
-                  {error}
-                </div>
-              )}
-
-              {success && (
-                <div className="rounded-[8px] border border-[color:color-mix(in_srgb,var(--glass-tone-success-fg)_22%,transparent)] bg-[var(--glass-tone-success-bg)] px-4 py-3 text-sm text-[var(--glass-tone-success-fg)]">
-                  {success}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="glass-btn-base glass-btn-primary w-full px-4 py-2.5 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading ? t('signupButtonLoading') : t('signupButton')}
-              </button>
-            </form>
-
-            <div className="mt-5 text-center text-xs text-[var(--glass-text-secondary)]">
-              {t('hasAccount')}{" "}
-              <Link href={{ pathname: '/auth/signin' }} className="font-medium text-[var(--film-gold)] hover:underline">
-                {t('signinNow')}
-              </Link>
-            </div>
-
-            <div className="mt-4 text-center">
-              <Link href={{ pathname: '/' }} className="text-xs text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">
-                {t('backToHome')}
-              </Link>
-            </div>
+      <div className="auth-apple__stage">
+        <div className="auth-apple__card">
+          <div className="auth-apple__brand">
+            <BrandLogo variant="horizontal" className="auth-apple__logo" priority />
           </div>
+
+          <form onSubmit={handleSubmit} className="auth-apple__form">
+            <div className="auth-apple__field">
+              <label htmlFor="name" className="auth-apple__label">
+                {t('phoneNumber')}
+              </label>
+              <input
+                id="name"
+                name="username"
+                type="text"
+                autoComplete="username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="auth-apple__input"
+                placeholder={t('phoneNumberPlaceholder')}
+              />
+            </div>
+
+            <div className="auth-apple__field">
+              <label htmlFor="password" className="auth-apple__label">
+                {t('password')}
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="auth-apple__input"
+                placeholder={t('passwordMinPlaceholder')}
+              />
+              <PasswordStrengthIndicator password={password} />
+            </div>
+
+            <div className="auth-apple__field">
+              <label htmlFor="confirmPassword" className="auth-apple__label">
+                {t('confirmPassword')}
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="auth-apple__input"
+                placeholder={t('confirmPasswordPlaceholder')}
+              />
+            </div>
+
+            {error ? (
+              <div className="auth-apple__alert auth-apple__alert--danger" role="alert">
+                {error}
+              </div>
+            ) : null}
+
+            {success ? (
+              <div className="auth-apple__alert auth-apple__alert--success" role="status">
+                {success}
+              </div>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="glass-btn-base glass-btn-primary auth-apple__submit"
+            >
+              {loading ? t('signupButtonLoading') : t('signupButton')}
+            </button>
+          </form>
+
+          <p className="auth-apple__switch">
+            {t('hasAccount')}{' '}
+            <Link href={{ pathname: '/auth/signin' }} className="auth-apple__link">
+              {t('signinNow')}
+            </Link>
+          </p>
+
+          <Link href={{ pathname: '/' }} className="auth-apple__home">
+            {t('backToHome')}
+          </Link>
         </div>
       </div>
     </div>

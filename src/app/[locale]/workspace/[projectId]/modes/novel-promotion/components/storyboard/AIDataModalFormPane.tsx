@@ -34,7 +34,7 @@ interface AIDataModalFormPaneProps {
 }
 
 function FL({ children }: { children: string }) {
-  return <p className="mb-1 text-[10.5px] font-semibold text-[var(--glass-text-tertiary)]">{children}</p>
+  return <p className="mb-1 text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-tertiary)]">{children}</p>
 }
 
 function AutoGrowTextarea({
@@ -83,7 +83,7 @@ function SectionLabel({ children }: { children: string }) {
   return (
     <div className="flex items-center gap-2 mb-2.5">
       <AppIcon name="sparkles" className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)] flex-shrink-0" />
-      <span className="text-[11px] font-semibold text-[var(--glass-text-primary)]">{children}</span>
+      <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-primary)]">{children}</span>
     </div>
   )
 }
@@ -112,7 +112,7 @@ function CollapseSection({
               className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)] flex-shrink-0"
             />
           ) : null}
-          <span className="text-[11px] font-semibold text-[var(--glass-text-secondary)]">{label}</span>
+          <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">{label}</span>
         </div>
         <AppIcon
           name={open ? 'chevronUp' : 'chevronDown'}
@@ -160,7 +160,7 @@ export default function AIDataModalFormPane({
       <section>
         <div className="flex items-center gap-2 mb-2.5">
           <AppIcon name="fileText" className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)] flex-shrink-0" />
-          <span className="text-[11px] font-semibold text-[var(--glass-text-primary)]">
+          <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-primary)]">
             {t('aiData.visualDescription')}
           </span>
         </div>
@@ -205,7 +205,7 @@ export default function AIDataModalFormPane({
         </div>
         {/* 场景 + 比例 — 只读文字，不用 input 避免视觉干扰 */}
         {location && (
-          <div className="flex items-center gap-2 text-[11.5px] text-[var(--glass-text-tertiary)]">
+          <div className="flex items-center gap-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
             <AppIcon name="imageAlt" className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)] flex-shrink-0" />
             <span>
               {t('aiData.scene').replace('（只读）', '')}：<span className="text-[var(--glass-text-secondary)] font-medium">{location}</span>
@@ -241,7 +241,7 @@ export default function AIDataModalFormPane({
                 </div>
                 {char.name}
                 {char.slot && (
-                  <span className="glass-chip glass-chip-neutral text-[9.5px] inline-flex items-center gap-1">
+                  <span className="glass-chip glass-chip-neutral text-[length:var(--glass-font-size-caption)] inline-flex items-center gap-1">
                     <AppIcon name="badgeCheck" className="h-3 w-3" />
                     {char.slot}
                   </span>
@@ -256,10 +256,10 @@ export default function AIDataModalFormPane({
               {/* slot 行 */}
               <div className="flex items-center gap-2 px-3.5 py-2 bg-[var(--glass-bg-muted)] border-b border-[var(--glass-stroke-base)] flex-wrap">
                 <AppIcon name="badgeCheck" className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)] flex-shrink-0" />
-                <span className="text-[10.5px] font-semibold text-[var(--glass-text-tertiary)]">
+                <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-tertiary)]">
                   {t('aiData.slot')}：
                 </span>
-                <span className="glass-chip glass-chip-info text-[10.5px]">
+                <span className="glass-chip glass-chip-info text-[length:var(--glass-font-size-caption)]">
                   {activeChar.slot ?? t('aiData.slotUnset')}
                 </span>
               </div>
@@ -271,7 +271,7 @@ export default function AIDataModalFormPane({
                     <FL>{t('aiData.appearanceReadonly')}</FL>
                     <div className="flex items-start gap-2 rounded-[var(--glass-radius-xs)] bg-[var(--glass-bg-muted)] px-3 py-2">
                       <AppIcon name="sparkles" className="mt-0.5 h-3.5 w-3.5 text-[var(--glass-tone-warning-fg)] flex-shrink-0" />
-                      <p className="text-[12px] text-[var(--glass-text-secondary)] leading-relaxed">
+                      <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)] leading-relaxed">
                         {activeChar.appearance}
                       </p>
                     </div>
@@ -284,7 +284,7 @@ export default function AIDataModalFormPane({
                     <FL>{t('aiData.framePosition')}</FL>
                     <div className="space-y-2">
                       <div>
-                        <p className="text-[10px] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.screenPosition')}</p>
+                        <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.screenPosition')}</p>
                         <GlassInput
                           density="compact"
                           value={photoChar.screen_position}
@@ -296,7 +296,7 @@ export default function AIDataModalFormPane({
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <p className="text-[10px] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.posture')}</p>
+                          <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.posture')}</p>
                           <GlassInput
                             density="compact"
                             value={photoChar.posture}
@@ -307,7 +307,7 @@ export default function AIDataModalFormPane({
                           />
                         </div>
                         <div>
-                          <p className="text-[10px] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.facing')}</p>
+                          <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mb-1">{t('aiData.facing')}</p>
                           <GlassInput
                             density="compact"
                             value={photoChar.facing}

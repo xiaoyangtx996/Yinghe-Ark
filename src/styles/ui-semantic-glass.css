@@ -1,41 +1,51 @@
 .glass-page {
-  background: var(--glass-bg-canvas);
+  /* Canvas + grain live on body; page shell stays clear so grain shows in gutters */
+  background: transparent;
   color: var(--glass-text-primary);
 }
 
 .glass-surface {
   background: var(--glass-bg-surface);
   border: 1px solid var(--glass-stroke-base);
-  box-shadow: var(--glass-shadow-sm);
-  border-radius: var(--glass-radius-md);
+  box-shadow: var(--glass-shadow-0);
+  border-radius: var(--glass-radius-panel);
 }
 
 .glass-surface-elevated {
   background: var(--glass-bg-surface-strong);
   border: 1px solid var(--glass-stroke-base);
-  box-shadow: var(--glass-shadow-md);
-  border-radius: var(--glass-radius-md);
+  box-shadow: var(--glass-shadow-1);
+  border-radius: var(--glass-radius-panel);
 }
 
 .glass-surface-modal {
   background: var(--glass-bg-surface-modal);
   border: 1px solid var(--glass-stroke-base);
-  box-shadow: var(--glass-shadow-modal);
-  border-radius: var(--glass-radius-lg);
+  box-shadow: var(--glass-shadow-2);
+  border-radius: var(--glass-radius-xl);
 }
 
 .glass-surface-nav {
   background: var(--glass-bg-nav);
   border: 1px solid var(--glass-stroke-base);
   box-shadow: var(--glass-shadow-nav);
+  border-radius: var(--glass-radius-panel);
+}
+
+/* Nested / secondary fill — no stroke (avoids card-in-card) */
+.glass-surface-soft {
+  background: var(--glass-bg-muted);
+  border: none;
+  box-shadow: none;
   border-radius: var(--glass-radius-md);
 }
 
-.glass-surface-soft {
-  background: var(--glass-bg-surface-strong);
-  border: 1px solid var(--glass-stroke-base);
+/* Main creative well — muted inset, no outer chrome */
+.glass-inset {
+  background: color-mix(in srgb, var(--glass-bg-muted) 70%, transparent);
+  border: none;
   box-shadow: none;
-  border-radius: var(--glass-radius-md);
+  border-radius: var(--glass-radius-panel);
 }
 
 .glass-divider {
@@ -43,14 +53,16 @@
 }
 
 .glass-field-label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--glass-font-size-caption);
+  font-weight: var(--glass-font-weight-medium);
+  line-height: var(--glass-line-height-caption);
   color: var(--glass-text-secondary);
   letter-spacing: 0.01em;
 }
 
 .glass-field-hint {
-  font-size: 12px;
+  font-size: var(--glass-font-size-caption);
+  line-height: var(--glass-line-height-caption);
   color: var(--glass-text-secondary);
 }
 
@@ -58,13 +70,19 @@
 .glass-textarea-base,
 .glass-select-base {
   width: 100%;
-  border-radius: var(--glass-radius-md);
+  min-height: var(--glass-control-min-size-compact);
+  border-radius: var(--glass-radius-sm);
   border: 1px solid transparent;
   background: var(--glass-bg-muted);
   box-shadow: inset 0 0 0 1px var(--glass-stroke-base);
   color: var(--glass-text-primary);
+  font-size: var(--glass-font-size-body);
+  line-height: var(--glass-line-height-body);
   outline: none;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  transition:
+    box-shadow var(--glass-motion-duration) var(--glass-motion-easing),
+    background-color var(--glass-motion-duration) var(--glass-motion-easing),
+    transform var(--glass-motion-duration) var(--glass-motion-easing);
 }
 
 .glass-input-base::placeholder,
@@ -108,13 +126,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--glass-space-2);
+  min-height: var(--glass-control-min-size-compact);
+  padding: 0 var(--glass-space-3);
   cursor: pointer;
-  font-weight: 600;
-  border-radius: var(--glass-radius-md);
+  font-size: var(--glass-font-size-body);
+  font-weight: var(--glass-font-weight-medium);
+  line-height: var(--glass-line-height-body);
+  border-radius: var(--glass-radius-sm);
   border: 1px solid transparent;
-  transition: all 0.2s ease;
+  transition:
+    background-color var(--glass-motion-duration) var(--glass-motion-easing),
+    border-color var(--glass-motion-duration) var(--glass-motion-easing),
+    color var(--glass-motion-duration) var(--glass-motion-easing),
+    box-shadow var(--glass-motion-duration) var(--glass-motion-easing),
+    transform var(--glass-motion-duration) var(--glass-motion-easing);
   white-space: nowrap;
+}
+
+.glass-btn-base.glass-btn-comfortable {
+  min-height: var(--glass-control-min-size);
+  padding: 0 var(--glass-space-4);
 }
 
 .glass-btn-base:focus-visible {
@@ -122,25 +154,27 @@
   box-shadow: 0 0 0 3px var(--glass-focus-ring-strong);
 }
 
-.glass-btn-base:disabled {
+.glass-btn-base:disabled,
+.glass-btn-base[aria-disabled='true'] {
   color: var(--glass-text-disabled);
   background: var(--glass-bg-muted);
   border-color: var(--glass-stroke-base);
   box-shadow: none;
   cursor: not-allowed;
   opacity: 1;
+  pointer-events: none;
 }
 
 .glass-btn-primary {
   background: var(--glass-accent-from);
-  border: 1px solid var(--glass-accent-from);
+  border: 1px solid transparent;
   color: var(--glass-text-on-accent);
   box-shadow: none;
 }
 
 .glass-btn-primary:hover:not(:disabled) {
   background: var(--glass-accent-to);
-  border-color: var(--glass-accent-to);
+  border-color: transparent;
   transform: none;
   box-shadow: none;
 }
@@ -149,10 +183,13 @@
   transform: translateY(1px);
 }
 
+/* Keep disabled primary on-brand (beats .glass-btn-base:disabled muted gray) */
+.glass-btn-base.glass-btn-primary:disabled,
+.glass-btn-base.glass-btn-primary[aria-disabled='true'],
 .glass-btn-primary:disabled {
-  background: var(--glass-bg-muted);
-  border-color: var(--glass-stroke-base);
-  color: var(--glass-text-disabled);
+  background: color-mix(in srgb, var(--glass-accent-from) 32%, var(--glass-bg-muted));
+  border-color: transparent;
+  color: color-mix(in srgb, var(--glass-text-on-accent) 72%, var(--glass-text-disabled));
   box-shadow: none;
 }
 

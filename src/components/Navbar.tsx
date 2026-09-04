@@ -2,10 +2,13 @@
 
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
 import LanguageSwitcher from './LanguageSwitcher'
-import { AppIcon } from '@/components/ui/icons'
+import BrandIcon from '@/components/brand/BrandIcon'
+import { brandAssetUrl, brandLogo } from '@/lib/brand/assets'
 import { Link, usePathname } from '@/i18n/navigation'
 import { buildAuthenticatedHomeTarget } from '@/lib/home/default-route'
+import BrandLogo from '@/components/brand/BrandLogo'
 
 export default function Navbar() {
   const { data: session, status } = useSession()
@@ -43,7 +46,14 @@ export default function Navbar() {
             className="theater-rail__brand"
             aria-label={t('railBrandHome')}
           >
-            W
+            <Image
+              src={brandAssetUrl(brandLogo.iconApp)}
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+              priority
+            />
           </Link>
           <Link
             href={homeTarget}
@@ -51,7 +61,7 @@ export default function Navbar() {
             data-active={isActive('/home') ? 'true' : 'false'}
             aria-label={t('railHome')}
           >
-            <AppIcon name="sparkles" className="h-4 w-4" />
+            <BrandIcon name="home" size={22} />
             <span className="rail-tip" role="tooltip">{t('railHome')}</span>
           </Link>
           <Link
@@ -60,7 +70,7 @@ export default function Navbar() {
             data-active={isActive('/workspace') ? 'true' : 'false'}
             aria-label={t('railProjects')}
           >
-            <AppIcon name="monitor" className="h-4 w-4" />
+            <BrandIcon name="project" size={22} />
             <span className="rail-tip" role="tooltip">{t('railProjects')}</span>
           </Link>
           <Link
@@ -69,7 +79,7 @@ export default function Navbar() {
             data-active={isActive('/workspace/asset-hub') ? 'true' : 'false'}
             aria-label={t('railAssets')}
           >
-            <AppIcon name="folderHeart" className="h-4 w-4" />
+            <BrandIcon name="assets" size={22} />
             <span className="rail-tip" role="tooltip">{t('railAssets')}</span>
           </Link>
           <Link
@@ -78,7 +88,7 @@ export default function Navbar() {
             data-active={isActive('/logs') ? 'true' : 'false'}
             aria-label={t('railLogs')}
           >
-            <AppIcon name="fileText" className="h-4 w-4" />
+            <BrandIcon name="logs" size={22} />
             <span className="rail-tip" role="tooltip">{t('railLogs')}</span>
           </Link>
           <div className="theater-rail__spacer" />
@@ -88,7 +98,7 @@ export default function Navbar() {
             data-active={isActive('/profile') ? 'true' : 'false'}
             aria-label={t('railSettings')}
           >
-            <AppIcon name="userRoundCog" className="h-4 w-4" />
+            <BrandIcon name="settings" size={22} />
             <span className="rail-tip" role="tooltip">{t('railSettings')}</span>
           </Link>
         </aside>
@@ -99,9 +109,10 @@ export default function Navbar() {
           <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6">
             <Link
               href={{ pathname: '/' }}
-              className="font-display text-xl font-semibold tracking-tight text-[var(--glass-text-primary)]"
+              className="flex items-center py-1"
+              aria-label={tc('appName')}
             >
-              {tc('appName')}
+              <BrandLogo variant="horizontal" className="max-h-8" priority />
             </Link>
 
             <div className="flex items-center gap-3 sm:gap-4">

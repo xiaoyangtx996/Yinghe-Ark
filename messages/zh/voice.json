@@ -1,5 +1,55 @@
 {
     "title": "台词配音",
+    "review": {
+        "title": "出声前自检",
+        "subtitle": "勾选表示已核对；建议不阻断生成配音",
+        "progress": "{checked}/{total}",
+        "collapse": "收起",
+        "expand": "展开",
+        "empty": "分析出台词后，这里会出现自检清单",
+        "hints": {
+            "no_lines": "还没有台词：先点「分析台词」或手动添加。",
+            "single_line": "目前只有 1 条台词：确认对白是否抽全。",
+            "speakers_missing_voice": "有发言人缺参考音色：先在资产库或内联绑定。",
+            "lines_missing_audio": "有台词还没生成音频：可单条或一键生成。",
+            "lines_missing_panel": "有台词未匹配镜头：方便定位画面，建议补上。",
+            "lines_empty_content": "有台词内容为空：补上要说的话再生成。"
+        },
+        "gates": {
+            "speakers_have_voice": {
+                "label": "每个发言人都有参考音色吗？",
+                "tip": "缺音色时合成会失败或串声"
+            },
+            "lines_complete": {
+                "label": "该出声的台词都抽到了吗？",
+                "tip": "对照剧本，别漏关键对白或旁白"
+            },
+            "speaker_attribution": {
+                "label": "说话人归属对吗？",
+                "tip": "甲乙别反了；独白别挂错角色"
+            },
+            "emotion_fit": {
+                "label": "情绪提示合适吗？",
+                "tip": "强度与语气应贴合这一句，别全剧同一档"
+            },
+            "panel_match": {
+                "label": "台词与镜头匹配合理吗？",
+                "tip": "方便从配音跳到画面核对口型与节奏"
+            },
+            "audio_ready": {
+                "label": "需要出声的台词都有音频吗？",
+                "tip": "空音频进成片会静音或对不上"
+            },
+            "listen_pass": {
+                "label": "关键句试听过了吗？",
+                "tip": "听错音、断句、情绪翻车再重生成"
+            },
+            "export_ready": {
+                "label": "可以进入下载/成片了吗？",
+                "tip": "音色、归属、音频都齐再导出更省事"
+            }
+        }
+    },
     "linesCount": "共 {count} 条台词，",
     "audioGeneratedCount": "{count} 条已生成音频",
     "emotionPrompt": "情绪提示词",

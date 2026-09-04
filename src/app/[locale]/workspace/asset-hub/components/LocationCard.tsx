@@ -217,7 +217,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-sm font-semibold text-[var(--glass-text-primary)]">{location.name}</span>
+              <span className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{location.name}</span>
             </div>
             {location.summary && (
               <div className="text-xs text-[var(--glass-text-secondary)] mb-1 line-clamp-2" title={location.summary}>
@@ -231,12 +231,12 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
               prefix={isTaskRunning ? (
                 <>
                   <TaskStatusInline state={displayTaskPresentation} className="[&_span]:sr-only [&_svg]:text-[var(--glass-tone-info-fg)]" />
-                  <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
+                  <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
                 </>
               ) : (
                 <>
                   <AppIcon name="refresh" className="w-4 h-4 text-[var(--glass-tone-info-fg)]" />
-                  <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
+                  <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
                 </>
               )}
               value={generationCount}
@@ -246,7 +246,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
               disabled={isTaskRunning}
               showCountControl={false}
               ariaLabel={tAssets('image.regenCountPrefix')}
-              className="inline-flex h-6 items-center justify-center gap-1 rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors disabled:opacity-50"
+              className="inline-flex h-6 items-center justify-center gap-1 rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors"
             />
             {hasPreviousVersion && (
               <button onClick={handleUndo} className="glass-btn-base glass-btn-soft h-6 w-6 rounded-md" title={tAssets('image.undo')}>
@@ -336,7 +336,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
                     handleSelectImage(isThisSelected ? null : img.imageIndex)
                   }}
                   disabled={!img.imageUrl || phase === 'generating' || phase === 'regenerating'}
-                  className={`absolute top-2 right-2 glass-btn-base h-7 w-7 rounded-full ${isThisSelected ? 'glass-btn-tone-success' : 'glass-btn-secondary'} disabled:opacity-50`}
+                  className={`absolute top-2 right-2 glass-btn-base h-7 w-7 rounded-full ${isThisSelected ? 'glass-btn-tone-success' : 'glass-btn-secondary'}`}
                 >
                   <AppIcon name="check" className="w-4 h-4" />
                 </button>
@@ -350,7 +350,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
           <div className="mt-4 flex justify-end">
             <button onClick={handleConfirmSelection} disabled={selectImage.isPending} className="glass-btn-base glass-btn-tone-success px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
               {selectImage.isPending ? (
-                <TaskStatusInline state={selectImageRunningState} className="text-white [&>span]:sr-only [&_svg]:text-white" />
+                <TaskStatusInline state={selectImageRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:sr-only [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 <AppIcon name="check" className="w-4 h-4" />
               )}
@@ -428,7 +428,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
               onClick={() => handleGenerate(generationCount)}
               ariaLabel={tAssets('image.selectCount')}
               className="glass-btn-base glass-btn-primary flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg"
-              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
+              selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-body)] font-medium text-current outline-none cursor-pointer leading-none transition-colors"
             />
           </div>
         )}
@@ -448,7 +448,7 @@ export function LocationCard({ location, assetType = 'location', onImageClick, o
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium text-[var(--glass-text-primary)] text-sm truncate">{location.name}</h3>
-            <p className="text-[10px] text-[var(--glass-text-tertiary)]">{assetLabel}</p>
+            <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">{assetLabel}</p>
           </div>
           <div className="flex items-center gap-1">
             {/* 编辑按钮 */}

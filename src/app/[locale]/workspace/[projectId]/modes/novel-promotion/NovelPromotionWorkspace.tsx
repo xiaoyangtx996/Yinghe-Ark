@@ -2,8 +2,10 @@
 
 import ProgressToast from '@/components/ProgressToast'
 import ConfirmDialog from '@/components/ConfirmDialog'
+import TaskPipelineChecklist from '@/components/task/TaskPipelineChecklist'
 import { AnimatedBackground } from '@/components/ui/SharedComponents'
 import { useTranslations } from 'next-intl'
+import { useMemo } from 'react'
 import { WorkspaceProvider } from './WorkspaceProvider'
 import WorkspaceRunStreamConsoles from './components/WorkspaceRunStreamConsoles'
 import WorkspaceStageContent from './components/WorkspaceStageContent'
@@ -12,6 +14,11 @@ import WorkspaceHeaderShell from './components/WorkspaceHeaderShell'
 import { WorkspaceStageRuntimeProvider } from './WorkspaceStageRuntimeContext'
 import { useNovelPromotionWorkspaceController } from './hooks/useNovelPromotionWorkspaceController'
 import type { NovelPromotionWorkspaceProps } from './types'
+import { resolveEpisodeStageArtifacts } from '@/lib/novel-promotion/stage-readiness'
+import {
+  resolvePipelineChecklist,
+  shouldShowPipelineChecklist,
+} from '@/lib/task/pipeline-checklist'
 import '@/styles/animations.css'
 
 function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
@@ -22,6 +29,7 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
     project,
     projectId,
     episodeId,
+    episode,
     episodes = [],
     onEpisodeSelect,
     onEpisodeCreate,
@@ -39,6 +47,31 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
     scriptToStoryboardStream.isRunning ||
     scriptToStoryboardStream.isRecoveredRunning ||
     scriptToStoryboardStream.status === 'running'
+
+  const pipelineItems = useMemo(
+    () =>
+      resolvePipelineChecklist({
+        artifacts: resolveEpisodeStageArtifacts(episode),
+        storyToScriptRunning: storyToScriptActive,
+        scriptToStoryboardRunning: scriptToStoryboardActive,
+        videoRunning: vm.execution.videoRunning,
+        voiceRunning: vm.execution.voiceRunning,
+      }),
+    [
+      episode,
+      storyToScriptActive,
+      scriptToStoryboardActive,
+      vm.execution.videoRunning,
+      vm.execution.voiceRunning,
+    ],
+  )
+
+  const showPipelineChecklist = shouldShowPipelineChecklist({
+    items: pipelineItems,
+    storyToScriptRunning: storyToScriptActive,
+    scriptToStoryboardRunning: scriptToStoryboardActive,
+    showCreatingToast: vm.execution.showCreatingToast,
+  })
 
   const showStoryToScriptMinBadge =
     storyToScriptStream.isVisible &&
@@ -117,8 +150,28 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
       />
 
       <div className="pt-24">
+        {showPipelineChecklist ? (
+          <div className="px-4 sm:px-6">
+            <TaskPipelineChecklist
+              items={pipelineItems}
+              title={tProgress('pipelineChecklist.title')}
+              subtitle={tProgress('pipelineChecklist.subtitle')}
+              labels={{
+                story: tProgress('pipelineChecklist.story'),
+                script: tProgress('pipelineChecklist.script'),
+                storyboard: tProgress('pipelineChecklist.storyboard'),
+                video: tProgress('pipelineChecklist.video'),
+                voice: tProgress('pipelineChecklist.voice'),
+              }}
+            />
+          </div>
+        ) : null}
+
         <WorkspaceStageRuntimeProvider value={vm.runtime.stageRuntime}>
-          <WorkspaceStageContent currentStage={vm.stageNav.currentStage} />
+          <WorkspaceStageContent
+            currentStage={vm.stageNav.currentStage}
+            onGoVideos={() => vm.stageNav.handleStageChange('videos')}
+          />
         </WorkspaceStageRuntimeProvider>
 
         <WorkspaceAssetLibraryModal

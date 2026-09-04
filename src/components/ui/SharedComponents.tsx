@@ -72,7 +72,6 @@ export function Button({
         ${primary
                     ? 'glass-btn-primary'
                     : 'glass-btn-secondary'}
-        disabled:opacity-50 disabled:cursor-not-allowed
         ${className}
       `}
         >

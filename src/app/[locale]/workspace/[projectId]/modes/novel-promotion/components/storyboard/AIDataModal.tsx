@@ -106,10 +106,10 @@ export default function AIDataModal({
               <AppIcon name="clapperboard" className="h-3.5 w-3.5 text-[var(--glass-tone-info-fg)]" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-[var(--glass-text-primary)] leading-none">
+              <h2 className="text-sm font-medium text-[var(--glass-text-primary)] leading-none">
                 {t('aiData.title')}
               </h2>
-              <p className="text-[11px] text-[var(--glass-text-tertiary)] mt-0.5">
+              <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mt-0.5">
                 {t('aiData.subtitle', { number: panelNumber })} · {videoRatio}
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function AIDataModal({
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-[var(--glass-stroke-base)] px-5 py-3 flex-shrink-0">
-          <p className="text-[11px] text-[var(--glass-text-tertiary)]">
+          <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
             {characters.map(c => c.name).join('、')}
             {location ? ` · ${location}` : ''}
           </p>

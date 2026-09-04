@@ -8,6 +8,7 @@ import ImagePreviewModal from '@/components/ui/ImagePreviewModal'
 import StoryboardStageShell from './StoryboardStageShell'
 import StoryboardToolbar from './StoryboardToolbar'
 import StoryboardCanvas from './StoryboardCanvas'
+import StoryboardReviewChecklist from './StoryboardReviewChecklist'
 import { useStoryboardStageController } from './hooks/useStoryboardStageController'
 import { useStoryboardModalRuntime } from './hooks/useStoryboardModalRuntime'
 
@@ -216,6 +217,12 @@ export default function StoryboardStage({
           addStoryboardGroup={addStoryboardGroup}
           addingStoryboardGroup={addingStoryboardGroup}
           setLocalStoryboards={setLocalStoryboards}
+        />
+
+        <StoryboardReviewChecklist
+          projectId={projectId}
+          episodeId={episodeId}
+          storyboards={localStoryboards}
         />
 
         {modalRuntime.editingPanel && (

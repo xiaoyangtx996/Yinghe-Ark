@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import type { CSSProperties, ImgHTMLAttributes, MouseEventHandler } from 'react'
+import { toDisplayImageUrl } from '@/lib/media/image-url'
 
 export type MediaImageProps = {
   src: string | null | undefined
@@ -33,13 +34,16 @@ export function MediaImage({
   priority = false,
   ...imgProps
 }: MediaImageProps) {
-  if (!src) return null
+  // Storage keys like `images/panel-candidate-….jpg` must not be used as relative
+  // URLs (would resolve under /zh/… and 404). Normalize before paint.
+  const resolvedSrc = toDisplayImageUrl(src)
+  if (!resolvedSrc) return null
 
-  if (isStableMediaRoute(src)) {
+  if (isStableMediaRoute(resolvedSrc)) {
     if (fill) {
       return (
         <Image
-          src={src}
+          src={resolvedSrc}
           alt={alt}
           fill
           sizes={sizes || '100vw'}
@@ -54,7 +58,7 @@ export function MediaImage({
 
     return (
       <Image
-        src={src}
+        src={resolvedSrc}
         alt={alt}
         width={width}
         height={height}
@@ -72,7 +76,7 @@ export function MediaImage({
     // 外部 URL 兜底，避免 next/image 远程域名限制影响兼容链路
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       className={className}
       style={style}

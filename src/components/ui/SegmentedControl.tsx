@@ -80,7 +80,7 @@ export function SegmentedControl<T extends string = string>({
                             type="button"
                             onClick={() => onChange(opt.value)}
                             aria-pressed={selected}
-                            className={`relative z-10 flex cursor-pointer items-center justify-center gap-1.5 rounded-[calc(var(--glass-radius-lg)-2px)] px-3 text-[13px] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)] ${
+                            className={`relative z-10 flex cursor-pointer items-center justify-center gap-1.5 rounded-[calc(var(--glass-radius-lg)-2px)] px-3 text-[length:var(--glass-font-size-body)] font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)] ${
                                 isLg ? 'min-h-[44px] py-2' : 'min-h-[40px] py-1.5'
                             } ${
                                 selected

@@ -76,6 +76,13 @@ certificates
 
 # temporary files
 tmp/
+.tmp/
+.tmp_*/
+.tmp_*.ts
+.tmp_*.py
+.tmp-refactor-report/
+debug-request.json
+.design-audit/
 
 # internal AI agent config (not for public)
 AGENTS.md

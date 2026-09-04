@@ -125,6 +125,7 @@
   "testing": "Testing...",
   "testPassed": "Connection test passed",
   "testFailed": "Connection test failed",
+  "testPartial": "Partially available",
   "testWarning": "We recommend checking your configuration before adding",
   "testRetry": "Retry",
   "addAnyway": "Add Anyway",

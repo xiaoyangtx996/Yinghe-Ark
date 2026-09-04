@@ -97,7 +97,7 @@ export function AddLocationModal({ folderId, onClose, onSuccess }: AddLocationMo
                 <div className="p-6 overflow-y-auto app-scrollbar flex-1 min-h-0">
                     {/* 标题 */}
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+                        <h3 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">
                             {t('modal.newLocation')}
                         </h3>
                         <button
@@ -111,7 +111,7 @@ export function AddLocationModal({ folderId, onClose, onSuccess }: AddLocationMo
                     <div className="space-y-5">
                         {/* AI 设计区域 */}
                         <div className="glass-surface-soft border border-[var(--glass-stroke-base)] rounded-xl p-4 space-y-3">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--glass-text-primary)]">
+                            <div className="flex items-center gap-2 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">
                                 <SparklesIcon className="w-4 h-4" />
                                 <span>{t('modal.aiDesign')}</span>
                             </div>
@@ -136,7 +136,7 @@ export function AddLocationModal({ folderId, onClose, onSuccess }: AddLocationMo
                                     className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg text-sm"
                                 >
                                     {isAiDesigning ? (
-                                        <TaskStatusInline state={aiDesigningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                        <TaskStatusInline state={aiDesigningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                                     ) : (
                                         <>
                                             <SparklesIcon className="w-4 h-4" />
@@ -215,7 +215,7 @@ export function AddLocationModal({ folderId, onClose, onSuccess }: AddLocationMo
                             className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm"
                         >
                             {isSubmitting ? (
-                                <TaskStatusInline state={submittingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                <TaskStatusInline state={submittingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                             ) : (
                                 <span>{t('modal.addLocation')}</span>
                             )}

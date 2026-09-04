@@ -176,7 +176,7 @@ export function CharacterEditModal({
                 <div className="p-6 space-y-4 overflow-y-auto app-scrollbar flex-1 min-h-0">
                     {/* 标题 */}
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+                        <h3 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">
                             {t('modal.editCharacter')} - {characterName}
                         </h3>
                         <button onClick={onClose} className="glass-btn-base glass-btn-soft h-8 w-8 rounded-full text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">
@@ -238,10 +238,10 @@ export function CharacterEditModal({
                             <button
                                 onClick={handleAiModify}
                                 disabled={isAiModifying || !aiModifyInstruction.trim()}
-                                className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                                className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
                             >
                                 {isAiModifying ? (
-                                    <TaskStatusInline state={aiModifyingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                    <TaskStatusInline state={aiModifyingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                                 ) : (
                                     <>
                                         <AppIcon name="bolt" className="w-4 h-4" />
@@ -281,10 +281,10 @@ export function CharacterEditModal({
                         <button
                             onClick={handleSaveOnly}
                             disabled={isSaving || !editingDescription.trim()}
-                            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {isSaving ? (
-                                <TaskStatusInline state={savingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                <TaskStatusInline state={savingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                             ) : (
                                 t('modal.saveOnly')
                             )}
@@ -292,7 +292,7 @@ export function CharacterEditModal({
                         <button
                             onClick={handleSaveAndGenerate}
                             disabled={isSaving || !editingDescription.trim()}
-                            className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {t('modal.saveAndGenerate')}
                         </button>

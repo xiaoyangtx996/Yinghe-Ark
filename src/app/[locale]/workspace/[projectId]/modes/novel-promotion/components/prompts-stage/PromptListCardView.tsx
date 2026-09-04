@@ -67,7 +67,7 @@ export default function PromptListCardView({ runtime }: PromptListCardViewProps)
               ) : (
                 <AppIcon name="video" className="w-16 h-16 text-[var(--glass-text-tertiary)]" />
               )}
-              <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] text-white px-2 py-1 rounded text-xs font-medium">
+              <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] px-2 py-1 rounded text-xs font-medium">
                 #{shot.shotId}
               </div>
               {shot.imageUrl && (
@@ -77,7 +77,7 @@ export default function PromptListCardView({ runtime }: PromptListCardViewProps)
                     onGenerateImage(shot.id, shotExtraAssets[shot.id])
                   }}
                   disabled={isBatchSubmitting}
-                  className="absolute top-2 right-2 bg-[var(--glass-overlay)] hover:bg-[var(--glass-text-primary)] text-white p-2 rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
+                  className="absolute top-2 right-2 bg-[var(--glass-overlay)] hover:bg-[var(--glass-text-primary)] text-[var(--glass-text-on-accent)] p-2 rounded-full transition-all disabled:cursor-not-allowed z-10"
                   title={t('panel.regenerateImage')}
                 >
                   <AppIcon name="refresh" className="w-4 h-4" />
@@ -211,13 +211,13 @@ export default function PromptListCardView({ runtime }: PromptListCardViewProps)
                           <button
                             onClick={handleAiModify}
                             disabled={editingPrompt ? aiModifyingShots.has(editingPrompt.shotId) || !aiModifyInstruction.trim() : true}
-                            className="glass-btn-base glass-btn-primary mt-2 w-full px-3 py-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="glass-btn-base glass-btn-primary mt-2 w-full px-3 py-2 text-sm font-medium disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             title={t('prompts.aiModifyTip')}
                           >
                             {editingPrompt && aiModifyingShots.has(editingPrompt.shotId) ? (
                               <TaskStatusInline
                                 state={resolveTaskPresentationState({ phase: 'processing', intent: 'modify', resource: 'text', hasOutput: true })}
-                                className="text-white [&>span]:text-white [&_svg]:text-white"
+                                className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]"
                               />
                             ) : (
                               t('prompts.aiModify')
@@ -228,7 +228,7 @@ export default function PromptListCardView({ runtime }: PromptListCardViewProps)
                         <div className="flex gap-2 pt-2 border-t">
                           <button
                             onClick={handleSaveEdit}
-                            className="flex-1 px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg text-sm font-medium hover:bg-[var(--glass-accent-to)] transition-colors"
+                            className="flex-1 px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg text-sm font-medium hover:bg-[var(--glass-accent-to)] transition-colors"
                           >
                             {t('prompts.save')}
                           </button>
@@ -276,10 +276,10 @@ export default function PromptListCardView({ runtime }: PromptListCardViewProps)
               <button
                 onClick={() => onGenerateImage(shot.id, shotExtraAssets[shot.id])}
                 disabled={isShotTaskRunning(shot) || isBatchSubmitting}
-                className={`glass-btn-base w-full py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${getGenerateButtonToneClass(shot)}`}
+                className={`glass-btn-base w-full py-2 text-sm disabled:cursor-not-allowed ${getGenerateButtonToneClass(shot)}`}
               >
                 {shot.imageUrl ? t('group.hasSynced') : isShotTaskRunning(shot) ? (
-                  <TaskStatusInline state={shotRunningState} className="justify-center text-white [&>span]:text-white [&_svg]:text-white" />
+                  <TaskStatusInline state={shotRunningState} className="justify-center text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                 ) : t('assets.location.generateImage')}
               </button>
             </div>

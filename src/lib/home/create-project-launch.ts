@@ -31,6 +31,7 @@ export interface CreateHomeProjectLaunchParams {
   videoRatio: string
   artStyle: string
   episodeName: string
+  genrePack?: string | null
 }
 
 export interface CreateHomeProjectLaunchResult {
@@ -72,6 +73,23 @@ async function readEpisodeId(response: Response): Promise<string> {
   return episodeId
 }
 
+/**
+ * Best-effort cleanup when launch fails after the shell project already exists.
+ * Must never replace the original launch error.
+ */
+export async function compensateCreatedHomeProject(
+  apiFetch: ApiFetchLike,
+  projectId: string,
+): Promise<void> {
+  try {
+    await apiFetch(`/api/projects/${projectId}`, {
+      method: 'DELETE',
+    })
+  } catch {
+    // Swallow compensation transport errors; caller rethrows the root cause.
+  }
+}
+
 export function buildHomeWorkspaceLaunchTarget(projectId: string, episodeId: string): HomeWorkspaceLaunchTarget {
   return {
     pathname: `/workspace/${projectId}`,
@@ -89,49 +107,64 @@ export async function createHomeProjectLaunch({
   videoRatio,
   artStyle,
   episodeName,
+  genrePack,
 }: CreateHomeProjectLaunchParams): Promise<CreateHomeProjectLaunchResult> {
-  const projectResponse = await apiFetch('/api/projects', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: projectName,
-    }),
-  })
+  let projectId: string | null = null
 
-  if (!projectResponse.ok) {
-    throw new Error(await readApiErrorMessage(projectResponse, 'Failed to create project'))
-  }
+  try {
+    const projectResponse = await apiFetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: projectName,
+      }),
+    })
 
-  const projectId = await readProjectId(projectResponse)
+    if (!projectResponse.ok) {
+      throw new Error(await readApiErrorMessage(projectResponse, 'Failed to create project'))
+    }
 
-  const configResponse = await apiFetch(`/api/novel-promotion/${projectId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ videoRatio, artStyle }),
-  })
+    projectId = await readProjectId(projectResponse)
 
-  if (!configResponse.ok) {
-    throw new Error(await readApiErrorMessage(configResponse, 'Failed to save project config'))
-  }
+    const configBody: Record<string, string> = { videoRatio, artStyle }
+    if (genrePack && genrePack.trim()) {
+      configBody.genrePack = genrePack.trim()
+    }
 
-  const episodeResponse = await apiFetch(`/api/novel-promotion/${projectId}/episodes`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: episodeName,
-      novelText: storyText,
-    }),
-  })
+    const configResponse = await apiFetch(`/api/novel-promotion/${projectId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(configBody),
+    })
 
-  if (!episodeResponse.ok) {
-    throw new Error(await readApiErrorMessage(episodeResponse, 'Failed to create first episode'))
-  }
+    if (!configResponse.ok) {
+      throw new Error(await readApiErrorMessage(configResponse, 'Failed to save project config'))
+    }
 
-  const episodeId = await readEpisodeId(episodeResponse)
+    const episodeResponse = await apiFetch(`/api/novel-promotion/${projectId}/episodes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: episodeName,
+        novelText: storyText,
+      }),
+    })
 
-  return {
-    projectId,
-    episodeId,
-    target: buildHomeWorkspaceLaunchTarget(projectId, episodeId),
+    if (!episodeResponse.ok) {
+      throw new Error(await readApiErrorMessage(episodeResponse, 'Failed to create first episode'))
+    }
+
+    const episodeId = await readEpisodeId(episodeResponse)
+
+    return {
+      projectId,
+      episodeId,
+      target: buildHomeWorkspaceLaunchTarget(projectId, episodeId),
+    }
+  } catch (error) {
+    if (projectId) {
+      await compensateCreatedHomeProject(apiFetch, projectId)
+    }
+    throw error
   }
 }

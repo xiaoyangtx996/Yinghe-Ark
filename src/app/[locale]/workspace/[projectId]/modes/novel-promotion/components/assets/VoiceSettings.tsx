@@ -203,7 +203,7 @@ export default function VoiceSettings({
                         <button
                             onClick={handlePreviewVoice}
                             className={`w-full mt-2 px-3 py-2 border rounded-lg text-sm font-medium transition-all ${isPreviewingVoice
-                                ? 'bg-[var(--glass-accent-from)] border-[var(--glass-stroke-focus)] text-white hover:bg-[var(--glass-accent-to)]'
+                                ? 'bg-[var(--glass-accent-from)] border-[var(--glass-stroke-focus)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)]'
                                 : 'bg-[var(--glass-tone-info-bg)] border-[var(--glass-stroke-focus)] text-[var(--glass-tone-info-fg)] hover:bg-[var(--glass-tone-info-bg)]'
                                 }`}
                         >

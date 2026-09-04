@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
+import AgentActivityFeed from '@/components/llm-console/AgentActivityFeed'
+import { resolveAgentActivityFeed } from '@/lib/llm-console/agent-activity-feed'
 
 export type LLMStageViewStatus =
   | 'pending'
@@ -184,18 +186,41 @@ export default function LLMStageStreamCard({
   topRightAction,
 }: LLMStageStreamCardProps) {
   const t = useTranslations('progress')
+  const [viewMode, setViewMode] = useState<'simple' | 'detailed'>('simple')
 
   const resolveProgressText = useCallback((value: string | undefined, fallbackKey: string): string => {
     const raw = typeof value === 'string' ? value.trim() : ''
     if (!raw) return t(fallbackKey as never)
-    if (!raw.startsWith(PROGRESS_KEY_PREFIX)) return raw
-    const key = raw.slice(PROGRESS_KEY_PREFIX.length)
-    try {
-      return t(key as never)
-    } catch {
-      return raw
+
+    const translateProgressKey = (fullKey: string): string => {
+      const key = fullKey.startsWith(PROGRESS_KEY_PREFIX)
+        ? fullKey.slice(PROGRESS_KEY_PREFIX.length)
+        : fullKey
+      if (typeof t.has === 'function' && !t.has(key as never)) return fullKey
+      try {
+        return t(key as never)
+      } catch {
+        return fullKey
+      }
     }
+
+    // Exact progress key (worker stageLabel / activeMessage).
+    if (raw.startsWith(PROGRESS_KEY_PREFIX) && !/\s/.test(raw)) {
+      return translateProgressKey(raw)
+    }
+
+    // Embedded keys inside composite subtitles, e.g. "并行组: a/b | progress.runtime.stage.llmStreaming"
+    if (raw.includes(PROGRESS_KEY_PREFIX)) {
+      return raw.replace(/\bprogress\.[a-zA-Z0-9_.]+\b/g, (match) => translateProgressKey(match))
+    }
+
+    return raw
   }, [t])
+
+  const activityFeedItems = useMemo(
+    () => resolveAgentActivityFeed(stages),
+    [stages],
+  )
 
   const statusLabel = useCallback((status: LLMStageViewStatus): string => {
     if (status === 'completed') return t('status.completed')
@@ -348,8 +373,8 @@ export default function LLMStageStreamCard({
     <article className="glass-surface-modal flex h-full w-full flex-col overflow-hidden rounded-2xl text-[var(--glass-text-primary)]">
       <header className="border-b border-[var(--glass-stroke-base)] px-5 py-5 md:px-6">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[15rem_minmax(0,1fr)_auto] md:items-center">
-          <div className="glass-surface-soft rounded-xl border border-[var(--glass-stroke-base)] p-3">
-            <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--glass-text-tertiary)]">
+          <div className="glass-surface-soft rounded-xl p-3">
+            <p className="text-[length:var(--glass-font-size-caption)] uppercase tracking-[0.12em] text-[var(--glass-text-tertiary)]">
               {t('stageCard.stage')}
             </p>
             <p className="mt-1 text-2xl font-semibold text-[var(--glass-text-primary)]">
@@ -361,7 +386,7 @@ export default function LLMStageStreamCard({
           </div>
 
           <div className="min-w-0 text-center">
-            <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--glass-text-tertiary)]">
+            <p className="text-[length:var(--glass-font-size-caption)] uppercase tracking-[0.12em] text-[var(--glass-text-tertiary)]">
               {resolveProgressText(subtitle, 'stageCard.realtimeStream')}
             </p>
             <h2 className="mt-1 text-xl font-semibold text-[var(--glass-text-primary)] md:text-2xl">
@@ -372,7 +397,33 @@ export default function LLMStageStreamCard({
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center justify-start whitespace-nowrap md:justify-end">{topRightAction || null}</div>
+          <div className="flex shrink-0 items-center justify-start gap-2 whitespace-nowrap md:justify-end">
+            <div className="inline-flex rounded-lg border border-[var(--glass-stroke-base)] p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode('simple')}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  viewMode === 'simple'
+                    ? 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-primary)]'
+                    : 'text-[var(--glass-text-tertiary)]'
+                }`}
+              >
+                {t('stageCard.viewSimple')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('detailed')}
+                className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  viewMode === 'detailed'
+                    ? 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-primary)]'
+                    : 'text-[var(--glass-text-tertiary)]'
+                }`}
+              >
+                {t('stageCard.viewDetailed')}
+              </button>
+            </div>
+            {topRightAction || null}
+          </div>
         </div>
 
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--glass-bg-muted)]">
@@ -392,8 +443,30 @@ export default function LLMStageStreamCard({
         )}
       </header>
 
+      {viewMode === 'simple' ? (
+        <div className="min-h-0 flex-1 p-5 md:p-6">
+          <section className="glass-surface-soft flex h-full min-h-[320px] flex-col rounded-xl">
+            <div className="border-b border-[var(--glass-stroke-base)] px-4 py-3">
+              <p className="text-sm font-medium text-[var(--glass-text-primary)]">
+                {t('stageCard.activityTitle')}
+              </p>
+              <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
+                {t('stageCard.outputHiddenHint')}
+              </p>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <AgentActivityFeed
+                items={activityFeedItems}
+                activeId={outputStageId}
+                onSelect={onSelectStage}
+                resolveTitle={(title) => resolveProgressText(title, 'stageCard.currentStage')}
+              />
+            </div>
+          </section>
+        </div>
+      ) : (
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 p-5 md:grid-cols-[17rem_1fr] md:gap-5 md:p-6">
-        <aside className="glass-surface-soft min-h-0 rounded-xl border border-[var(--glass-stroke-base)] p-3">
+        <aside className="glass-surface-soft min-h-0 rounded-xl p-3">
           <ul className="max-h-[40vh] space-y-2 overflow-y-auto pr-1 md:h-full md:max-h-none">
             {stages.map((stage, index) => {
               const isActive = stage.id === outputStageId
@@ -421,11 +494,11 @@ export default function LLMStageStreamCard({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex min-w-0 items-center gap-2">
-                          <span className="glass-chip glass-chip-neutral min-w-6 justify-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                          <span className="glass-chip glass-chip-neutral min-w-6 justify-center rounded-md px-1.5 py-0.5 text-[length:var(--glass-font-size-caption)] font-semibold leading-none">
                             {index + 1}
                           </span>
                           {attempt > 1 && (
-                            <span className="glass-chip glass-chip-warning min-w-6 justify-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                            <span className="glass-chip glass-chip-warning min-w-6 justify-center rounded-md px-1.5 py-0.5 text-[length:var(--glass-font-size-caption)] font-semibold leading-none">
                               ×{attempt}
                             </span>
                           )}
@@ -449,7 +522,7 @@ export default function LLMStageStreamCard({
                           onClick={() => {
                             void onRetryStage(stage.id)
                           }}
-                          className="glass-btn-base glass-btn-primary rounded-md px-2.5 py-1 text-[11px]"
+                          className="glass-btn-base glass-btn-primary rounded-md px-2.5 py-1 text-[length:var(--glass-font-size-caption)]"
                         >
                           重试
                         </button>
@@ -462,7 +535,7 @@ export default function LLMStageStreamCard({
           </ul>
         </aside>
 
-        <section className="glass-surface-soft min-h-[320px] rounded-xl border border-[var(--glass-stroke-base)]">
+        <section className="glass-surface-soft min-h-[320px] rounded-xl">
           <div className="border-b border-[var(--glass-stroke-base)] px-4 py-3 text-sm font-medium text-[var(--glass-text-primary)]">
             {t('stageCard.outputTitle', {
               stage: resolveProgressText(outputStage?.title, 'stageCard.currentStage'),
@@ -479,7 +552,7 @@ export default function LLMStageStreamCard({
                     <div className="border-b border-[var(--glass-stroke-base)] px-3 py-2 text-xs font-semibold text-[var(--glass-text-primary)]">
                       {REASONING_HEADER}
                     </div>
-                    <pre className="min-h-[110px] whitespace-pre-wrap break-words px-3 py-3 font-mono text-[14px] leading-7 text-[var(--glass-text-secondary)]">
+                    <pre className="min-h-[110px] whitespace-pre-wrap break-words px-3 py-3 font-mono text-[length:var(--glass-font-size-body)] leading-7 text-[var(--glass-text-secondary)]">
                       {structuredOutput.reasoning || (structuredOutput.finalText ? t('stageCard.reasoningNotProvided') : t('stageCard.waitingModelOutput'))}
                       {showCursor && !structuredOutput.finalText ? <span className="animate-pulse text-[var(--glass-accent-from)]">▋</span> : null}
                     </pre>
@@ -490,7 +563,7 @@ export default function LLMStageStreamCard({
                     <div className="border-b border-[var(--glass-stroke-base)] px-3 py-2 text-xs font-semibold text-[var(--glass-text-primary)]">
                       {FINAL_HEADER}
                     </div>
-                    <pre className="min-h-[110px] whitespace-pre-wrap break-words px-3 py-3 font-mono text-[14px] leading-7 text-[var(--glass-text-secondary)]">
+                    <pre className="min-h-[110px] whitespace-pre-wrap break-words px-3 py-3 font-mono text-[length:var(--glass-font-size-body)] leading-7 text-[var(--glass-text-secondary)]">
                       {structuredOutput.finalText || t('stageCard.waitingModelOutput')}
                       {showCursor && !!structuredOutput.finalText ? <span className="animate-pulse text-[var(--glass-accent-from)]">▋</span> : null}
                     </pre>
@@ -498,7 +571,7 @@ export default function LLMStageStreamCard({
                 ) : null}
               </div>
             ) : (
-              <pre className="whitespace-pre-wrap break-words font-mono text-[14px] leading-7 text-[var(--glass-text-secondary)]">
+              <pre className="whitespace-pre-wrap break-words font-mono text-[length:var(--glass-font-size-body)] leading-7 text-[var(--glass-text-secondary)]">
                 {renderedOutputText || resolvedPlaceholderText}
                 {showCursor ? <span className="animate-pulse text-[var(--glass-accent-from)]">▋</span> : null}
               </pre>
@@ -506,6 +579,7 @@ export default function LLMStageStreamCard({
           </div>
         </section>
       </div>
+      )}
     </article>
   )
 }

@@ -94,14 +94,14 @@ export default function InsertPanelModal({
                 {/* 标题 */}
                 <div className="px-5 py-3 border-b border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-t-2xl">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-base font-bold text-[var(--glass-text-primary)] flex items-center gap-2">
-                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] text-sm font-bold">+</span>
+                        <h2 className="text-base font-medium text-[var(--glass-text-primary)] flex items-center gap-2">
+                            <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] text-sm font-medium">+</span>
                             {t('insertModal.insertBetween', { before: prevPanel.panelNumber ?? 0, after: nextPanel?.panelNumber ?? '' })}
                         </h2>
                         <button
                             onClick={handleClose}
                             disabled={isInserting}
-                            className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] disabled:opacity-50"
+                            className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]"
                         >
                             <AppIcon name="close" className="w-5 h-5" />
                         </button>
@@ -131,7 +131,7 @@ export default function InsertPanelModal({
 
                         {/* 插入指示 */}
                         <div className="flex flex-col items-center">
-                            <div className="w-10 h-10 rounded-full bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] flex items-center justify-center text-xl font-bold">
+                            <div className="w-10 h-10 rounded-full bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] flex items-center justify-center text-xl font-medium">
                                 +
                             </div>
                         </div>
@@ -195,7 +195,7 @@ export default function InsertPanelModal({
                             onClick={handleInsert}
                             disabled={isInserting || !userInput.trim()}
                             className={`flex-1 py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all
-                                ${isInserting || !userInput.trim() ? 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)]' : 'bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)] shadow-[var(--glass-shadow-md)]'}`}
+                                ${isInserting || !userInput.trim() ? 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)]' : 'bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)] shadow-[var(--glass-shadow-md)]'}`}
                         >
                             {isInserting && userInput ? (
                                 <TaskStatusInline state={insertingState} />

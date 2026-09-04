@@ -29,7 +29,7 @@ export default function VideoPromptModal({
       <div className="bg-[var(--glass-bg-surface)] rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* 标题栏 */}
         <div className="bg-[var(--glass-bg-surface)] border-b px-6 py-4 flex items-center justify-between shrink-0">
-          <h3 className="text-lg font-bold">{t('promptModal.title', { number: panelIndex + 1 })}</h3>
+          <h3 className="text-lg font-medium">{t('promptModal.title', { number: panelIndex + 1 })}</h3>
           <button onClick={onCancel} className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]">
             <AppIcon name="close" className="w-6 h-6" />
           </button>
@@ -90,7 +90,7 @@ export default function VideoPromptModal({
             </button>
             <button
               onClick={onSave}
-              className="glass-btn-base px-4 py-2 bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)]"
+              className="glass-btn-base px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)]"
             >
               {t('promptModal.save')}
             </button>

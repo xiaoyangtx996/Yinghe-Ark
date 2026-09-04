@@ -129,9 +129,9 @@ export default function AssetLibrary({
             <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--glass-stroke-base)]">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-[var(--glass-accent-from)] rounded-2xl flex items-center justify-center shadow-[var(--glass-shadow-md)]">
-                  <AppIcon name="folderCards" className="w-5 h-5 text-white" />
+                  <AppIcon name="folderCards" className="w-5 h-5 text-[var(--glass-text-on-accent)]" />
                 </div>
-                <h2 className="text-2xl font-bold text-[var(--glass-text-primary)]">{t('assetLibrary.title')}</h2>
+                <h2 className="text-2xl font-medium text-[var(--glass-text-primary)]">{t('assetLibrary.title')}</h2>
 
                 {/* 下载按钮 - 紧贴标题 */}
                 <button
@@ -139,7 +139,7 @@ export default function AssetLibrary({
                   onClick={handleDownloadAll}
                   disabled={isDownloading}
                   title={t('common.download')}
-                  className="w-9 h-9 glass-btn-base glass-btn-secondary flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-9 h-9 glass-btn-base glass-btn-secondary flex items-center justify-center disabled:cursor-not-allowed"
                 >
                   <AppIcon
                     name={isDownloading ? 'refresh' : 'download'}

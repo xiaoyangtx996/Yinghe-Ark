@@ -3,9 +3,85 @@
     "scriptBreakdown": "剧本拆解",
     "splitCount": "已拆分 {count} 个分镜",
     "noClips": "暂无分镜，请先在故事视图生成",
+    "eventGraph": {
+        "title": "剧情节点",
+        "hint": "点选 · 拖拽排序 · 前移/后移 · 可与后一段合并",
+        "nodeIndex": "节点 {index}",
+        "location": "场景 · {name}",
+        "noMeta": "暂无角色/场景标签",
+        "kind": {
+            "opening": "开场",
+            "beat": "节拍",
+            "ending": "收束"
+        },
+        "moveEarlier": "前移",
+        "moveLater": "后移",
+        "moveFailed": "调整顺序失败：{error}",
+        "mergeWithNext": "与后一段合并",
+        "merging": "合并中…",
+        "mergeConfirm": "将与后一段合并成一个节点。后一段若已有分镜会被删除；当前节点已有分镜不会自动按合并后剧本更新，确定继续？",
+        "mergeFailed": "合并失败：{error}"
+    },
+    "review": {
+        "title": "出片前自检",
+        "subtitle": "勾选即表示你已经核对过；建议不阻断下一步",
+        "progress": "{checked}/{total}",
+        "collapse": "收起",
+        "expand": "展开",
+        "empty": "生成剧本片段后，这里会出现自检清单",
+        "llmRun": "AI 核对",
+        "llmRunning": "核对中…",
+        "llmNeedEpisode": "请先选择剧集后再核对",
+        "llmFailed": "AI 核对失败：{error}",
+        "llmEmpty": "AI 未发现明显问题，可再人工勾选确认。",
+        "llmFindingsTitle": "AI 建议",
+        "llmUnavailable": "AI 核对暂不可用",
+        "hints": {
+            "no_clips": "还没有片段，先在故事页跑一遍「故事→剧本」。",
+            "single_clip": "目前只有 1 个片段：确认开场压力与收束悬念是否都在这一段里说清。",
+            "missing_summary": "有片段缺少摘要：补一句「这段发生了什么」方便自检。",
+            "missing_characters": "有片段未标角色：补上出场人物，后续资产与对白更稳。",
+            "missing_location": "有片段未标场景：可选，但标了更利于分镜。"
+        },
+        "gates": {
+            "opening_pressure": {
+                "label": "开场有压力吗？",
+                "tip": "一上来观众能否感到「有事要崩」或「有东西要守」"
+            },
+            "want_vs_block": {
+                "label": "主角要什么、谁在挡？",
+                "tip": "本集欲望要具体；阻力也要看得见，别只写气氛"
+            },
+            "turn_choice": {
+                "label": "转折是主角选的吗？",
+                "tip": "重大转向最好由主角选择造成；纯救援/巧合会显得被动"
+            },
+            "local_payoff": {
+                "label": "悬念前有没有本集回报？",
+                "tip": "吊胃口之前，先给一点看得见的结果或兑现"
+            },
+            "next_state": {
+                "label": "下一集接手什么状态？",
+                "tip": "关系/信息/代价/时间，至少说清一项"
+            },
+            "scene_change": {
+                "label": "每个片段有没有变一点？",
+                "tip": "信息、关系、所有权、风险或不可逆结果，至少变一项"
+            },
+            "dialogue_want": {
+                "label": "对白是在要东西吗？",
+                "tip": "避免纯设定讲解；每句最好在威胁、讨价、隐瞒或证明"
+            },
+            "turn_setup": {
+                "label": "大转折有铺垫吗？",
+                "tip": "别让巧合单独扛主线；前面要有可回看的原因"
+            }
+        }
+    },
     "segment": {
         "title": "片段 {index}",
-        "selected": "(选中)"
+        "selected": "(选中)",
+        "collapsedHint": "点击展开正文"
     },
     "inSceneAssets": "剧中资产",
     "currentSelected": "当前选中: 片段 {number}",

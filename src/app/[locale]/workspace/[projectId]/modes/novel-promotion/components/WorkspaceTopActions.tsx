@@ -45,25 +45,33 @@ export default function WorkspaceTopActions({
   return (
     <div className="fixed top-[4.75rem] right-6 z-40 flex gap-2">
       <button
+        type="button"
         onClick={onOpenAssetLibrary}
+        title={assetLibraryLabel}
+        aria-label={assetLibraryLabel}
         className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
       >
         <AppIcon name="package" className="h-4 w-4" />
         <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{assetLibraryLabel}</span>
       </button>
       <button
+        type="button"
         onClick={onOpenSettings}
+        title={settingsLabel}
+        aria-label={settingsLabel}
         className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
       >
         <AppIcon name="settingsHexMinor" className="h-4 w-4" />
         <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{settingsLabel}</span>
       </button>
       <button
+        type="button"
         onClick={handleRefreshClick}
         className={`glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)] ${
           isRefreshing ? 'opacity-60 cursor-wait' : ''
         }`}
         title={refreshTitle}
+        aria-label={refreshTitle}
         disabled={isRefreshing}
       >
         <AppIcon name="refresh" className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />

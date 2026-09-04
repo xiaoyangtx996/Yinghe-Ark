@@ -1,163 +1,147 @@
 <p align="center">
-  <a href="https://www.waoowaoo.com/">
-    <img src="images/cta-banner.png" alt="🚀 探索 AI 影视的下一代创作流 | 立即加入 waoowaoo 在线网页版内测候补" width="800">
-  </a>
+  <img src="./assets/readme/hero.png" width="100%" alt="影核 Ark — 从剧本到成片的开源 AI 影视 Studio">
+</p>
+
+<h1 align="center">影核 Ark</h1>
+
+<p align="center">
+  面向短剧与漫剧的开源 AI 创作台：解析文本、生成角色与场景、排分镜、配音并导出成片。
 </p>
 
 <p align="center">
-  <a href="https://trendshift.io/repositories/22585?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-22585" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/22585/daily" alt="waooAI%2Fwaoowaoo | Trendshift" width="250" height="55"/>
-  </a>
-</p>
-
-<h1 align="center">waoowaoo AI 影视 Studio</h1>
-
-<p align="center">
-  一款基于 AI 技术的短剧/漫画视频制作工具，支持从小说文本自动生成分镜、角色、场景，并制作成完整视频。
+  <a href="README_en.md">English</a>
+  ·
+  <a href="https://github.com/xiaoyangtx996/Yinghe-Ark/issues">Issues</a>
 </p>
 
 <p align="center">
-  <a href="README_en.md">English</a> · <a href="https://www.waoowaoo.com/">加入内测候补</a> · <a href="https://github.com/saturndec/waoowaoo/issues">反馈问题</a>
+  <img src="./assets/readme/workflow.svg" width="100%" alt="制作管线：文本解析 → 角色场景 → 分镜 → 配音 → 成片">
 </p>
-
-> [!IMPORTANT]
-> ⚠️ **测试版声明**：本项目目前处于测试初期阶段，由于暂时只有我一个人开发，存在部分 bug 和不完善之处。我们正在快速迭代更新中，**欢迎进群反馈问题和需求，及时关注项目更新！目前更新会非常频繁，后续会增加大量新功能以及优化效果，我们的目标是成为行业最强AI工具！**
-
-<img src="https://github.com/user-attachments/assets/d190bf41-488d-47df-a5df-06346ef0f2f5" width="30%">
-
----
-## ✨ 功能特性
-
-- 🎬 **AI 剧本分析** — 自动解析小说，提取角色、场景、剧情
-- 🎨 **角色 & 场景生成** — AI 生成一致性人物和场景图片
-- 📽️ **分镜视频制作** — 自动生成分镜头并合成视频
-- 🎙️ **AI 配音** — 多角色语音合成
-- 🌐 **多语言支持** — 中文 / 英文界面，右上角一键切换
 
 ---
 
-## 🚀 快速开始
+## 它是什么
 
-**前提条件**：安装 [Docker Desktop](https://docs.docker.com/get-docker/)
+影核 Ark（Yinghe Ark）把「小说 / 剧本 → 可看短片」拆成可回看、可重跑的工作台阶段，而不是一次性黑盒出片。
 
-### 方式一：拉取预构建镜像（最简单）
+| 阶段 | 你得到什么 |
+| --- | --- |
+| 文本解析 | 角色、场次、冲突与对白结构 |
+| 角色与场景 | 可复用的一致性人物 / 场景资产 |
+| 分镜排镜 | 可改提示词、可重跑单镜 |
+| 配音与成片 | 多角色语音 + 镜头合成导出 |
 
-无需克隆仓库，下载即用：
+---
+
+## 功能一览
+
+- **AI 剧本分析** — 从小说或草稿抽出角色、场景与剧情节点
+- **角色 & 场景生成** — 跨镜头保持外貌与空间一致
+- **分镜视频** — 文字转镜头，支持局部重跑
+- **AI 配音** — 多角色语音合成
+- **资产中心** — 角色 / 场景 / 道具跨项目复用
+- **中英双语** — 界面一键切换
+
+---
+
+## 快速开始
+
+**前提**：安装 [Docker Desktop](https://docs.docker.com/get-docker/)（方式一、二）或本机 Node 18+、MySQL、Redis、MinIO（方式三）。
+
+### 方式一：拉取预构建镜像
 
 ```bash
-# 下载 docker-compose.yml
-curl -O https://raw.githubusercontent.com/saturndec/waoowaoo/main/docker-compose.yml
-
-# 启动所有服务
+curl -O https://raw.githubusercontent.com/xiaoyangtx996/Yinghe-Ark/main/docker-compose.yml
 docker compose up -d
 ```
 
-> ⚠️ 当前为测试版，版本间数据库不兼容。升级请先清除旧数据：
+测试版数据库可能不兼容升级。升级前请先：
 
 ```bash
 docker compose down -v
-docker rmi ghcr.io/saturndec/waoowaoo:latest
-curl -O https://raw.githubusercontent.com/saturndec/waoowaoo/main/docker-compose.yml
 docker compose up -d
 ```
 
-> 启动后请**清空浏览器缓存**并重新登录，避免旧版本缓存导致异常。
+启动后建议清空浏览器缓存再登录。默认访问 [http://localhost:13000](http://localhost:13000)。
 
-### 方式二：克隆仓库 + Docker 构建（完全控制）
+### 方式二：克隆仓库 + Docker 构建
 
 ```bash
-git clone https://github.com/saturndec/waoowaoo.git
-cd waoowaoo
+git clone https://github.com/xiaoyangtx996/Yinghe-Ark.git
+cd Yinghe-Ark
 docker compose up -d
 ```
 
-更新版本：
+更新：
+
 ```bash
 git pull
 docker compose down && docker compose up -d --build
 ```
 
-### 方式三：本地开发模式（开发者）
+### 方式三：本地开发
 
 ```bash
-git clone https://github.com/saturndec/waoowaoo.git
-cd waoowaoo
+git clone https://github.com/xiaoyangtx996/Yinghe-Ark.git
+cd Yinghe-Ark
 
-# 复制环境变量配置文件（必须在 npm install 之前完成）
 cp .env.example .env
-# ⚠️ 编辑 .env，填入你的 AI API Key（NEXTAUTH_URL 默认已是 http://localhost:3000，无需修改）
+# 编辑 .env：填入 AI API Key；按本机端口调整 MySQL / Redis / MinIO
 
 npm install
 
-# 只启动基础设施
-# 注意：docker-compose.yml 将服务映射到非标准端口，.env.example 已按此预设
-mysql:13306  redis:16379  minio:19000
+# 若使用仓库自带 docker-compose 基础设施（宿主机端口见 .env.example）：
 docker compose up mysql redis minio -d
 
-# 初始化数据库表结构（首次必须执行，跳过会导致启动后报错）
 npx prisma db push
-
-# 启动开发服务器
 npm run dev
 ```
 
 > [!WARNING]
-> 跳过 `npx prisma db push` 会导致所有数据库表不存在，启动后报错 `The table 'tasks' does not exist`。请务必先运行此命令再启动开发服务器。
+> 跳过 `npx prisma db push` 会导致表不存在（例如 `tasks`），启动后必报错。
+
+开发模式默认访问 [http://localhost:3000](http://localhost:3000)。
+
+若你本机已有 MySQL `3306` / Redis `6379`，可在 `.env` 中改端口，不必强行起 Docker 映射端口。
 
 ---
 
-访问 [http://localhost:13000](http://localhost:13000)（方式一、二）或 [http://localhost:3000](http://localhost:3000)（方式三）开始使用！
+## API 配置
 
-> 首次启动会自动完成数据库初始化，无需任何额外配置。
+启动后进入**设置中心**配置各模型服务商的 API Key（内置配置引导）。
 
-> [!TIP]
-> **如果遇到网页卡顿**：HTTP 模式下浏览器可能限制并发连接。可安装 [Caddy](https://caddyserver.com/docs/install) 启用 HTTPS：
-> ```bash
-> caddy run --config Caddyfile
-> ```
-> 然后访问 [https://localhost:1443](https://localhost:1443)
+目前更推荐官方 API；第三方 OpenAI Compatible 仍在完善中。
 
 ---
 
-## 🔧 API 配置
+## 技术栈
 
-启动后进入**设置中心**配置 AI 服务的 API Key，内置配置教程。
-
-> 💡 **注意**：目前仅推荐使用各服务商官方 API，第三方兼容格式（OpenAI Compatible）尚不完善，后续版本会持续优化。
-
----
-
-## 📦 技术栈
-
-- **框架**: Next.js 15 + React 19
-- **数据库**: MySQL + Prisma ORM
-- **队列**: Redis + BullMQ
-- **样式**: Tailwind CSS v4
-- **认证**: NextAuth.js
+- **应用**：Next.js 15 · React 19 · Tailwind CSS v4
+- **数据**：MySQL · Prisma
+- **任务**：Redis · BullMQ
+- **认证**：NextAuth.js
+- **存储**：MinIO（S3 兼容）
 
 ---
 
-## 📦 页面功能预览
+## 界面预览
 
-![4f7b913264f7f26438c12560340e958c67fa833a](https://github.com/user-attachments/assets/fa0e9c57-9ea0-4df3-893e-b76c4c9d304b)
-![67509361cbe6809d2496a550de5733b9f99a9702](https://github.com/user-attachments/assets/f2fb6a64-5ba8-4896-a064-be0ded213e42)
-![466e13c8fd1fc799d8f588c367ebfa24e1e99bf7](https://github.com/user-attachments/assets/09bbff39-e535-4c67-80a9-69421c3b05ee)
-![c067c197c20b0f1de456357c49cdf0b0973c9b31](https://github.com/user-attachments/assets/688e3147-6e95-43b0-b9e7-dd9af40db8a0)
-
----
-
-## 🤝 参与方式
-
-本项目由核心团队独立维护。欢迎你通过以下方式参与：
-
-- 🐛 提交 [Issue](https://github.com/saturndec/waoowaoo/issues) 反馈 Bug
-- 💡 提交 [Issue](https://github.com/saturndec/waoowaoo/issues) 提出功能建议
-- 🔧 提交 Pull Request 供参考 — 我们会认真审阅每一个 PR 的思路，但最终由团队自行实现修复，不会直接合并外部 PR
+![工作台预览 1](https://github.com/user-attachments/assets/fa0e9c57-9ea0-4df3-893e-b76c4c9d304b)
+![工作台预览 2](https://github.com/user-attachments/assets/f2fb6a64-5ba8-4896-a064-be0ded213e42)
+![工作台预览 3](https://github.com/user-attachments/assets/09bbff39-e535-4c67-80a9-69421c3b05ee)
+![工作台预览 4](https://github.com/user-attachments/assets/688e3147-6e95-43b0-b9e7-dd9af40db8a0)
 
 ---
 
-**Made with ❤️ by waoowaoo team**
+## 状态与参与
 
-## Star History
+项目仍在快速迭代，欢迎通过 Issue 反馈问题与需求。
 
-[![Star History Chart](https://api.star-history.com/svg?repos=saturndec/waoowaoo&type=date&legend=top-left)](https://www.star-history.com/#saturndec/waoowaoo&type=date&legend=top-left)
+- 🐛 [提交 Bug](https://github.com/xiaoyangtx996/Yinghe-Ark/issues)
+- 💡 [功能建议](https://github.com/xiaoyangtx996/Yinghe-Ark/issues)
+
+---
+
+<p align="center">
+  <img src="./public/brand/logo-horizontal.png" alt="影核 Ark" height="40">
+</p>

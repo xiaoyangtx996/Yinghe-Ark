@@ -1,4 +1,60 @@
 {
+  "review": {
+    "title": "Pre-export self-check",
+    "subtitle": "Check items you verified — hints never block generation",
+    "progress": "{checked}/{total}",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "empty": "Self-check appears once panels are available",
+    "llmRun": "AI review",
+    "llmRunning": "Reviewing…",
+    "llmNeedEpisode": "Select an episode before running AI review",
+    "llmFailed": "AI review failed: {error}",
+    "llmEmpty": "AI found no major issues — still worth a quick manual check.",
+    "llmFindingsTitle": "AI suggestions",
+    "hints": {
+      "no_panels": "No panels yet — finish storyboard first.",
+      "single_panel": "Only one panel — confirm action and dialogue coverage.",
+      "panels_missing_image": "Some panels lack a still frame — generate images first.",
+      "panels_missing_video": "Some panels have no clip yet — batch or generate per shot.",
+      "panels_missing_prompt": "Some panels lack a motion prompt — describe how the shot moves.",
+      "panels_failed": "Some panels failed — read the error and retry."
+    },
+    "gates": {
+      "motion_from_frame": {
+        "label": "Does motion start from the still?",
+        "tip": "Do not invent a new look — continue from the storyboard frame"
+      },
+      "action_small_clear": {
+        "label": "Are actions short and clear?",
+        "tip": "Fewer simultaneous moves; performance change should be readable"
+      },
+      "no_new_story": {
+        "label": "Any invented story facts?",
+        "tip": "No unplanned grabs, relationship flips, or new lines"
+      },
+      "dialogue_match": {
+        "label": "Is dialogue ownership correct?",
+        "tip": "Speaker, lip-sync need, and VO should not be mixed up"
+      },
+      "cut_continuity": {
+        "label": "Do adjacent clips cut cleanly?",
+        "tip": "Facing, props, and emotion should not jump without reason"
+      },
+      "prompt_focused": {
+        "label": "Does the prompt describe motion?",
+        "tip": "Avoid dumping the full character bible into every shot"
+      },
+      "audio_intent": {
+        "label": "Is audio intent clear?",
+        "tip": "If you need voice or lip-sync, confirm audio readiness"
+      },
+      "playback_ready": {
+        "label": "Can key shots play through?",
+        "tip": "Retry failures before export / editor"
+      }
+    }
+  },
   "panelCard": {
     "play": "Play",
     "pause": "Pause",

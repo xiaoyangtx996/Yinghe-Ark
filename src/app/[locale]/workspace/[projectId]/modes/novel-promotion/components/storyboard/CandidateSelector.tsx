@@ -49,13 +49,13 @@ export default function CandidateSelector({
     <div className="mb-4 p-4 glass-surface-soft border border-[var(--glass-stroke-focus)]">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h4 className="font-bold text-[var(--glass-text-primary)] text-sm">{t('candidate.title')}</h4>
+          <h4 className="font-medium text-[var(--glass-text-primary)] text-sm">{t('candidate.title')}</h4>
           <p className="text-xs text-[var(--glass-text-tertiary)]">{t('image.clickToPreview')}</p>
         </div>
         <button
           onClick={onCancel}
           disabled={isConfirming}
-          className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] disabled:cursor-not-allowed"
         >
           <AppIcon name="close" className="w-5 h-5" />
         </button>
@@ -89,12 +89,12 @@ export default function CandidateSelector({
               </div>
             )}
             {selectedIndex === 0 && (
-              <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--glass-accent-from)] text-white rounded-full flex items-center justify-center shadow">
+              <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-full flex items-center justify-center shadow">
                 <AppIcon name="checkSm" className="w-3 h-3" />
               </div>
             )}
             {/* 放大图标 */}
-            <div className="absolute bottom-1 right-1 w-5 h-5 bg-[var(--glass-overlay)] text-white rounded flex items-center justify-center">
+            <div className="absolute bottom-1 right-1 w-5 h-5 bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] rounded flex items-center justify-center">
               <AppIcon name="searchPlus" className="w-3 h-3" />
             </div>
           </button>
@@ -122,12 +122,12 @@ export default function CandidateSelector({
                 className="w-full h-full object-cover"
               />
               {selectedIndex === index + 1 && (
-                <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--glass-accent-from)] text-white rounded-full flex items-center justify-center shadow">
+                <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-full flex items-center justify-center shadow">
                   <AppIcon name="checkSm" className="w-3 h-3" />
                 </div>
               )}
               {/* 放大图标 */}
-              <div className="absolute bottom-1 right-1 w-5 h-5 bg-[var(--glass-overlay)] text-white rounded flex items-center justify-center">
+              <div className="absolute bottom-1 right-1 w-5 h-5 bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] rounded flex items-center justify-center">
                 <AppIcon name="searchPlus" className="w-3 h-3" />
               </div>
             </button>
@@ -145,7 +145,7 @@ export default function CandidateSelector({
           <button
             onClick={onCancel}
             disabled={isConfirming}
-            className="px-4 py-2 text-sm text-[var(--glass-text-secondary)] bg-[var(--glass-bg-muted)] rounded-lg hover:bg-[var(--glass-bg-muted)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm text-[var(--glass-text-secondary)] bg-[var(--glass-bg-muted)] rounded-lg hover:bg-[var(--glass-bg-muted)] transition-all active:scale-95 disabled:cursor-not-allowed"
           >
             {t("candidate.cancel")}
           </button>
@@ -155,10 +155,10 @@ export default function CandidateSelector({
               onConfirm()
             }}
             disabled={isConfirming}
-            className="px-5 py-2 text-sm bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
+            className="px-5 py-2 text-sm bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)] transition-all active:scale-95 disabled:cursor-not-allowed flex items-center gap-1.5 shadow-sm"
           >
             {isConfirming ? (
-              <TaskStatusInline state={confirmingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+              <TaskStatusInline state={confirmingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
             ) : (
               <>
                 <AppIcon name="check" className="w-4 h-4" />

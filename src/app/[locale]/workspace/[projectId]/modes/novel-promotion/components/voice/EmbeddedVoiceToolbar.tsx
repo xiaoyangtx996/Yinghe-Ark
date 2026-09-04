@@ -75,11 +75,11 @@ export default function EmbeddedVoiceToolbar({
                 <button
                     onClick={onAnalyze}
                     disabled={analyzing}
-                    className="glass-btn-base glass-btn-primary flex items-center gap-2 px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="glass-btn-base glass-btn-primary flex items-center gap-2 px-4 py-2 font-medium disabled:cursor-not-allowed"
                     title={totalLines > 0 ? t("embedded.reanalyzeHint") : t("embedded.analyzeHint")}
                 >
                     {analyzing ? (
-                        <TaskStatusInline state={voiceAnalyzingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                        <TaskStatusInline state={voiceAnalyzingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                     ) : totalLines > 0 ? t("embedded.reanalyze") : t("embedded.analyzeLines")}
                 </button>
 
@@ -94,11 +94,11 @@ export default function EmbeddedVoiceToolbar({
                 <button
                     onClick={onDownloadAll}
                     disabled={linesWithAudio === 0 || isDownloading}
-                    className="glass-btn-base glass-btn-tone-info flex items-center gap-2 px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="glass-btn-base glass-btn-tone-info flex items-center gap-2 px-4 py-2 font-medium disabled:cursor-not-allowed"
                     title={linesWithAudio === 0 ? t("toolbar.noDownload") : t("toolbar.downloadCount", { count: linesWithAudio })}
                 >
                     {isDownloading ? (
-                        <TaskStatusInline state={voiceDownloadingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                        <TaskStatusInline state={voiceDownloadingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                     ) : (
                         <>{t("embedded.downloadVoice")}</>
                     )}
@@ -108,13 +108,13 @@ export default function EmbeddedVoiceToolbar({
                 <button
                     onClick={onGenerateAll}
                     disabled={isBatchSubmitting || !allSpeakersHaveVoice || totalLines === 0}
-                    className="glass-btn-base glass-btn-tone-success flex items-center gap-2 px-4 py-2 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="glass-btn-base glass-btn-tone-success flex items-center gap-2 px-4 py-2 font-medium disabled:cursor-not-allowed"
                     title={getGenerateButtonTitle()}
                 >
                     {isBatchSubmitting ? (
                         <>
-                            <TaskStatusInline state={voiceTaskRunningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
-                            <span className="text-xs text-white/90">{t("embedded.generatingProgress", { current: runningCount, total: totalLines - linesWithAudio })}</span>
+                            <TaskStatusInline state={voiceTaskRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
+                            <span className="text-xs text-[color-mix(in_srgb,var(--glass-text-on-accent)_90%,transparent)]">{t("embedded.generatingProgress", { current: runningCount, total: totalLines - linesWithAudio })}</span>
                         </>
                     ) : (
                         <>

@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import Navbar from '@/components/Navbar'
-import { AppIcon, IconGradientDefs } from '@/components/ui/icons'
+import { AppIcon } from '@/components/ui/icons'
 import StoryInputComposer from '@/components/story-input/StoryInputComposer'
 import TypewriterHero from '@/components/home/TypewriterHero'
 import { ART_STYLES, VIDEO_RATIOS } from '@/lib/constants'
@@ -18,8 +18,12 @@ import { apiFetch } from '@/lib/api-fetch'
 import { expandHomeStory } from '@/lib/home/ai-story-expand'
 import { createHomeProjectLaunch } from '@/lib/home/create-project-launch'
 import { formatDefaultProjectTimestamp } from '@/lib/projects/default-name'
+import { formatProjectStatsLine } from '@/lib/projects/format-project-stats'
 import { HOME_QUICK_START_MIN_ROWS } from '@/lib/ui/textarea-height'
 import AiWriteModal from '@/components/home/AiWriteModal'
+import CreateConfirmWizard from '@/components/home/CreateConfirmWizard'
+import ProjectCardCover from '@/components/projects/ProjectCardCover'
+import { getGenrePackOption } from '@/lib/genre-packs'
 
 interface ProjectStats {
   episodes: number
@@ -27,6 +31,7 @@ interface ProjectStats {
   videos: number
   panels: number
   firstEpisodePreview: string | null
+  coverImageUrl?: string | null
 }
 
 interface Project {
@@ -35,6 +40,7 @@ interface Project {
   description: string | null
   createdAt: string
   updatedAt: string
+  genrePack?: string | null
   stats?: ProjectStats
 }
 
@@ -56,6 +62,7 @@ export default function HomePage() {
   const [createError, setCreateError] = useState<string | null>(null)
   const [aiWriteOpen, setAiWriteOpen] = useState(false)
   const [aiWriteLoading, setAiWriteLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   // 鉴权
   useEffect(() => {
@@ -91,7 +98,14 @@ export default function HomePage() {
     }
   }, [session, fetchRecentProjects])
 
-  // 创建项目并跳转
+  // 打开确认向导（未确认前不创建项目）
+  const handleOpenConfirm = () => {
+    if (!inputValue.trim() || createLoading) return
+    setCreateError(null)
+    setConfirmOpen(true)
+  }
+
+  // 确认后创建项目并跳转
   const handleCreate = async () => {
     if (!inputValue.trim() || createLoading) return
     setCreateError(null)
@@ -106,9 +120,11 @@ export default function HomePage() {
         storyText,
         videoRatio,
         artStyle,
+        genrePack: stylePresetValue || null,
         episodeName: `${tc('episode')} 1`,
       })
 
+      setConfirmOpen(false)
       router.push(result.target)
     } catch (error) {
       const message = error instanceof Error ? error.message : t('createFailed')
@@ -163,7 +179,11 @@ export default function HomePage() {
 
   if (status === 'loading' || !session) {
     return (
-      <div className="glass-page min-h-screen flex items-center justify-center">
+      <div className="glass-page flex min-h-screen flex-col items-center justify-center gap-3">
+        <span
+          className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--glass-stroke-strong)] border-t-[var(--film-gold)]"
+          aria-hidden
+        />
         <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
       </div>
     )
@@ -201,9 +221,9 @@ export default function HomePage() {
             stylePresetOptions={STYLE_PRESETS}
             primaryAction={(
               <button
-                onClick={() => void handleCreate()}
+                onClick={handleOpenConfirm}
                 disabled={!inputValue.trim() || createLoading}
-                className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm disabled:opacity-50"
+                className="glass-btn-base glass-btn-primary h-10 flex-shrink-0 px-5 text-sm"
               >
                 {createLoading ? tc('loading') : t('startCreation')}
                 <AppIcon name="arrowRight" className="w-4 h-4" />
@@ -222,7 +242,7 @@ export default function HomePage() {
               </button>
             )}
             footer={createError ? (
-              <p className="rounded-[10px] border border-[var(--glass-stroke-danger)] bg-[var(--glass-tone-danger-bg)] px-4 py-3 text-sm text-[var(--glass-tone-danger-fg)]">
+              <p className="rounded-[var(--glass-radius-sm)] border border-[var(--glass-stroke-danger)] bg-[var(--glass-tone-danger-bg)] px-4 py-3 text-sm text-[var(--glass-tone-danger-fg)]">
                 {createError}
               </p>
             ) : null}
@@ -236,12 +256,34 @@ export default function HomePage() {
           onStart={(prompt) => void handleAiWriteStart(prompt)}
           t={(key: string) => t(`aiWrite.${key}`)}
         />
+
+        <CreateConfirmWizard
+          open={confirmOpen}
+          draft={{
+            storyText: inputValue,
+            videoRatio,
+            artStyle,
+            genrePack: stylePresetValue,
+          }}
+          onDraftChange={(next) => {
+            setInputValue(next.storyText)
+            setVideoRatio(next.videoRatio)
+            setArtStyle(next.artStyle)
+            setStylePresetValue(next.genrePack)
+          }}
+          submitting={createLoading}
+          onCancel={() => {
+            if (!createLoading) setConfirmOpen(false)
+          }}
+          onConfirm={() => void handleCreate()}
+          t={(key, values) => t(`confirmWizard.${key}` as never, values as never)}
+        />
       </main>
 
-      {/* 最近项目 */}
+      {/* 最近项目 — 少卡时收窄网格，避免左侧单卡 + 右侧大空 */}
       <section className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6 lg:px-8">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[15px] font-bold text-[var(--glass-text-primary)]">{t('recentProjects')}</h2>
+          <h2 className="text-[length:var(--glass-font-size-title)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">{t('recentProjects')}</h2>
           <Link
             href={{ pathname: '/workspace' }}
             className="text-xs font-medium text-[var(--glass-text-secondary)] transition-colors hover:text-[var(--film-gold)]"
@@ -251,7 +293,7 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="glass-surface animate-pulse overflow-hidden">
                 <div className="aspect-[16/10] bg-[var(--glass-bg-muted)]" />
@@ -268,63 +310,66 @@ export default function HomePage() {
             <p className="text-sm text-[var(--glass-text-tertiary)]">{t('noProjects')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {projects.map((project, index) => (
+          <div
+            className={`mx-auto grid grid-cols-1 gap-3 ${
+              projects.length === 1
+                ? 'max-w-sm'
+                : projects.length === 2
+                  ? 'max-w-2xl sm:grid-cols-2'
+                  : projects.length === 3
+                    ? 'max-w-5xl sm:grid-cols-2 lg:grid-cols-3'
+                    : 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+            }`}
+          >
+            {projects.map((project, index) => {
+              const statsLine = formatProjectStatsLine(project.stats, (key, n) => {
+                if (key === 'episodes') return t('statsEpisodesShort', { n })
+                if (key === 'panels') return t('statsPanelsShort', { n })
+                if (key === 'images') return t('statsImagesShort', { n })
+                return t('statsVideosShort', { n })
+              })
+              return (
               <Link
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
                 className="glass-surface group block overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
               >
-                <div
-                  className="aspect-[16/10] border-b border-[var(--glass-stroke-base)]"
-                  style={{
-                    background:
-                      index % 3 === 0
-                        ? 'linear-gradient(135deg, #3a2e24, #1a1612)'
-                        : index % 3 === 1
-                          ? 'linear-gradient(135deg, #2f3a32, #15120f)'
-                          : 'linear-gradient(135deg, #2a3340, #15120f)',
-                  }}
+                <ProjectCardCover
+                  name={project.name}
+                  coverImageUrl={project.stats?.coverImageUrl}
+                  genrePack={project.genrePack}
+                  seedIndex={index}
                 />
                 <div className="p-3">
-                  <h3 className="mb-1 line-clamp-1 text-sm font-bold text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
+                  <h3 className="mb-1 line-clamp-1 text-sm font-medium text-[var(--glass-text-primary)] transition-colors group-hover:text-[var(--film-gold)]">
                     {project.name}
                   </h3>
+                  {(() => {
+                    const genreLabel = getGenrePackOption(project.genrePack)?.label
+                    return genreLabel ? (
+                      <p className="mb-1 text-[length:var(--glass-font-size-caption)] font-medium leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
+                        {genreLabel}
+                      </p>
+                    ) : null
+                  })()}
                   {(project.description || project.stats?.firstEpisodePreview) && (
                     <p className="mb-2 line-clamp-2 text-xs leading-relaxed text-[var(--glass-text-secondary)]">
                       {project.description || project.stats?.firstEpisodePreview}
                     </p>
                   )}
-                  {project.stats && (project.stats.episodes > 0 || project.stats.images > 0 || project.stats.videos > 0) && (
-                    <div className="mb-2 flex items-center gap-3 text-xs font-semibold text-[var(--glass-text-secondary)]">
-                      <IconGradientDefs className="absolute h-0 w-0" aria-hidden="true" />
-                      {project.stats.episodes > 0 && (
-                        <span className="inline-flex items-center gap-1">
-                          <AppIcon name="statsEpisodeGradient" className="h-3.5 w-3.5" />
-                          {project.stats.episodes}
-                        </span>
-                      )}
-                      {project.stats.images > 0 && (
-                        <span className="inline-flex items-center gap-1">
-                          <AppIcon name="statsImageGradient" className="h-3.5 w-3.5" />
-                          {project.stats.images}
-                        </span>
-                      )}
-                      {project.stats.videos > 0 && (
-                        <span className="inline-flex items-center gap-1">
-                          <AppIcon name="statsVideoGradient" className="h-3.5 w-3.5" />
-                          {project.stats.videos}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1 text-[10px] text-[var(--glass-text-tertiary)]">
+                  {statsLine ? (
+                    <p className="mb-2 text-xs font-semibold text-[var(--glass-text-secondary)]">
+                      {statsLine}
+                    </p>
+                  ) : null}
+                  <div className="flex items-center gap-1 text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
                     <AppIcon name="clock" className="h-3 w-3" />
                     {formatTimeAgo(project.updatedAt)}
                   </div>
                 </div>
               </Link>
-            ))}
+              )
+            })}
           </div>
         )}
       </section>

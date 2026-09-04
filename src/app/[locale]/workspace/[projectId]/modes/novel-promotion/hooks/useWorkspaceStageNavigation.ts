@@ -47,13 +47,12 @@ export function useWorkspaceStageNavigation({
     { id: 'script', icon: 'A', label: t('stages.script'), status: getStageStatus('assets') },
     { id: 'storyboard', icon: 'B', label: t('stages.storyboard'), status: getStageStatus('storyboard') },
     { id: 'videos', icon: 'V', label: t('stages.video'), status: getStageStatus('videos') },
+    { id: 'voice', icon: 'A', label: t('stages.voice'), status: getStageStatus('voice') },
     {
       id: 'editor',
       icon: 'E',
       label: t('stages.editor'),
-      status: 'empty',
-      disabled: true,
-      disabledLabel: t('stages.editorComingSoon'),
+      status: getStageStatus('editor'),
     },
   ]
 }

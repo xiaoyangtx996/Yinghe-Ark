@@ -117,7 +117,7 @@ export default function FirstLastFramePanel({
                 }}
               />
             )}
-            <span className="absolute bottom-1 left-1 bg-[var(--glass-accent-from)] text-white text-[10px] px-1 rounded">{t("firstLastFrame.firstFrame")}</span>
+            <span className="absolute bottom-1 left-1 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] text-[length:var(--glass-font-size-caption)] px-1 rounded">{t("firstLastFrame.firstFrame")}</span>
           </div>
           <AppIcon name="arrowRight" className="w-4 h-4 text-[var(--glass-tone-info-fg)]" />
           <div className="flex-1 bg-[var(--glass-bg-muted)] rounded overflow-hidden relative" style={{ aspectRatio: cssAspectRatio }}>
@@ -132,7 +132,7 @@ export default function FirstLastFramePanel({
                 }}
               />
             )}
-            <span className="absolute bottom-1 left-1 bg-[var(--glass-tone-warning-fg)] text-white text-[10px] px-1 rounded">{t("firstLastFrame.lastFrame")}</span>
+            <span className="absolute bottom-1 left-1 bg-[var(--glass-tone-warning-fg)] text-[var(--glass-text-on-accent)] text-[length:var(--glass-font-size-caption)] px-1 rounded">{t("firstLastFrame.lastFrame")}</span>
           </div>
         </div>
         {/* 首尾帧提示词编辑 */}
@@ -161,15 +161,15 @@ export default function FirstLastFramePanel({
         <button
           onClick={() => onGenerate(panel.storyboardId, panel.panelIndex, nextPanel.storyboardId, nextPanel.panelIndex, panelKey, flGenerationOptions, panel.panelId)}
           disabled={isVideoTaskRunning || !panel.imageUrl || !nextPanel.imageUrl || !flModel || hasMissingCapabilities}
-          className={`glass-btn-base flex-1 py-2 text-sm font-medium disabled:opacity-50 ${isFirstLastFrameGenerated
-            ? 'bg-[var(--glass-tone-success-fg)] text-white'
+          className={`glass-btn-base flex-1 py-2 text-sm font-medium ${isFirstLastFrameGenerated
+            ? 'bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)]'
             : isVideoTaskRunning
               ? 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)]'
-              : 'bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)]'
+              : 'bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)]'
             }`}
         >
           {isFirstLastFrameGenerated ? t("firstLastFrame.generated") : isVideoTaskRunning ? (
-            <TaskStatusInline state={videoTaskRunningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+            <TaskStatusInline state={videoTaskRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
           ) : t("firstLastFrame.generate")}
         </button>
         <div className="min-w-[220px] max-w-[280px]">

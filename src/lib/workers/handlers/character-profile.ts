@@ -16,9 +16,15 @@ import {
 } from './character-profile-helpers'
 import { createWorkerLLMStreamCallbacks, createWorkerLLMStreamContext } from './llm-stream'
 import { buildPrompt, PROMPT_IDS } from '@/lib/prompt-i18n'
+import { enqueueProjectCharacterAppearanceImages } from './character-profile-enqueue-images'
 
 type ConfirmProfileOptions = {
   suppressProgress?: boolean
+}
+
+function shouldEnqueueImages(payload: AnyObj): boolean {
+  // Default on: UI promises image gen after confirm; client may pass generateImage: true/false.
+  return payload.generateImage !== false
 }
 
 async function handleConfirmProfile(
@@ -155,15 +161,18 @@ async function handleConfirmProfile(
     })
   }
 
-  await prisma.$transaction(async (tx) => {
+  const createdAppearances = await prisma.$transaction(async (tx) => {
     await tx.characterAppearance.deleteMany({
       where: { characterId: character.id },
     })
 
+    const created: Array<{ id: string; appearanceIndex: number }> = []
     for (const appearanceRow of appearanceRows) {
-      await tx.characterAppearance.create({
+      const row = await tx.characterAppearance.create({
         data: appearanceRow,
+        select: { id: true, appearanceIndex: true },
       })
+      created.push(row)
     }
 
     await tx.novelPromotionCharacter.update({
@@ -173,14 +182,34 @@ async function handleConfirmProfile(
         profileConfirmed: true,
       },
     })
+
+    return created
   })
+
+  let imageEnqueue: { submitted: number; skipped: number; errors: string[] } | null = null
+  if (shouldEnqueueImages(payload)) {
+    imageEnqueue = await enqueueProjectCharacterAppearanceImages({
+      userId: job.data.userId,
+      projectId: job.data.projectId,
+      locale: job.data.locale,
+      characterId: character.id,
+      appearanceIds: createdAppearances.map((row) => row.id),
+      count: 1,
+      requestId: job.data.taskId,
+    })
+  }
 
   if (!suppressProgress) {
     await reportTaskProgress(job, 96, {
       stage: 'character_profile_confirm_done',
       stageLabel: '角色档案确认完成',
       displayMode: 'detail',
-      meta: { characterId },
+      meta: {
+        characterId,
+        imageSubmitted: imageEnqueue?.submitted ?? 0,
+        imageSkipped: imageEnqueue?.skipped ?? 0,
+        imageErrors: imageEnqueue?.errors?.length ?? 0,
+      },
     })
   }
 
@@ -191,6 +220,7 @@ async function handleConfirmProfile(
       profileConfirmed: true,
       appearances,
     },
+    imageEnqueue,
   }
 }
 

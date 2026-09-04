@@ -50,7 +50,7 @@ export function ConfigConfirmModal({
           <button
             onClick={onConfirm}
             disabled={confirmDisabled}
-            className={`glass-btn-base px-3 py-1.5 text-sm ${danger ? 'glass-btn-tone-danger' : 'glass-btn-primary'} disabled:pointer-events-none disabled:opacity-50`}
+            className={`glass-btn-base px-3 py-1.5 text-sm ${danger ? 'glass-btn-tone-danger' : 'glass-btn-primary'} disabled:pointer-events-none`}
           >
             {confirmText || t('confirm')}
           </button>

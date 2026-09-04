@@ -24,7 +24,7 @@ export default function PromptEditorPanel({ runtime }: PromptEditorPanelProps) {
     <>
       {onAppendContent && (
         <div className="mt-8 p-6 bg-[var(--glass-bg-muted)] rounded-lg border-2 border-dashed border-[var(--glass-stroke-strong)]">
-          <h3 className="text-lg font-semibold text-[var(--glass-text-primary)] mb-3">{tStoryboard('prompts.appendTitle')}</h3>
+          <h3 className="text-lg font-medium text-[var(--glass-text-primary)] mb-3">{tStoryboard('prompts.appendTitle')}</h3>
           <p className="text-sm text-[var(--glass-text-secondary)] mb-4">
             {tStoryboard('prompts.appendDescription')}
           </p>
@@ -39,10 +39,10 @@ export default function PromptEditorPanel({ runtime }: PromptEditorPanelProps) {
             <button
               onClick={handleAppendSubmit}
               disabled={isAppending || !appendContent.trim()}
-              className="glass-btn-base px-6 py-3 bg-[var(--glass-tone-success-fg)] text-white hover:bg-[var(--glass-tone-success-fg)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="glass-btn-base px-6 py-3 bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-tone-success-fg)] disabled:cursor-not-allowed flex items-center"
             >
               {isAppending ? (
-                <TaskStatusInline state={appendTaskRunningState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={appendTaskRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 tStoryboard('prompts.appendSubmit')
               )}
@@ -55,7 +55,7 @@ export default function PromptEditorPanel({ runtime }: PromptEditorPanelProps) {
         <button
           onClick={onNext}
           disabled={isAnyTaskRunning}
-          className="glass-btn-base px-6 py-2 bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="glass-btn-base px-6 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)] disabled:cursor-not-allowed"
         >
           {tNovelPromotion('buttons.enterVideoGeneration')}
         </button>

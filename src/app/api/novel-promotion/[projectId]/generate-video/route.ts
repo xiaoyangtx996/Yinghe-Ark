@@ -15,6 +15,10 @@ import {
 } from '@/lib/model-capabilities/lookup'
 import { resolveBuiltinPricing } from '@/lib/model-pricing/lookup'
 import { resolveProjectModelCapabilityGenerationOptions } from '@/lib/config-service'
+import {
+  requireEpisodeOwnedByProject,
+  requireStoryboardOwnedByProject,
+} from '@/lib/novel-promotion/resource-ownership'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -205,9 +209,11 @@ export const POST = apiHandler(async (
 
   if (isBatch) {
     const episodeId = body?.episodeId
-    if (!episodeId) {
+    if (!episodeId || typeof episodeId !== 'string') {
       throw new ApiError('INVALID_PARAMS')
     }
+
+    await requireEpisodeOwnedByProject(episodeId, projectId)
 
     const panels = await prisma.novelPromotionPanel.findMany({
       where: {
@@ -253,6 +259,8 @@ export const POST = apiHandler(async (
   if (!storyboardId || panelIndex === undefined) {
     throw new ApiError('INVALID_PARAMS')
   }
+
+  await requireStoryboardOwnedByProject(storyboardId, projectId)
 
   const panel = await prisma.novelPromotionPanel.findFirst({
     where: { storyboardId, panelIndex: Number(panelIndex) },

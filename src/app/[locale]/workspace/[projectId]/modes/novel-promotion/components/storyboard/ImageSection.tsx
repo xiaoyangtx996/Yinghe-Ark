@@ -92,10 +92,10 @@ export default function ImageSection({
             sizes="(max-width: 768px) 100vw, 33vw"
           />
         )}
-        <div className={`absolute inset-0 ${backdropImageUrl ? 'bg-black/45 backdrop-blur-[1px]' : 'bg-[var(--glass-bg-surface-modal)] backdrop-blur-md'}`} />
+        <div className={`absolute inset-0 ${backdropImageUrl ? 'bg-[var(--glass-overlay)] backdrop-blur-[1px]' : 'bg-[var(--glass-bg-surface-modal)] backdrop-blur-md'}`} />
         <TaskStatusOverlay
           state={state}
-          className={backdropImageUrl ? 'bg-black/45 backdrop-blur-[1px]' : undefined}
+          className={backdropImageUrl ? 'backdrop-blur-[1px]' : undefined}
         />
       </div>
     )
@@ -105,10 +105,10 @@ export default function ImageSection({
     <div className="flex h-full w-full flex-col items-center justify-center gap-1 bg-[var(--glass-danger-ring)] text-[var(--glass-tone-danger-fg)] p-2">
       <AppIcon name="alert" className="w-6 h-6 mb-1" />
       <span className="text-xs text-center font-medium">{t('image.failed')}</span>
-      <span className="text-[10px] text-center mt-1 line-clamp-2 px-1">{failedError}</span>
+      <span className="text-[length:var(--glass-font-size-caption)] text-center mt-1 line-clamp-2 px-1">{failedError}</span>
       <button
         onClick={onClearError}
-        className="glass-btn-base glass-btn-tone-danger mt-1 px-2 py-1 text-[10px] rounded-md"
+        className="glass-btn-base glass-btn-tone-danger mt-1 px-2 py-1 text-[length:var(--glass-font-size-caption)] rounded-md"
       >
         {t('variant.close')}
       </button>

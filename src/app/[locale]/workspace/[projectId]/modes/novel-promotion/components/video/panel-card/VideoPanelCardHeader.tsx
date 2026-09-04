@@ -42,7 +42,7 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
           src={media.currentVideoUrl}
           controls
           playsInline
-          className="w-full h-full object-contain bg-black"
+          className="w-full h-full object-contain bg-[var(--glass-media-letterbox)]"
           onEnded={() => player.setIsPlaying(false)}
         />
       ) : hasVisibleBaseVideo ? (
@@ -53,12 +53,12 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
           <MediaImageWithLoading
             src={panel.imageUrl || ''}
             alt={t('panelCard.shot', { number: panelIndex + 1 })}
-            containerClassName="w-full h-full bg-black"
-            className="w-full h-full object-contain bg-black"
+            containerClassName="w-full h-full bg-[var(--glass-media-letterbox)]"
+            className="w-full h-full object-contain bg-[var(--glass-media-letterbox)]"
           />
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--glass-overlay)] group-hover:bg-[var(--glass-overlay)] transition-colors pointer-events-none">
             <div className="w-16 h-16 bg-[var(--glass-bg-surface-strong)] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <AppIcon name="play" className="w-8 h-8 text-white" />
+              <AppIcon name="play" className="w-8 h-8 text-[var(--glass-text-on-accent)]" />
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
       )}
 
       {/* 镜头编号 */}
-      <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] text-white px-2 py-0.5 rounded text-xs font-medium">
+      <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] px-2 py-0.5 rounded text-xs font-medium">
         {panelIndex + 1}
       </div>
 
@@ -92,7 +92,7 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
               className={`h-8 w-8 rounded-full flex items-center justify-center shadow-[var(--glass-shadow-sm)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--glass-stroke-focus)] ${layout.isLinked
-                ? 'bg-[var(--glass-accent-from)] text-white shadow-[0_0_12px_rgba(99,102,241,0.5)]'
+                ? 'bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] shadow-[0_0_12px_var(--glass-accent-shadow-strong)]'
                 : 'bg-[var(--glass-bg-surface)] text-[var(--glass-text-secondary)] hover:bg-[var(--glass-tone-info-bg)] hover:text-[var(--glass-tone-info-fg)]'
                 }`}
             >
@@ -122,10 +122,10 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
             player.setIsPlaying(false)
           }}
         >
-          <div className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${!media.showLipSyncVideo ? 'bg-[var(--glass-tone-success-fg)] text-white' : 'text-[var(--glass-text-tertiary)] hover:text-white'}`}>
+          <div className={`px-2 py-0.5 rounded-full text-[length:var(--glass-font-size-caption)] font-medium transition-all ${!media.showLipSyncVideo ? 'bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)]' : 'text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-on-accent)]'}`}>
             {t('panelCard.original')}
           </div>
-          <div className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${media.showLipSyncVideo ? 'bg-[var(--glass-accent-from)] text-white' : 'text-[var(--glass-text-tertiary)] hover:text-white'}`}>
+          <div className={`px-2 py-0.5 rounded-full text-[length:var(--glass-font-size-caption)] font-medium transition-all ${media.showLipSyncVideo ? 'bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)]' : 'text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-on-accent)]'}`}>
             {t('panelCard.synced')}
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
             || !videoModel.selectedModel
             || videoModel.missingCapabilityFields.length > 0
           }
-          className="absolute bottom-2 right-2 bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay-strong)] text-white p-2 rounded-full transition-all z-20 disabled:cursor-not-allowed disabled:opacity-50"
+          className="absolute bottom-2 right-2 bg-[var(--glass-overlay)] hover:bg-[var(--glass-overlay-strong)] text-[var(--glass-text-on-accent)] p-2 rounded-full transition-all z-20 disabled:cursor-not-allowed"
         >
           <AppIcon name="refresh" className="w-4 h-4" />
         </button>
@@ -164,11 +164,11 @@ export default function VideoPanelCardHeader({ runtime }: VideoPanelCardHeaderPr
         <div className="absolute inset-0 bg-[var(--glass-tone-danger-bg)] flex flex-col items-center justify-center z-10 p-4">
           <button
             onClick={(e) => { e.stopPropagation(); setErrorDismissed(true) }}
-            className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 text-white text-xs transition-colors"
+            className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full bg-[var(--glass-overlay-soft)] hover:bg-[var(--glass-overlay)] text-[var(--glass-text-on-accent)] text-xs transition-colors"
           >
             <AppIcon name="close" className="w-3 h-3" />
           </button>
-          <span className="text-white text-xs text-center break-all">{taskStatus.panelErrorDisplay.message}</span>
+          <span className="text-[var(--glass-text-on-accent)] text-xs text-center break-all">{taskStatus.panelErrorDisplay.message}</span>
         </div>
       )}
     </div>

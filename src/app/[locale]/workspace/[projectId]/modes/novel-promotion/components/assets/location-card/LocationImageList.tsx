@@ -99,16 +99,32 @@ export default function LocationImageList(props: LocationImageListProps) {
                     className="w-full h-auto object-contain"
                   />
                 ) : (
-                  <div className="flex min-h-[88px] items-center justify-center bg-[var(--glass-bg-muted)]">
+                  <div
+                    className={`flex min-h-[88px] items-center justify-center ${
+                      phase === 'generating' || phase === 'regenerating'
+                        ? 'bg-[var(--glass-bg-muted)]'
+                        : 'border border-dashed border-[var(--glass-stroke-strong)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_70%,transparent)]'
+                    }`}
+                  >
                     {imageError && phase !== 'generating' && phase !== 'regenerating' ? (
                       <div className="flex flex-col items-center justify-center px-3 py-6 text-center">
                         <AppIcon name="alert" className="mb-2 h-6 w-6 text-[var(--glass-tone-danger-fg)]" />
                         <span className="text-xs font-medium text-[var(--glass-tone-danger-fg)]">{t('common.generateFailed')}</span>
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center gap-2 px-3 py-6 text-[var(--glass-text-tertiary)]">
+                    ) : phase === 'generating' || phase === 'regenerating' ? (
+                      <div className="flex flex-col items-center justify-center gap-2 px-3 py-6 text-[var(--glass-text-secondary)]">
                         <div className="h-12 w-12 animate-pulse rounded-xl bg-[var(--glass-bg-surface-strong)]" />
-                        <span className="text-xs">{t('image.generatingPlaceholder')}</span>
+                        <span className="text-xs">{t('image.generating')}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-1.5 px-3 py-6 text-center">
+                        <AppIcon name="image" className="h-6 w-6 text-[var(--glass-text-tertiary)]" />
+                        <span className="text-xs font-medium text-[var(--glass-text-secondary)]">
+                          {t('image.generatingPlaceholder')}
+                        </span>
+                        <span className="line-clamp-1 max-w-full text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
+                          {props.locationName}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -123,7 +139,7 @@ export default function LocationImageList(props: LocationImageListProps) {
                 )}
 
                 <div
-                  className={`absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs px-2 py-0.5 rounded ${isThisSelected ? 'bg-[var(--glass-tone-success-fg)]' : 'bg-[var(--glass-overlay)]'
+                  className={`absolute bottom-2 left-2 flex items-center gap-1 text-[var(--glass-text-on-accent)] text-xs px-2 py-0.5 rounded ${isThisSelected ? 'bg-[var(--glass-tone-success-fg)]' : 'bg-[var(--glass-overlay)]'
                     }`}
                 >
                   <span>{t('image.optionNumber', { number: img.imageIndex + 1 })}</span>
@@ -141,9 +157,9 @@ export default function LocationImageList(props: LocationImageListProps) {
                   }}
                   disabled={phase === 'generating' || phase === 'regenerating' || !img.imageUrl}
                   className={`absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm ${isThisSelected
-                    ? 'bg-[var(--glass-tone-success-fg)] text-white'
-                    : 'bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-accent-from)] hover:text-white'
-                    } disabled:opacity-50`}
+                    ? 'bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)]'
+                    : 'bg-[var(--glass-bg-surface-strong)] hover:bg-[var(--glass-accent-from)] hover:text-[var(--glass-text-on-accent)]'
+                    }`}
                   title={isThisSelected ? t('image.cancelSelection') : t('image.useThis')}
                 >
                   <AppIcon name="check" className="w-4 h-4" />
@@ -173,13 +189,19 @@ export default function LocationImageList(props: LocationImageListProps) {
             onClick={() => props.onImageClick(props.currentImageUrl!)}
           />
           {props.selectedIndex !== null && props.hasMultipleImages && (
-            <div className="absolute bottom-2 left-2 bg-[var(--glass-tone-success-fg)] text-white text-xs px-2 py-0.5 rounded">
+            <div className="absolute bottom-2 left-2 bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] text-xs px-2 py-0.5 rounded">
               {t('image.optionNumber', { number: props.selectedIndex + 1 })}
             </div>
           )}
         </div>
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-[var(--glass-bg-muted)]">
+        <div
+          className={`flex h-full w-full flex-col items-center justify-center gap-2 px-3 text-center ${
+            props.isTaskRunning
+              ? 'bg-[var(--glass-bg-muted)]'
+              : 'border border-dashed border-[var(--glass-stroke-strong)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_70%,transparent)]'
+          }`}
+        >
           {locationErrorDisplay && !props.isTaskRunning ? (
             <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
               <AppIcon name="alert" className="w-8 h-8 text-[var(--glass-tone-danger-fg)] mb-2" />
@@ -187,7 +209,19 @@ export default function LocationImageList(props: LocationImageListProps) {
               <div className="text-[var(--glass-tone-danger-fg)] text-xs max-w-full break-words">{locationErrorDisplay.message}</div>
             </div>
           ) : (
-            <AppIcon name="image" className="w-8 h-8 text-[var(--glass-text-tertiary)]" />
+            <>
+              <AppIcon name="image" className="h-8 w-8 text-[var(--glass-text-tertiary)]" />
+              {!props.isTaskRunning ? (
+                <>
+                  <span className="text-xs font-medium text-[var(--glass-text-secondary)]">
+                    {t('image.generatingPlaceholder')}
+                  </span>
+                  <span className="line-clamp-2 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
+                    {props.locationName}
+                  </span>
+                </>
+              ) : null}
+            </>
           )}
         </div>
       )}

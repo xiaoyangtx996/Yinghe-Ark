@@ -6,7 +6,8 @@ import { AppIcon } from '@/components/ui/icons'
 
 export type ThemeMode = 'light' | 'dark'
 
-const STORAGE_KEY = 'waoowaoo-theme'
+const STORAGE_KEY = 'yinghe-ark-theme'
+const LEGACY_STORAGE_KEY = 'waoowaoo-theme'
 
 function applyTheme(mode: ThemeMode) {
   const root = document.documentElement
@@ -16,7 +17,7 @@ function applyTheme(mode: ThemeMode) {
 
 function readStoredTheme(): ThemeMode | null {
   try {
-    const value = localStorage.getItem(STORAGE_KEY)
+    const value = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY)
     if (value === 'light' || value === 'dark') return value
   } catch {
     // ignore

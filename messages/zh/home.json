@@ -7,6 +7,10 @@
   "recentProjects": "最近项目",
   "viewAll": "查看全部项目",
   "noProjects": "还没有项目，从上方开始你的第一个创作吧",
+  "statsEpisodesShort": "{n} 集",
+  "statsPanelsShort": "{n} 镜",
+  "statsImagesShort": "{n} 图",
+  "statsVideosShort": "{n} 视频",
   "ago": {
     "justNow": "刚刚",
     "minutesAgo": "{n}分钟前",
@@ -22,5 +26,42 @@
     "hint": "💡 可以输入关键词、故事大纲、创意描述，AI 会根据你的输入扩展生成完整的故事内容",
     "startAiWrite": "开始 AI 创作",
     "cancel": "取消"
+  },
+  "createFailed": "创建失败，请稍后重试",
+  "confirmWizard": {
+    "title": "确认后再开始",
+    "subtitle": "花半分钟确认创意与风格，避免误生成",
+    "steps": {
+      "story": "创意确认",
+      "style": "画幅画风",
+      "plan": "生成计划",
+      "summary": "最终摘要",
+      "launch": "开始创作"
+    },
+    "storyHint": "确认故事内容，仍可在此修改。",
+    "ratioLabel": "画幅比例",
+    "styleLabel": "画风",
+    "genreLabel": "题材",
+    "plan": {
+      "step1": "创建项目并保存你的故事",
+      "step2": "自动拆解剧本（角色、场次、对白）",
+      "step3": "你可在工作区继续分镜与成片",
+      "step4": "随时可在作品库打开继续"
+    },
+    "summary": {
+      "story": "故事内容",
+      "emptyStory": "（尚未填写故事）",
+      "noGenre": "未选题材",
+      "autoRun": "确认后将进入工作区，并自动开始「故事 → 剧本」拆解。"
+    },
+    "launchHint": "准备就绪。点击开始后将创建项目并启动首轮生成。",
+    "launchBullet1": "不会在未确认时扣费或入队",
+    "launchBullet2": "生成过程可在工作区查看阶段进度",
+    "launchBullet3": "成片剪辑功能暂未开放，可先导出视频",
+    "back": "上一步",
+    "next": "下一步",
+    "cancel": "取消",
+    "confirmStart": "确认并开始",
+    "submitting": "创建中…"
   }
 }

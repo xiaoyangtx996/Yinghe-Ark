@@ -11,6 +11,7 @@ import type {
     OpenAICompatMediaTemplate,
     OpenAICompatMediaTemplateSource,
 } from '@/lib/openai-compat-media-template'
+import type { AppIconName } from '@/components/ui/icons'
 
 // 统一提供商接口
 export interface Provider {
@@ -244,6 +245,33 @@ export function getProviderDisplayName(providerId?: string, locale?: string): st
     const provider = PRESET_PROVIDERS.find(p => p.id === providerKey)
     if (!provider) return providerId
     return resolvePresetProviderName(provider.id, provider.name, locale)
+}
+
+/** Shell icon for provider cards — aligned with default-model section headers */
+export function getProviderVisualIcon(providerId: string): AppIconName {
+    const providerKey = getProviderKey(providerId)
+    switch (providerKey) {
+        case 'ark':
+            return 'bolt'
+        case 'google':
+            return 'sparkles'
+        case 'bailian':
+            return 'cloudUpload'
+        case 'openrouter':
+            return 'globe'
+        case 'minimax':
+            return 'audioWave'
+        case 'vidu':
+            return 'film'
+        case 'fal':
+            return 'image'
+        case 'gemini-compatible':
+            return 'sparklesAlt'
+        case 'openai-compatible':
+            return 'cpu'
+        default:
+            return 'cube'
+    }
 }
 
 /**

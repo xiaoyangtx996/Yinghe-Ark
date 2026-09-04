@@ -1,6 +1,7 @@
 import { type Job } from 'bullmq'
 import { prisma } from '@/lib/prisma'
 import { LOCATION_IMAGE_RATIO, PROP_IMAGE_RATIO, addLocationPromptSuffix, addPropPromptSuffix, getArtStylePrompt, isArtStyleValue, type ArtStyleValue } from '@/lib/constants'
+import { resolveVisualGenerationPrompt } from '@/lib/genre-packs'
 import { normalizeImageGenerationCount } from '@/lib/image-generation/count'
 import { type TaskJobData } from '@/lib/task/types'
 import { reportTaskProgress } from '../shared'
@@ -67,7 +68,11 @@ export async function handleLocationImageTask(job: Job<TaskJobData>) {
   const requestedCount = resolveRequestedLocationCount(payload)
 
   const payloadArtStyle = resolvePayloadArtStyle(payload)
-  const artStyle = getArtStylePrompt(payloadArtStyle ?? models.artStyle, job.data.locale)
+  const artStyle = resolveVisualGenerationPrompt({
+    artStylePrompt: getArtStylePrompt(payloadArtStyle ?? models.artStyle, job.data.locale) || '',
+    genrePack: models.genrePack,
+    locale: job.data.locale,
+  })
   const assetType = payload.type === 'prop' ? 'prop' : 'location'
 
   // targetId may be locationId (group) or locationImageId (single)

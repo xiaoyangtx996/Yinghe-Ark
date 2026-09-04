@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireProjectAuthLight, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
+import {
+  buildClipCreatedAtUpdates,
+  resolveAdjacentClipMove,
+  resolveClipDragReorder,
+} from '@/lib/novel-promotion/clip-reorder'
+import { clearVoiceLineMatchesForStoryboard } from '@/lib/novel-promotion/clear-voice-line-panel-matches'
 
 /**
  * POST /api/novel-promotion/[projectId]/storyboard-group
@@ -29,11 +35,12 @@ export const POST = apiHandler(async (
   const episode = await prisma.novelPromotionEpisode.findUnique({
     where: { id: episodeId },
     include: {
+      novelPromotionProject: { select: { projectId: true } },
       clips: { orderBy: { createdAt: 'asc' } }
     }
   })
 
-  if (!episode) {
+  if (!episode || episode.novelPromotionProject.projectId !== projectId) {
     throw new ApiError('NOT_FOUND')
   }
 
@@ -114,6 +121,8 @@ export const POST = apiHandler(async (
 /**
  * PUT /api/novel-promotion/[projectId]/storyboard-group
  * 调整分镜组顺序（通过修改 clip 的 createdAt）
+ * - adjacent: { episodeId, clipId, direction: 'up'|'down' }
+ * - drag:     { episodeId, clipId, overClipId }
  */
 export const PUT = apiHandler(async (
   request: NextRequest,
@@ -126,9 +135,14 @@ export const PUT = apiHandler(async (
   if (isErrorResponse(authResult)) return authResult
 
   const body = await request.json()
-  const { episodeId, clipId, direction } = body // direction: 'up' | 'down'
+  const { episodeId, clipId, direction, overClipId } = body as {
+    episodeId?: string
+    clipId?: string
+    direction?: 'up' | 'down'
+    overClipId?: string
+  }
 
-  if (!episodeId || !clipId || !direction) {
+  if (!episodeId || !clipId || (!direction && !overClipId)) {
     throw new ApiError('INVALID_PARAMS')
   }
 
@@ -136,58 +150,92 @@ export const PUT = apiHandler(async (
   const episode = await prisma.novelPromotionEpisode.findUnique({
     where: { id: episodeId },
     include: {
+      novelPromotionProject: { select: { projectId: true } },
       clips: { orderBy: { createdAt: 'asc' } }
     }
   })
 
-  if (!episode) {
+  if (!episode || episode.novelPromotionProject.projectId !== projectId) {
     throw new ApiError('NOT_FOUND')
   }
 
   const clips = episode.clips
-  const currentIndex = clips.findIndex(c => c.id === clipId)
+  const orderedIds = clips.map((clip) => clip.id)
+  const currentIndex = orderedIds.findIndex((id) => id === clipId)
 
   if (currentIndex === -1) {
     throw new ApiError('NOT_FOUND')
   }
 
-  // 计算目标位置
-  const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+  // Drag reorder: reassign ascending createdAt timeline onto nextOrder
+  if (typeof overClipId === 'string' && overClipId.length > 0) {
+    const drag = resolveClipDragReorder(orderedIds, clipId, overClipId)
+    if (!drag) {
+      throw new ApiError('INVALID_PARAMS')
+    }
+    const updates = buildClipCreatedAtUpdates(clips, drag.nextOrder)
+    if (!updates) {
+      throw new ApiError('INVALID_PARAMS')
+    }
 
-  // 检查边界
-  if (targetIndex < 0 || targetIndex >= clips.length) {
+    await prisma.$transaction(async (tx) => {
+      // Park all to unique temp times so final writes never collide mid-tx
+      for (let i = 0; i < updates.length; i++) {
+        await tx.novelPromotionClip.update({
+          where: { id: updates[i]!.id },
+          data: { createdAt: new Date(i + 1) },
+        })
+      }
+      for (const update of updates) {
+        await tx.novelPromotionClip.update({
+          where: { id: update.id },
+          data: { createdAt: update.createdAt },
+        })
+      }
+    })
+
+    _ulogInfo(
+      `[拖拽分镜组] clipId=${clipId}, overClipId=${overClipId}, ${drag.fromIndex} -> ${drag.toIndex}`,
+    )
+    return NextResponse.json({ success: true })
+  }
+
+  // Adjacent swap (Earlier / Later buttons)
+  if (direction !== 'up' && direction !== 'down') {
     throw new ApiError('INVALID_PARAMS')
   }
 
-  const currentClip = clips[currentIndex]
-  const targetClip = clips[targetIndex]
+  const adjacent = resolveAdjacentClipMove(orderedIds, clipId, direction)
+  if (!adjacent) {
+    throw new ApiError('INVALID_PARAMS')
+  }
 
-  // 交换两个 clip 的 createdAt（加减小量时间避免冲突）
+  const currentClip = clips[adjacent.fromIndex]!
+  const targetClip = clips[adjacent.toIndex]!
+
   const tempTime = currentClip.createdAt.getTime()
   const targetTime = targetClip.createdAt.getTime()
 
-  // 使用事务更新
   await prisma.$transaction(async (tx) => {
-    // 先把当前 clip 移到一个临时时间
     await tx.novelPromotionClip.update({
       where: { id: currentClip.id },
-      data: { createdAt: new Date(0) } // 临时时间
+      data: { createdAt: new Date(0) },
     })
 
-    // 更新目标 clip 的时间
     await tx.novelPromotionClip.update({
       where: { id: targetClip.id },
-      data: { createdAt: new Date(tempTime) }
+      data: { createdAt: new Date(tempTime) },
     })
 
-    // 更新当前 clip 到目标时间
     await tx.novelPromotionClip.update({
       where: { id: currentClip.id },
-      data: { createdAt: new Date(targetTime) }
+      data: { createdAt: new Date(targetTime) },
     })
   })
 
-  _ulogInfo(`[移动分镜组] clipId=${clipId}, direction=${direction}, ${currentIndex} -> ${targetIndex}`)
+  _ulogInfo(
+    `[移动分镜组] clipId=${clipId}, direction=${direction}, ${adjacent.fromIndex} -> ${adjacent.toIndex}`,
+  )
 
   return NextResponse.json({ success: true })
 })
@@ -213,21 +261,31 @@ export const DELETE = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  // 获取 storyboard 及其关联的 clip
+  // 获取 storyboard 及其关联的 clip / 项目归属
   const storyboard = await prisma.novelPromotionStoryboard.findUnique({
     where: { id: storyboardId },
     include: {
       panels: true,
-      clip: true
+      clip: true,
+      episode: {
+        include: {
+          novelPromotionProject: { select: { projectId: true } },
+        },
+      },
     }
   })
 
-  if (!storyboard) {
+  if (!storyboard || storyboard.episode.novelPromotionProject.projectId !== projectId) {
     throw new ApiError('NOT_FOUND')
   }
 
   // 使用事务删除（Prisma 的 cascade 会自动处理关联删除，但我们显式删除以确保一致性）
   await prisma.$transaction(async (tx) => {
+    await clearVoiceLineMatchesForStoryboard(tx, {
+      id: storyboard.id,
+      panels: storyboard.panels.map((panel) => ({ id: panel.id })),
+    })
+
     // 1. 删除所有关联的 Panels
     await tx.novelPromotionPanel.deleteMany({
       where: { storyboardId }

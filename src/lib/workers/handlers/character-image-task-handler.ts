@@ -1,6 +1,7 @@
 import { type Job } from 'bullmq'
 import { prisma } from '@/lib/prisma'
 import { CHARACTER_ASSET_IMAGE_RATIO, addCharacterPromptSuffix, getArtStylePrompt, isArtStyleValue, PRIMARY_APPEARANCE_INDEX, type ArtStyleValue } from '@/lib/constants'
+import { resolveVisualGenerationPrompt } from '@/lib/genre-packs'
 import { type TaskJobData } from '@/lib/task/types'
 import { encodeImageUrls } from '@/lib/contracts/image-urls-contract'
 import { normalizeImageGenerationCount } from '@/lib/image-generation/count'
@@ -107,7 +108,11 @@ export async function handleCharacterImageTask(job: Job<TaskJobData>) {
   if (!appearance) throw new Error('Character appearance not found')
 
   const payloadArtStyle = resolvePayloadArtStyle(payload)
-  const artStyle = getArtStylePrompt(payloadArtStyle ?? models.artStyle, job.data.locale)
+  const artStyle = resolveVisualGenerationPrompt({
+    artStylePrompt: getArtStylePrompt(payloadArtStyle ?? models.artStyle, job.data.locale) || '',
+    genrePack: models.genrePack,
+    locale: job.data.locale,
+  })
   const descriptions = parseJsonStringArray(appearance.descriptions)
   const baseDescriptions = descriptions.length > 0 ? descriptions : [appearance.description || '']
 

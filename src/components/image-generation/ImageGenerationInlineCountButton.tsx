@@ -71,7 +71,7 @@ export default function ImageGenerationInlineCountButton({
 
   if (splitInteractiveZones) {
     return (
-      <div className="inline-flex items-center gap-1">
+      <div className="inline-flex w-full items-center gap-1">
         <button
           type="button"
           onClick={() => {
@@ -79,14 +79,13 @@ export default function ImageGenerationInlineCountButton({
             onClick()
           }}
           disabled={isActionDisabled}
-          aria-label={ariaLabel}
           className={`${resolvedActionClassName} ${rootStateClassName}`.trim()}
         >
           <span className={`${labelClassName} inline-flex items-center gap-1 whitespace-nowrap`.trim()}>{prefix}</span>
         </button>
         <span
-          className={`group relative inline-flex h-6 items-center gap-1 rounded-md px-1.5 transition-colors ${
-            isSelectDisabled ? '' : 'hover:bg-white/12 focus-within:bg-white/14'
+          className={`group relative inline-flex h-6 min-w-0 flex-1 items-center justify-end gap-1 rounded-[var(--glass-radius-xs)] px-1.5 transition-colors ${
+            isSelectDisabled ? '' : 'hover:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)] focus-within:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_14%,transparent)]'
           } ${countClassName}`.trim()}
         >
           <select
@@ -97,7 +96,7 @@ export default function ImageGenerationInlineCountButton({
             className={`${selectClassName} ${selectStateClassName}`.trim()}
           >
             {options.map((option) => (
-              <option key={option} value={option} className="text-black">
+              <option key={option} value={option} className="text-[var(--glass-text-primary)]">
                 {option}
               </option>
             ))}
@@ -133,8 +132,8 @@ export default function ImageGenerationInlineCountButton({
     >
       <span className={`${labelClassName} inline-flex shrink-0 items-center whitespace-nowrap leading-none`.trim()}>{prefix}</span>
       <span
-        className={`group relative inline-flex h-8 shrink-0 items-center rounded-full bg-white/12 px-2 transition-colors ${
-          isSelectDisabled ? '' : 'hover:bg-white/16 focus-within:bg-white/18'
+        className={`group relative inline-flex h-8 shrink-0 items-center rounded-full bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)] px-2 transition-colors ${
+          isSelectDisabled ? '' : 'hover:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_16%,transparent)] focus-within:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_18%,transparent)]'
         }`}
         onClick={(event: MouseEvent<HTMLSpanElement>) => event.stopPropagation()}
       >
@@ -146,7 +145,7 @@ export default function ImageGenerationInlineCountButton({
           className={`${selectClassName} ${selectStateClassName}`.trim()}
         >
           {options.map((option) => (
-            <option key={option} value={option} className="text-black">
+            <option key={option} value={option} className="text-[var(--glass-text-primary)]">
               {option}
             </option>
           ))}

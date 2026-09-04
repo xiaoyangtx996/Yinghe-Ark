@@ -20,7 +20,7 @@ export default function StoryboardGroupFailedAlert({
       <div className="flex items-start gap-3">
         <AppIcon name="alert" className="mt-0.5 h-5 w-5 shrink-0 text-[var(--glass-tone-danger-fg)]" />
         <div className="flex-1">
-          <h4 className="text-sm font-bold text-[var(--glass-tone-danger-fg)]">{title}</h4>
+          <h4 className="text-sm font-medium text-[var(--glass-tone-danger-fg)]">{title}</h4>
           <p className="mt-1 text-sm text-[var(--glass-tone-danger-fg)]">{failedError}</p>
         </div>
         <button

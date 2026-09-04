@@ -20,9 +20,9 @@ import { readConfiguredAnalysisModel, shouldGuideToModelSetup } from '@/lib/work
 import { useRouter } from '@/i18n/navigation'
 import { readApiErrorMessage } from '@/lib/api/read-error-message'
 
-// 有效的stage值
-const VALID_STAGES = ['config', 'script', 'assets', 'text-storyboard', 'storyboard', 'videos', 'voice', 'editor'] as const
-type Stage = typeof VALID_STAGES[number]
+import { isWorkspaceStage, resolveWorkspaceStage, type WorkspaceStage } from '@/lib/workspace/resolve-workspace-stage'
+
+type Stage = WorkspaceStage
 
 interface Episode {
   id: string
@@ -60,7 +60,7 @@ export default function ProjectDetailPage() {
   // 从URL读取参数
   const urlStage = searchParams.get('stage') as Stage | null
   const urlEpisodeId = searchParams.get('episode') ?? null
-  const currentUrlStage = urlStage && VALID_STAGES.includes(urlStage) ? urlStage : null
+  const currentUrlStage = isWorkspaceStage(urlStage) ? urlStage : null
 
   // 🔥 React Query 数据获取
   const queryClient = useQueryClient()
@@ -80,7 +80,10 @@ export default function ProjectDetailPage() {
 
   // 更新URL参数（stage 和/或 episode）
   const updateUrlParams = useCallback((updates: { stage?: string; episode?: string | null }) => {
-    const params = new URLSearchParams(searchParams.toString())
+    // Prefer the live location search string so a stale React searchParams snapshot
+    // cannot drop stage/episode during concurrent replaces (HMR / episode backfill races).
+    const liveSearch = typeof window !== 'undefined' ? window.location.search : ''
+    const params = new URLSearchParams(liveSearch || searchParams.toString())
     if (updates.stage !== undefined) {
       params.set('stage', updates.stage)
     }
@@ -106,10 +109,8 @@ export default function ProjectDetailPage() {
     updateUrlParams({ stage })
   }, [updateUrlParams])
 
-  // Stage 状态完全由 URL 控制，不再从数据库同步
-  // 如果 URL 没有 stage 参数，默认使用 'config'
-  // 🚧 剪辑阶段 (editor) 暂时禁用，自动重定向到成片阶段 (videos)
-  const effectiveStage = currentUrlStage === 'editor' ? 'videos' : (currentUrlStage || 'config')
+  // Stage 状态完全由 URL 控制；editor 保留为诚实门闸页（不再静默改写到 videos）
+  const effectiveStage = resolveWorkspaceStage(currentUrlStage)
 
   // 获取剧集列表
   const novelPromotionData = project?.novelPromotionData as NovelPromotionData | undefined
@@ -241,12 +242,13 @@ export default function ProjectDetailPage() {
       if (newEpisodes.length > 0) {
         // 如果需要触发全局分析，切换到 assets 阶段并带上参数
         if (triggerGlobalAnalysis) {
-          _ulogInfo('[Page] 触发全局分析，跳转到 assets 阶段，带 globalAnalyze=1 参数')
-          // 使用相对路径更新，保留 locale
+          _ulogInfo('[Page] 触发全局分析，跳转到 script 阶段，带 globalAnalyze + assetLibrary')
+          // 使用相对路径更新，保留 locale；勿用 stage=assets（胶囊会误高亮「剧本」且语义混淆）
           const params = new URLSearchParams()
-          params.set('stage', 'assets')
+          params.set('stage', 'script')
           params.set('episode', newEpisodes[0].id)
           params.set('globalAnalyze', '1')
+          params.set('assetLibrary', '1')
           const newUrl = `?${params.toString()}`
           _ulogInfo('[Page] 跳转到:', newUrl)
           router.replace(newUrl, { scroll: false })
@@ -354,7 +356,11 @@ export default function ProjectDetailPage() {
     return (
       <div className="glass-page min-h-screen">
         <Navbar />
-        <main className="flex items-center justify-center h-[calc(100vh-64px)]">
+        <main className="flex h-[calc(100vh-64px)] flex-col items-center justify-center gap-3">
+          <span
+            className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--glass-stroke-strong)] border-t-[var(--film-gold)]"
+            aria-hidden
+          />
           <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
         </main>
       </div>
@@ -393,7 +399,7 @@ export default function ProjectDetailPage() {
           {isGlobalAssetsView && project.novelPromotionData ? (
             // 全局资产视图（确保数据准备好）
             <div>
-              <h1 className="text-2xl font-bold text-[var(--glass-text-primary)] mb-6">{t('globalAssets')}</h1>
+              <h1 className="text-2xl font-medium text-[var(--glass-text-primary)] mb-6">{t('globalAssets')}</h1>
               <NovelPromotionWorkspace
                 project={project}
                 projectId={projectId}
@@ -408,7 +414,7 @@ export default function ProjectDetailPage() {
                 <div className="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)]">
                   <TaskStatusInline state={initLoadingState} className="[&>span]:sr-only" />
                 </div>
-                <h2 className="text-xl font-semibold text-[var(--glass-text-secondary)] mb-2">{tc('loading')}</h2>
+                <h2 className="text-xl font-medium text-[var(--glass-text-secondary)] mb-2">{tc('loading')}</h2>
               </div>
             ) : needsModelSetup ? (
               <div className="glass-surface p-8 max-w-2xl mx-auto">
@@ -417,7 +423,7 @@ export default function ProjectDetailPage() {
                     <AppIcon name="alert" className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-[var(--glass-text-primary)] mb-2">
+                    <h2 className="text-xl font-medium text-[var(--glass-text-primary)] mb-2">
                       {t('modelSetup.title')}
                     </h2>
                     <p className="text-[var(--glass-text-secondary)] mb-5">
@@ -443,7 +449,7 @@ export default function ProjectDetailPage() {
                 {isModelSetupModalOpen && (
                   <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50 backdrop-blur-sm">
                     <div className="glass-surface-modal p-6 w-full max-w-xl mx-4">
-                      <h3 className="text-xl font-bold text-[var(--glass-text-primary)] mb-2">
+                      <h3 className="text-xl font-medium text-[var(--glass-text-primary)] mb-2">
                         {t('modelSetup.modalTitle')}
                       </h3>
                       <p className="text-sm text-[var(--glass-text-secondary)] mb-5">
@@ -487,7 +493,7 @@ export default function ProjectDetailPage() {
                         <button
                           type="button"
                           onClick={() => { void handleSaveDefaultAnalysisModel() }}
-                          className="glass-btn-base glass-btn-primary px-4 py-2 disabled:opacity-50"
+                          className="glass-btn-base glass-btn-primary px-4 py-2"
                           disabled={modelSetupSaving || llmModelOptions.length === 0 || !analysisModelDraft.trim()}
                         >
                           {modelSetupSaving ? tc('loading') : tc('save')}
@@ -528,7 +534,7 @@ export default function ProjectDetailPage() {
               <div className="mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center bg-[var(--glass-bg-muted)] text-[var(--glass-text-tertiary)]">
                 <TaskStatusInline state={initLoadingState} className="[&>span]:sr-only" />
               </div>
-              <h2 className="text-xl font-semibold text-[var(--glass-text-secondary)] mb-2">{tc('loading')}</h2>
+              <h2 className="text-xl font-medium text-[var(--glass-text-secondary)] mb-2">{tc('loading')}</h2>
             </div>
           )}
         </div>

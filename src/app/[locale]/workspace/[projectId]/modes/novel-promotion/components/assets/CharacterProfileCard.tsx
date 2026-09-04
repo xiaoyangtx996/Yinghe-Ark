@@ -34,11 +34,11 @@ interface TierStyle {
 }
 
 const TIER_STYLES: Record<string, TierStyle> = {
-    S: { gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)', glow: '0 2px 8px rgba(245,158,11,0.35)', accent: '#b45309' },
-    A: { gradient: 'linear-gradient(135deg, #a855f7, #6366f1)', glow: '0 2px 8px rgba(168,85,247,0.3)', accent: '#7c3aed' },
-    B: { gradient: 'linear-gradient(135deg, #3b82f6, #06b6d4)', glow: '0 2px 8px rgba(59,130,246,0.3)', accent: '#2563eb' },
-    C: { gradient: 'linear-gradient(135deg, #22c55e, #10b981)', glow: '0 2px 8px rgba(34,197,94,0.25)', accent: '#16a34a' },
-    D: { gradient: 'linear-gradient(135deg, #9ca3af, #6b7280)', glow: '0 2px 6px rgba(156,163,175,0.2)', accent: '#6b7280' },
+    S: { gradient: 'var(--glass-role-tier-s-gradient)', glow: 'var(--glass-role-tier-s-glow)', accent: 'var(--glass-role-tier-s-accent)' },
+    A: { gradient: 'var(--glass-role-tier-a-gradient)', glow: 'var(--glass-role-tier-a-glow)', accent: 'var(--glass-role-tier-a-accent)' },
+    B: { gradient: 'var(--glass-role-tier-b-gradient)', glow: 'var(--glass-role-tier-b-glow)', accent: 'var(--glass-role-tier-b-accent)' },
+    C: { gradient: 'var(--glass-role-tier-c-gradient)', glow: 'var(--glass-role-tier-c-glow)', accent: 'var(--glass-role-tier-c-accent)' },
+    D: { gradient: 'var(--glass-role-tier-d-gradient)', glow: 'var(--glass-role-tier-d-glow)', accent: 'var(--glass-role-tier-d-accent)' },
 }
 
 const ROLE_LEVELS = ['S', 'A', 'B', 'C', 'D'] as const
@@ -87,10 +87,10 @@ export default function CharacterProfileCard({
                 {/* 头部 */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-bold text-[var(--glass-text-primary)] mb-1.5">{name}</h3>
+                        <h3 className="text-base font-medium text-[var(--glass-text-primary)] mb-1.5">{name}</h3>
                         <div className="flex items-center gap-2 flex-wrap">
                             <span
-                                className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-black text-white tracking-wide"
+                                className="inline-flex items-center px-2.5 py-1 rounded-full text-[length:var(--glass-font-size-caption)] font-black text-[var(--glass-text-on-accent)] tracking-wide"
                                 style={{
                                     background: tierStyle?.gradient ?? 'var(--glass-bg-muted)',
                                     boxShadow: tierStyle?.glow ?? 'none',
@@ -107,7 +107,7 @@ export default function CharacterProfileCard({
                         <button
                             onClick={onDelete}
                             disabled={isConfirming || isDeleting}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-danger-fg)] hover:bg-[var(--glass-tone-danger-bg)] transition-colors disabled:opacity-50 shrink-0"
+                            className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-danger-fg)] hover:bg-[var(--glass-tone-danger-bg)] transition-colors shrink-0"
                             title={t('characterProfile.delete')}
                         >
                             {isDeleting ? (
@@ -172,7 +172,7 @@ export default function CharacterProfileCard({
                     <button
                         onClick={onEdit}
                         disabled={isConfirming}
-                        className="glass-btn-base glass-btn-secondary flex-1 px-3 py-1.5 text-sm rounded-lg disabled:opacity-50"
+                        className="glass-btn-base glass-btn-secondary flex-1 px-3 py-1.5 text-sm rounded-lg"
                     >
                         {t('characterProfile.editProfile')}
                     </button>
@@ -180,7 +180,7 @@ export default function CharacterProfileCard({
                         <button
                             onClick={onUseExisting}
                             disabled={isConfirming}
-                            className="glass-btn-base glass-btn-tone-info flex-1 px-3 py-1.5 text-sm rounded-lg disabled:opacity-50"
+                            className="glass-btn-base glass-btn-tone-info flex-1 px-3 py-1.5 text-sm rounded-lg"
                         >
                             {t('characterProfile.useExisting')}
                         </button>
@@ -188,10 +188,10 @@ export default function CharacterProfileCard({
                     <button
                         onClick={onConfirm}
                         disabled={isConfirming}
-                        className="glass-btn-base glass-btn-primary flex-1 px-3 py-1.5 text-sm rounded-lg disabled:opacity-50"
+                        className="glass-btn-base glass-btn-primary flex-1 px-3 py-1.5 text-sm rounded-lg"
                     >
                         {isConfirming ? (
-                            <TaskStatusInline state={confirmingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                            <TaskStatusInline state={confirmingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                         ) : (
                             t('characterProfile.confirmAndGenerate')
                         )}

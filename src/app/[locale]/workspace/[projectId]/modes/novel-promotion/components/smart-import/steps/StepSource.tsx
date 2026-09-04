@@ -41,7 +41,7 @@ export default function StepSource({
               <div className="w-14 h-14 bg-[var(--glass-tone-info-bg)] rounded-full flex items-center justify-center mx-auto mb-4">
                 <AppIcon name="fileText" className="w-7 h-7 text-[var(--glass-tone-info-fg)]" />
               </div>
-              <h3 className="text-xl font-bold text-[var(--glass-text-primary)] mb-2">{t('markerDetected.title')}</h3>
+              <h3 className="text-xl font-medium text-[var(--glass-text-primary)] mb-2">{t('markerDetected.title')}</h3>
               <p className="text-[var(--glass-text-secondary)]">
                 {t('markerDetected.description', {
                   count: markerResult.matches.length,
@@ -72,14 +72,14 @@ export default function StepSource({
             <div className="grid grid-cols-2 gap-4 mb-4">
               <button
                 onClick={onUseMarkerSplit}
-                className="glass-btn-base glass-btn-primary py-4 px-3 rounded-xl font-bold transition-all flex flex-col items-center gap-1"
+                className="glass-btn-base glass-btn-primary py-4 px-3 rounded-xl font-medium transition-all flex flex-col items-center gap-1"
               >
                 <span>{t('markerDetected.useMarker')}</span>
                 <span className="text-xs font-normal opacity-80">{t('markerDetected.useMarkerDesc')}</span>
               </button>
               <button
                 onClick={onUseAiSplit}
-                className="py-4 bg-[var(--glass-bg-surface)] border-2 border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] rounded-xl font-bold hover:border-[var(--glass-stroke-focus)] hover:bg-[var(--glass-tone-info-bg)] transition-all flex flex-col items-center gap-1"
+                className="py-4 bg-[var(--glass-bg-surface)] border-2 border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] rounded-xl font-medium hover:border-[var(--glass-stroke-focus)] hover:bg-[var(--glass-tone-info-bg)] transition-all flex flex-col items-center gap-1"
               >
                 <span>{t('markerDetected.useAI')}</span>
                 <span className="text-xs font-normal text-[var(--glass-text-tertiary)]">{t('markerDetected.useAIDesc')}</span>
@@ -119,9 +119,9 @@ export default function StepSource({
             <div className="w-16 h-16 bg-[var(--glass-bg-muted)] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[var(--glass-tone-info-bg)] transition-colors duration-200">
               <AppIcon name="edit" className="w-8 h-8 text-[var(--glass-text-secondary)] group-hover:text-[var(--glass-tone-info-fg)] transition-colors duration-200" />
             </div>
-            <h3 className="text-2xl font-bold mb-3 text-[var(--glass-text-primary)]">{t('manualCreate.title')}</h3>
+            <h3 className="text-2xl font-medium mb-3 text-[var(--glass-text-primary)]">{t('manualCreate.title')}</h3>
             <p className="text-[var(--glass-text-tertiary)] mb-6 leading-relaxed">{t('manualCreate.description')}</p>
-            <div className="flex items-center text-[var(--glass-tone-info-fg)] font-bold">
+            <div className="flex items-center text-[var(--glass-tone-info-fg)] font-medium">
               <span>{t('manualCreate.button')}</span>
               <AppIcon name="chevronRight" className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
             </div>
@@ -133,7 +133,7 @@ export default function StepSource({
                 <AppIcon name="bolt" className="w-6 h-6 text-[var(--glass-tone-info-fg)]" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-[var(--glass-text-primary)]">{t('smartImport.title')}</h3>
+                <h3 className="text-xl font-medium text-[var(--glass-text-primary)]">{t('smartImport.title')}</h3>
                 <p className="text-sm text-[var(--glass-text-tertiary)]">{t('smartImport.description')}</p>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function StepSource({
                 <button
                   onClick={onAnalyze}
                   disabled={!rawContent.trim() || rawContent.length < 100}
-                  className="glass-btn-base glass-btn-primary px-5 py-2 rounded-xl font-bold active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
+                  className="glass-btn-base glass-btn-primary px-5 py-2 rounded-xl font-medium active:scale-[0.98] disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap"
                 >
                   <span>{t('upload.startAnalysis')}</span>
                   <AppIcon name="arrowRightWide" className="w-4 h-4" />

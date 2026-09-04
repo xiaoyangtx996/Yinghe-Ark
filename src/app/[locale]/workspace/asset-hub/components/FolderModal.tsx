@@ -37,7 +37,7 @@ export function FolderModal({ folder, onClose, onSave }: FolderModalProps) {
                 <div className="p-5">
                     {/* 标题 */}
                     <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+                        <h3 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">
                             {folder ? t('editFolder') : t('newFolder')}
                         </h3>
                         <button
@@ -74,7 +74,7 @@ export function FolderModal({ folder, onClose, onSave }: FolderModalProps) {
                             <button
                                 type="submit"
                                 disabled={!name.trim()}
-                                className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm disabled:cursor-not-allowed"
                             >
                                 {folder ? t('save') : t('create')}
                             </button>

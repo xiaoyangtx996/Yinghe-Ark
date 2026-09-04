@@ -1,21 +1,23 @@
 :root {
-  /* Film DI · 浅色（暖纸白 + 钨丝金） */
-  --glass-bg-canvas: #f4efe8;
-  --glass-bg-surface: #fffcf8;
-  --glass-bg-surface-strong: #ffffff;
-  --glass-bg-surface-modal: #ffffff;
-  --glass-bg-muted: #ebe4db;
-  --glass-bg-nav: rgba(255, 252, 248, 0.94);
+  /* Film DI · 浅色（加深纸底，避开常见 #F4F1EA 奶油簇） */
+  --glass-bg-canvas: #e6ddd2;
+  --glass-bg-surface: #f7f1ea;
+  --glass-bg-surface-strong: #fcf8f3;
+  --glass-bg-surface-modal: #fcf8f3;
+  --glass-bg-muted: #ddd3c6;
+  --glass-bg-nav: rgba(247, 241, 234, 0.94);
+  --film-grain-opacity: 0.045;
+  --film-grain-blend: multiply;
   --glass-bg-base: var(--glass-bg-surface);
   --glass-bg-hover: var(--glass-fill-hover);
   --glass-bg-active: var(--glass-fill-active);
   --glass-text-primary: #1a1510;
   --glass-text-secondary: #5c5046;
-  /* ≥4.5:1 on canvas/surface for helper copy (WCAG AA) */
-  --glass-text-tertiary: #6f6256;
-  --glass-text-on-accent: #1a120c;
+  /* Helper/caption on cream: target ≥4.5:1 */
+  --glass-text-tertiary: #5a4f45;
+  --glass-text-on-accent: #fff8f0;
   --glass-text-disabled: #8a7b6c;
-  --glass-placeholder: #6f6256;
+  --glass-placeholder: #5a4f45;
 
   --glass-stroke-soft: rgba(58, 48, 40, 0.08);
   --glass-stroke-base: #d9cfc3;
@@ -28,35 +30,66 @@
   --glass-stroke-warning: rgba(180, 120, 60, 0.55);
   --glass-stroke-success: rgba(70, 140, 100, 0.5);
 
-  --glass-shadow-sm: 0 2px 10px rgba(40, 28, 16, 0.06);
-  --glass-shadow-md: 0 8px 24px rgba(40, 28, 16, 0.08);
-  --glass-shadow-lg: 0 12px 36px rgba(40, 28, 16, 0.1);
-  --glass-shadow-modal: 0 16px 48px rgba(40, 28, 16, 0.14);
-  --glass-shadow-nav: 0 4px 16px rgba(40, 28, 16, 0.06);
+  /* Elevation 1 / 2 — soft Film shadows via token only */
+  --glass-shadow-sm: 0 2px 8px rgba(40, 28, 16, 0.08);
+  --glass-shadow-md: 0 4px 16px rgba(40, 28, 16, 0.1);
+  --glass-shadow-lg: 0 8px 24px rgba(40, 28, 16, 0.12);
+  --glass-shadow-modal: 0 8px 24px rgba(40, 28, 16, 0.16);
+  --glass-shadow-nav: 0 2px 8px rgba(40, 28, 16, 0.06);
   --glass-blur-sm: 2px;
   --glass-blur-md: 4px;
   --glass-blur-lg: 8px;
   --glass-blur-nav: 10px;
 
-  /* controls=xs/sm/md · panels=lg/panel · chips=pill */
-  --glass-radius-xs: 6px;
+  /*
+   * Alibaba 前端手册对齐（Film 品牌色保留）
+   * 圆角：控件 4 · 卡片/弹窗 8
+   * 间距：仅 4/8/16/24/32/40/48
+   * 阴影：0 无 · 1 轻 · 2 重(modal)
+   */
+  --glass-radius-xs: 4px;
   --glass-radius-sm: 8px;
-  --glass-radius-md: 10px;
-  --glass-radius-lg: 12px;
-  --glass-radius-panel: 14px;
-  --glass-radius-xl: 16px;
+  --glass-radius-md: 8px;
+  --glass-radius-lg: 8px;
+  --glass-radius-panel: 8px;
+  --glass-radius-xl: 8px;
 
   --glass-space-1: 4px;
   --glass-space-2: 8px;
-  --glass-space-3: 12px;
+  --glass-space-3: 16px;
   --glass-space-4: 16px;
-  --glass-space-5: 20px;
+  --glass-space-5: 24px;
   --glass-space-6: 24px;
-  --glass-space-7: 28px;
+  --glass-space-7: 32px;
   --glass-space-8: 32px;
+  --glass-space-9: 40px;
+  --glass-space-10: 48px;
   --glass-density-compact-scale: 0.86;
   --glass-density-default-scale: 1;
-  --admin-card-pad-x: 18px;
+  --admin-card-pad-x: var(--glass-space-4);
+
+  /* 字号层级 H1–caption */
+  --glass-font-size-h1: 24px;
+  --glass-font-size-h2: 20px;
+  --glass-font-size-h3: 18px;
+  --glass-font-size-title: 16px;
+  --glass-font-size-body: 14px;
+  --glass-font-size-caption: 12px;
+  --glass-line-height-heading: 1.4;
+  --glass-line-height-body: 1.5715;
+  --glass-line-height-caption: 1.5;
+  --glass-font-weight-regular: 400;
+  --glass-font-weight-medium: 500;
+
+  --glass-control-min-size: 44px;
+  --glass-control-min-size-compact: 32px;
+  --glass-motion-duration: 0.25s;
+  --glass-motion-easing: ease-out;
+
+  /* Elevation aliases */
+  --glass-shadow-0: none;
+  --glass-shadow-1: var(--glass-shadow-sm);
+  --glass-shadow-2: var(--glass-shadow-modal);
 
   --glass-tone-neutral-bg: rgba(90, 80, 70, 0.1);
   --glass-tone-neutral-fg: #5c5046;
@@ -72,29 +105,57 @@
   --glass-overlay-soft: rgba(26, 21, 16, 0.28);
   --glass-overlay: rgba(26, 21, 16, 0.4);
   --glass-overlay-strong: rgba(26, 21, 16, 0.55);
+  /* True black letterbox for video/image contain wells (not page body) */
+  --glass-media-letterbox: #000000;
 
-  --glass-accent-from: #b8793f;
-  /* Hover stays ≥4.5:1 with on-accent (avoid darker wash) */
-  --glass-accent-to: #c4894f;
-  --glass-accent-shadow-soft: rgba(196, 137, 79, 0.22);
-  --glass-accent-shadow-strong: rgba(196, 137, 79, 0.32);
-  --glass-focus-ring: rgba(196, 137, 79, 0.16);
-  --glass-focus-ring-strong: rgba(196, 137, 79, 0.24);
+  --glass-accent-from: #8f5a28;
+  /* Hover: slightly lighter gold; on-accent stays cream for ≥4.5:1 */
+  --glass-accent-to: #a56b32;
+  --glass-accent-shadow-soft: rgba(143, 90, 40, 0.24);
+  --glass-accent-shadow-strong: rgba(143, 90, 40, 0.34);
+  --glass-focus-ring: rgba(143, 90, 40, 0.18);
+  --glass-focus-ring-strong: rgba(143, 90, 40, 0.28);
   --glass-danger-ring: rgba(185, 80, 70, 0.14);
   --glass-ghost-hover-bg: rgba(26, 21, 16, 0.05);
 
   --glass-fill-hover: rgba(26, 21, 16, 0.04);
-  --glass-fill-active: rgba(196, 137, 79, 0.14);
+  --glass-fill-active: rgba(143, 90, 40, 0.14);
 
   --app-rail-width: 72px;
   --app-secondary-width: 220px;
   --app-chrome-left: 0px;
-  --film-rail-bg: #efe8df;
-  --film-secondary-bg: #f7f2eb;
-  --film-topbar-bg: rgba(255, 252, 248, 0.96);
-  --film-gold: #c4894f;
-  --film-gold-2: #b8793f;
+  --film-rail-bg: #ddd4c8;
+  --film-secondary-bg: #ebe3d8;
+  --film-topbar-bg: rgba(247, 241, 234, 0.96);
+  --film-gold: #a56b32;
+  --film-gold-2: #8f5a28;
   --film-teal: #5f8f8b;
+
+  /* Project card cover gradients (decorative; brand/neutral only) */
+  --cover-gradient-0: linear-gradient(135deg, var(--film-gold-2) 0%, #3a2e24 55%, var(--glass-bg-canvas) 100%);
+  --cover-gradient-1: linear-gradient(135deg, #5a6b52 0%, #2f3a32 55%, #15120f 100%);
+  --cover-gradient-2: linear-gradient(135deg, #4a5a6e 0%, #2a3340 55%, #15120f 100%);
+  --cover-gradient-urban: linear-gradient(135deg, #6b5a48 0%, #2c241c 60%, #14110e 100%);
+  --cover-gradient-romance: linear-gradient(135deg, #8a4a5c 0%, #3a1e28 60%, #14110e 100%);
+  --cover-gradient-mystery: linear-gradient(135deg, #3d4a62 0%, #1c2433 60%, #10131a 100%);
+  --cover-initial-fg: color-mix(in srgb, var(--glass-text-on-accent) 88%, transparent);
+
+  /* Role importance tier badges (S–D) — brand/functional only, no Ant purple/blue */
+  --glass-role-tier-s-gradient: linear-gradient(135deg, var(--film-gold), var(--glass-tone-danger-fg));
+  --glass-role-tier-s-glow: 0 2px 8px var(--glass-accent-shadow-strong);
+  --glass-role-tier-s-accent: var(--glass-tone-warning-fg);
+  --glass-role-tier-a-gradient: linear-gradient(135deg, var(--glass-accent-from), var(--glass-accent-to));
+  --glass-role-tier-a-glow: 0 2px 8px var(--glass-accent-shadow-soft);
+  --glass-role-tier-a-accent: var(--glass-accent-from);
+  --glass-role-tier-b-gradient: linear-gradient(135deg, var(--film-teal), var(--glass-tone-info-fg));
+  --glass-role-tier-b-glow: 0 2px 8px color-mix(in srgb, var(--film-teal) 35%, transparent);
+  --glass-role-tier-b-accent: var(--glass-tone-info-fg);
+  --glass-role-tier-c-gradient: linear-gradient(135deg, var(--glass-tone-success-fg), #2f7a55);
+  --glass-role-tier-c-glow: 0 2px 8px color-mix(in srgb, var(--glass-tone-success-fg) 30%, transparent);
+  --glass-role-tier-c-accent: var(--glass-tone-success-fg);
+  --glass-role-tier-d-gradient: linear-gradient(135deg, var(--glass-text-tertiary), var(--glass-text-secondary));
+  --glass-role-tier-d-glow: 0 2px 6px var(--glass-stroke-soft);
+  --glass-role-tier-d-accent: var(--glass-text-tertiary);
 
   /* Stacking: secondary 50 · rail 60 · tip 61 · modal/overlay 80+ */
   --z-secondary: 50;
@@ -104,24 +165,26 @@
 }
 
 .dark {
-  /* Film DI · 深色钨丝暖褐 */
-  --glass-bg-canvas: #14110e;
-  --glass-bg-surface: #1e1915;
-  --glass-bg-surface-strong: #241f1a;
-  --glass-bg-surface-modal: #1a1612;
-  --glass-bg-muted: #17130f;
-  --glass-bg-nav: #120f0c;
+  /* Film DI · 深色钨丝暖褐（与浅色等权） */
+  --glass-bg-canvas: #0f0d0b;
+  --glass-bg-surface: #1a1612;
+  --glass-bg-surface-strong: #221c17;
+  --glass-bg-surface-modal: #1c1713;
+  --glass-bg-muted: #15110e;
+  --glass-bg-nav: #100d0b;
   --glass-bg-base: var(--glass-bg-surface);
   --glass-bg-hover: var(--glass-fill-hover);
   --glass-bg-active: var(--glass-fill-active);
+  --film-grain-opacity: 0.06;
+  --film-grain-blend: soft-light;
   --glass-text-primary: #f3ebe3;
-  --glass-text-secondary: #a89888;
-  --glass-text-tertiary: #b0a090;
-  --glass-text-on-accent: #1a120c;
-  --glass-text-disabled: #7a6c5e;
-  --glass-placeholder: #b0a090;
+  --glass-text-secondary: #b5a494;
+  --glass-text-tertiary: #9a8b7a;
+  --glass-text-on-accent: #fff8f0;
+  --glass-text-disabled: #6e6054;
+  --glass-placeholder: #9a8b7a;
 
-  --glass-stroke-soft: rgba(58, 48, 40, 0.9);
+  --glass-stroke-soft: rgba(243, 235, 227, 0.06);
   --glass-stroke-base: #3a3028;
   --glass-stroke-strong: #4a3d32;
   --glass-stroke-subtle: var(--glass-stroke-soft);
@@ -156,24 +219,26 @@
   --glass-overlay-soft: rgba(0, 0, 0, 0.35);
   --glass-overlay: rgba(0, 0, 0, 0.45);
   --glass-overlay-strong: rgba(0, 0, 0, 0.58);
+  --glass-media-letterbox: #000000;
 
-  --glass-accent-from: #e0a36a;
+  /* Dark accent mirrors light: deep tungsten + cream label */
+  --glass-accent-from: #a56b32;
   --glass-accent-to: #c4894f;
-  --glass-accent-shadow-soft: rgba(224, 163, 106, 0.28);
-  --glass-accent-shadow-strong: rgba(224, 163, 106, 0.4);
-  --glass-focus-ring: rgba(224, 163, 106, 0.18);
-  --glass-focus-ring-strong: rgba(224, 163, 106, 0.28);
+  --glass-accent-shadow-soft: rgba(165, 107, 50, 0.32);
+  --glass-accent-shadow-strong: rgba(165, 107, 50, 0.44);
+  --glass-focus-ring: rgba(196, 137, 79, 0.22);
+  --glass-focus-ring-strong: rgba(196, 137, 79, 0.34);
   --glass-danger-ring: rgba(201, 123, 106, 0.18);
   --glass-ghost-hover-bg: rgba(255, 255, 255, 0.04);
 
   --glass-fill-hover: rgba(255, 255, 255, 0.04);
-  --glass-fill-active: rgba(224, 163, 106, 0.12);
+  --glass-fill-active: rgba(165, 107, 50, 0.16);
 
-  --film-rail-bg: #100d0b;
-  --film-secondary-bg: #17130f;
-  --film-topbar-bg: #120f0c;
-  --film-gold: #e0a36a;
-  --film-gold-2: #c4894f;
+  --film-rail-bg: #0c0a08;
+  --film-secondary-bg: #14110e;
+  --film-topbar-bg: #100d0b;
+  --film-gold: #d4a06a;
+  --film-gold-2: #a56b32;
   --film-teal: #6f9e9a;
 }
 

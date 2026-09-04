@@ -31,6 +31,7 @@ interface ProjectSnapshotInput {
   capabilityOverrides: CapabilitySelections
   ttsRate: string | number | undefined
   artStyle: string | undefined
+  genrePack: string | undefined
 }
 
 interface BuildWorkspaceControllerViewModelParams {
@@ -102,6 +103,8 @@ interface BuildWorkspaceControllerViewModelParams {
     runStoryToScriptFlow: () => Promise<void>
     runScriptToStoryboardFlow: () => Promise<void>
     showCreatingToast: boolean
+    videoRunning: boolean
+    voiceRunning: boolean
   }
   videoState: {
     handleGenerateVideo: (

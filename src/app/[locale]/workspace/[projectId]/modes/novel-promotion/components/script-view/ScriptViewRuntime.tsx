@@ -1,10 +1,19 @@
 'use client'
-import { logInfo as _ulogInfo } from '@/lib/logging/core'
+import { logInfo as _ulogInfo, logError as _ulogError } from '@/lib/logging/core'
 
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Character, Location, Prop } from '@/types/project'
 import { useProjectAssets } from '@/lib/query/hooks/useProjectAssets'
+import { useMoveProjectStoryboardGroup } from '@/lib/query/mutations/storyboard-panel-mutations'
+import { useMergeProjectClips } from '@/lib/query/mutations/useEpisodeMutations'
+import { queryKeys } from '@/lib/query/keys'
+import {
+  applyClipIdOrder,
+  resolveAdjacentClipMove,
+  resolveClipDragReorder,
+} from '@/lib/novel-promotion/clip-reorder'
 import { resolveTaskPresentationState } from '@/lib/task/presentation'
 import {
   fuzzyMatchLocation as fuzzyMatchLocationFromModule,
@@ -64,8 +73,14 @@ function toTranslationValues(values?: Record<string, unknown>) {
   return values as never
 }
 
+function readErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message.trim()) return error.message
+  return fallback
+}
+
 export default function ScriptView({
   projectId,
+  episodeId,
   clips,
   onClipEdit,
   onClipUpdate,
@@ -80,6 +95,11 @@ export default function ScriptView({
   const tNP = useTranslations('novelPromotion')
   const tScript = useTranslations('scriptView')
   const tCommon = useTranslations('common')
+  const queryClient = useQueryClient()
+  const moveClipMutation = useMoveProjectStoryboardGroup(projectId)
+  const mergeClipsMutation = useMergeProjectClips(projectId)
+  const [movingClipId, setMovingClipId] = useState<string | null>(null)
+  const [mergingClipId, setMergingClipId] = useState<string | null>(null)
 
   const assetsLoadingState = assetsLoading
     ? resolveTaskPresentationState({
@@ -368,6 +388,139 @@ export default function ScriptView({
     }
   }
 
+  const applyOptimisticClipOrder = useCallback(
+    (nextOrder: string[]) => {
+      if (!episodeId) return null
+      const episodeQueryKey = queryKeys.episodeData(projectId, episodeId)
+      const previousEpisode = queryClient.getQueryData<Record<string, unknown>>(episodeQueryKey)
+      queryClient.setQueryData<Record<string, unknown> | undefined>(episodeQueryKey, (prev) => {
+        if (!prev || !Array.isArray(prev.clips)) return prev
+        const reordered = applyClipIdOrder(prev.clips as Array<{ id: string }>, nextOrder)
+        if (!reordered) return prev
+        return { ...prev, clips: reordered }
+      })
+      return previousEpisode ?? null
+    },
+    [episodeId, projectId, queryClient],
+  )
+
+  const handleMoveClip = useCallback(async (clipId: string, direction: 'up' | 'down') => {
+    if (!episodeId || movingClipId || mergingClipId) return
+    const orderedIds = clips.map((clip) => clip.id)
+    const adjacent = resolveAdjacentClipMove(orderedIds, clipId, direction)
+    if (!adjacent) return
+    const drag = resolveClipDragReorder(orderedIds, clipId, adjacent.neighborId)
+    if (!drag) return
+
+    setMovingClipId(clipId)
+    const previousEpisode = applyOptimisticClipOrder(drag.nextOrder)
+    try {
+      await moveClipMutation.mutateAsync({ episodeId, clipId, direction })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.episodeData(projectId, episodeId),
+      })
+    } catch (error: unknown) {
+      if (previousEpisode) {
+        queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), previousEpisode)
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.episodeData(projectId, episodeId),
+        })
+      }
+      _ulogError('移动剧情节点失败:', error)
+      window.alert(
+        tScript('eventGraph.moveFailed', {
+          error: readErrorMessage(error, 'Unknown error'),
+        }),
+      )
+    } finally {
+      setMovingClipId(null)
+    }
+  }, [
+    applyOptimisticClipOrder,
+    clips,
+    episodeId,
+    mergingClipId,
+    moveClipMutation,
+    movingClipId,
+    projectId,
+    queryClient,
+    tScript,
+  ])
+
+  const handleDragReorderClip = useCallback(async (clipId: string, overClipId: string) => {
+    if (!episodeId || movingClipId || mergingClipId) return
+    if (clipId === overClipId) return
+    const orderedIds = clips.map((clip) => clip.id)
+    const drag = resolveClipDragReorder(orderedIds, clipId, overClipId)
+    if (!drag) return
+
+    setMovingClipId(clipId)
+    const previousEpisode = applyOptimisticClipOrder(drag.nextOrder)
+    try {
+      await moveClipMutation.mutateAsync({ episodeId, clipId, overClipId })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.episodeData(projectId, episodeId),
+      })
+    } catch (error: unknown) {
+      if (previousEpisode) {
+        queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), previousEpisode)
+      } else {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.episodeData(projectId, episodeId),
+        })
+      }
+      _ulogError('拖拽剧情节点失败:', error)
+      window.alert(
+        tScript('eventGraph.moveFailed', {
+          error: readErrorMessage(error, 'Unknown error'),
+        }),
+      )
+    } finally {
+      setMovingClipId(null)
+    }
+  }, [
+    applyOptimisticClipOrder,
+    clips,
+    episodeId,
+    mergingClipId,
+    moveClipMutation,
+    movingClipId,
+    projectId,
+    queryClient,
+    tScript,
+  ])
+
+  const handleMergeWithNext = useCallback(async (clipId: string) => {
+    if (!episodeId || movingClipId || mergingClipId) return
+    const confirmed = window.confirm(tScript('eventGraph.mergeConfirm'))
+    if (!confirmed) return
+    setMergingClipId(clipId)
+    try {
+      await mergeClipsMutation.mutateAsync({ episodeId, keepClipId: clipId })
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.episodeData(projectId, episodeId),
+      })
+    } catch (error: unknown) {
+      _ulogError('合并剧情节点失败:', error)
+      window.alert(
+        tScript('eventGraph.mergeFailed', {
+          error: readErrorMessage(error, 'Unknown error'),
+        }),
+      )
+    } finally {
+      setMergingClipId(null)
+    }
+  }, [
+    episodeId,
+    mergeClipsMutation,
+    mergingClipId,
+    movingClipId,
+    projectId,
+    queryClient,
+    tScript,
+  ])
+
   const { allCharNames: globalCharNames, allLocNames: globalLocNames, allPropNames: globalPropNames } = getAllClipsAssets()
 
   const globalCharIds = characters
@@ -411,11 +564,18 @@ export default function ScriptView({
   const missingAssetsCount = charsWithoutImage.length + locationsWithoutImage.length + propsWithoutImage.length
 
   return (
-    <div className="w-full grid grid-cols-12 gap-6 min-h-[400px] lg:h-[calc(100vh-180px)] animate-fadeIn">
+    <div className="w-full grid grid-cols-12 gap-4 lg:gap-5 min-h-[400px] lg:h-[calc(100vh-180px)] animate-fadeIn">
       <ScriptViewScriptPanel
+        projectId={projectId}
+        episodeId={episodeId}
         clips={clips}
         selectedClipId={selectedClipId}
         onSelectClip={setSelectedClipId}
+        onMoveClip={episodeId ? handleMoveClip : undefined}
+        onDragReorderClip={episodeId ? handleDragReorderClip : undefined}
+        onMergeWithNext={episodeId ? handleMergeWithNext : undefined}
+        movingClipId={movingClipId}
+        mergingClipId={mergingClipId}
         savingClips={savingClips}
         onClipEdit={onClipEdit}
         onClipDelete={onClipDelete}

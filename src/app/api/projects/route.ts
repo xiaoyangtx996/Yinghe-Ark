@@ -93,6 +93,7 @@ export const GET = apiHandler(async (request: NextRequest) => {
       where: { projectId: { in: projectIds } },
       select: {
         projectId: true,
+        genrePack: true,
         _count: {
           select: {
             episodes: true,
@@ -135,17 +136,28 @@ export const GET = apiHandler(async (request: NextRequest) => {
     costsByProject.map(item => [item.projectId, toMoneyNumber(item._sum.cost)])
   )
 
-  // 构建统计映射表 + 第一集预览
-  const statsMap = new Map<string, { episodes: number; images: number; videos: number; panels: number; firstEpisodePreview: string | null }>(
+  // 构建统计映射表 + 第一集预览 + 封面（首个分镜静帧）
+  const statsMap = new Map<string, {
+    episodes: number
+    images: number
+    videos: number
+    panels: number
+    firstEpisodePreview: string | null
+    coverImageUrl: string | null
+  }>(
     novelProjects.map(np => {
       let imageCount = 0
       let videoCount = 0
       let panelCount = 0
+      let coverImageUrl: string | null = null
       for (const ep of np.episodes) {
         for (const sb of ep.storyboards) {
           panelCount += sb._count.panels
           for (const panel of sb.panels) {
-            if (panel.imageUrl) imageCount++
+            if (panel.imageUrl) {
+              imageCount++
+              if (!coverImageUrl) coverImageUrl = panel.imageUrl
+            }
             if (panel.videoUrl) videoCount++
           }
         }
@@ -158,16 +170,29 @@ export const GET = apiHandler(async (request: NextRequest) => {
         images: imageCount,
         videos: videoCount,
         panels: panelCount,
-        firstEpisodePreview: preview
+        firstEpisodePreview: preview,
+        coverImageUrl,
       }]
     })
+  )
+
+  const genrePackMap = new Map(
+    novelProjects.map((np) => [np.projectId, np.genrePack ?? null]),
   )
 
   // 合并项目、费用与统计
   const projectsWithStats = projects.map(project => ({
     ...project,
     totalCost: costMap.get(project.id) ?? 0,
-    stats: statsMap.get(project.id) ?? { episodes: 0, images: 0, videos: 0, panels: 0, firstEpisodePreview: null }
+    genrePack: genrePackMap.get(project.id) ?? null,
+    stats: statsMap.get(project.id) ?? {
+      episodes: 0,
+      images: 0,
+      videos: 0,
+      panels: 0,
+      firstEpisodePreview: null,
+      coverImageUrl: null,
+    }
   }))
 
   return NextResponse.json({

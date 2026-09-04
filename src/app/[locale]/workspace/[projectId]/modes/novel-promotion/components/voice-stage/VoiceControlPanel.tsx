@@ -143,7 +143,7 @@ export default function VoiceControlPanel({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--glass-overlay)] p-4" onClick={onCancelEdit}>
           <div className="w-full max-w-xl bg-[var(--glass-bg-surface)] rounded-2xl shadow-2xl border border-[var(--glass-stroke-base)] p-5" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+              <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">
                 {editingLineId ? t('lineEditor.editTitle') : t('lineEditor.addTitle')}
               </h3>
               <button
@@ -207,17 +207,17 @@ export default function VoiceControlPanel({
               <button
                 onClick={onCancelEdit}
                 disabled={isSavingLineEditor}
-                className="px-4 py-2 text-sm rounded-lg border border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] disabled:opacity-60"
+                className="px-4 py-2 text-sm rounded-lg border border-[var(--glass-stroke-base)] text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] disabled:cursor-not-allowed disabled:text-[var(--glass-text-disabled)]"
               >
                 {t('common.cancel')}
               </button>
               <button
                 onClick={onSaveEdit}
                 disabled={isSavingLineEditor}
-                className="px-4 py-2 text-sm rounded-lg bg-[var(--glass-accent-from)] text-white hover:bg-[var(--glass-accent-to)] disabled:opacity-60 flex items-center gap-2"
+                className="px-4 py-2 text-sm rounded-lg bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] hover:bg-[var(--glass-accent-to)] disabled:cursor-not-allowed disabled:bg-[var(--glass-bg-muted)] disabled:text-[var(--glass-text-disabled)] flex items-center gap-2"
               >
                 {isSavingLineEditor && (
-                  <TaskStatusInline state={savingLineEditorState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                  <TaskStatusInline state={savingLineEditorState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                 )}
                 <span>{editingLineId ? t('lineEditor.saveEdit') : t('lineEditor.saveAdd')}</span>
               </button>

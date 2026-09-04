@@ -113,7 +113,7 @@ export default function VoicePickerDialog({ isOpen, onClose, onSelect }: VoicePi
                 <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]">
                     <div className="flex items-center gap-2">
                         <AppIcon name="mic" className="w-5 h-5 text-[var(--glass-tone-info-fg)]" />
-                        <h2 className="font-semibold text-[var(--glass-text-primary)]">{t('voicePickerTitle')}</h2>
+                        <h2 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">{t('voicePickerTitle')}</h2>
                     </div>
                     <button onClick={handleClose} className="glass-btn-base glass-btn-soft p-1 text-[var(--glass-text-tertiary)]">
                         <AppIcon name="close" className="w-5 h-5" />
@@ -150,7 +150,7 @@ export default function VoicePickerDialog({ isOpen, onClose, onSelect }: VoicePi
                                         {/* 选中标记 */}
                                         {isSelected && (
                                             <div className="absolute -top-1.5 -right-1.5 w-5 h-5 glass-chip glass-chip-info rounded-full flex items-center justify-center p-0">
-                                                <AppIcon name="checkSolid" className="w-3 h-3 text-white" />
+                                                <AppIcon name="checkSolid" className="w-3 h-3 text-[var(--glass-text-on-accent)]" />
                                             </div>
                                         )}
 
@@ -162,7 +162,7 @@ export default function VoicePickerDialog({ isOpen, onClose, onSelect }: VoicePi
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-1">
                                                     <span className="font-medium text-[var(--glass-text-primary)] text-sm truncate">{voice.name}</span>
-                                                    {genderIcon && <span className="glass-chip glass-chip-neutral text-[10px] px-1.5 py-0">{genderIcon}</span>}
+                                                    {genderIcon && <span className="glass-chip glass-chip-neutral text-[length:var(--glass-font-size-caption)] px-1.5 py-0">{genderIcon}</span>}
                                                 </div>
                                                 {voice.description && (
                                                     <p className="text-xs text-[var(--glass-text-secondary)] truncate">{voice.description}</p>
@@ -210,7 +210,7 @@ export default function VoicePickerDialog({ isOpen, onClose, onSelect }: VoicePi
                     <button
                         onClick={handleConfirm}
                         disabled={!selectedVoice}
-                        className="glass-btn-base glass-btn-primary flex-1 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                        className="glass-btn-base glass-btn-primary flex-1 py-2 rounded-lg disabled:cursor-not-allowed text-sm font-medium"
                     >
                         {t('voicePickerConfirm')}
                     </button>

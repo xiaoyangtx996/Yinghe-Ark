@@ -52,6 +52,7 @@ export function toDisplayImageUrl(input: string | null | undefined): string | nu
   if (!input) return null
   const raw = input.trim()
   if (!raw) return null
+  if (raw.startsWith('PENDING:')) return raw
 
   const unwrapped = unwrapNextImageUrl(raw)
   if (isStorageKey(unwrapped)) {

@@ -76,7 +76,7 @@ export default function ScreenplayDisplay({ screenplay, originalContent }: Scree
                         {parsedScreenplay.scenes.map((scene, sceneIndex) => (
                             <div key={sceneIndex} className="border-l-2 border-[var(--glass-stroke-focus)] pl-3 space-y-2">
                                 <div className="flex items-center gap-2 text-xs flex-wrap">
-                                    <span className="font-bold text-[var(--glass-tone-info-fg)] bg-[var(--glass-tone-info-bg)] px-2 py-0.5 rounded">
+                                    <span className="font-medium text-[var(--glass-tone-info-fg)] bg-[var(--glass-tone-info-bg)] px-2 py-0.5 rounded">
                                         {t('screenplay.scene', { number: scene.scene_number })}
                                     </span>
                                     <span className="text-[var(--glass-text-tertiary)]">
@@ -94,9 +94,9 @@ export default function ScreenplayDisplay({ screenplay, originalContent }: Scree
 
                                 {scene.characters && scene.characters.length > 0 && (
                                     <div className="flex gap-1 flex-wrap items-center">
-                                        <span className="text-[10px] text-[var(--glass-text-tertiary)]">{t('screenplay.characters')}</span>
+                                        <span className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">{t('screenplay.characters')}</span>
                                         {scene.characters.map((name, index) => (
-                                            <span key={`${name}-${index}`} className="text-[10px] text-[var(--glass-text-secondary)] bg-[var(--glass-bg-muted)] px-1.5 py-0.5 rounded">
+                                            <span key={`${name}-${index}`} className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)] bg-[var(--glass-bg-muted)] px-1.5 py-0.5 rounded">
                                                 {name}
                                             </span>
                                         ))}

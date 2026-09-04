@@ -69,17 +69,17 @@ export function AiModifyDescriptionField({
             type="button"
             onClick={() => setIsModalOpen(true)}
             disabled={isAiModifying}
-            className="glass-btn-base pointer-events-auto flex h-10 flex-shrink-0 items-center gap-1.5 border border-[var(--glass-stroke-strong)] bg-[var(--glass-bg-surface)] px-3 text-sm transition-all hover:border-[var(--glass-tone-info-fg)]/40 disabled:cursor-not-allowed disabled:opacity-50"
+            className="glass-btn-base pointer-events-auto flex h-10 flex-shrink-0 items-center gap-1.5 border border-[var(--glass-stroke-strong)] bg-[var(--glass-bg-surface)] px-3 text-sm transition-all hover:border-[var(--glass-tone-info-fg)]/40 disabled:cursor-not-allowed"
           >
             {isAiModifying ? (
               <TaskStatusInline state={aiModifyingState} className="text-[var(--glass-tone-info-fg)] [&>span]:text-[var(--glass-tone-info-fg)] [&_svg]:text-[var(--glass-tone-info-fg)]" />
             ) : (
               <>
-                <AppIcon name="sparkles" className="h-4 w-4 text-[#7c3aed]" />
+                <AppIcon name="sparkles" className="h-4 w-4 text-[var(--glass-accent-from)]" />
                 <span
                   className="font-medium"
                   style={{
-                    background: 'linear-gradient(135deg, #3b82f6, #7c3aed)',
+                    background: 'linear-gradient(135deg, var(--glass-accent-from), var(--glass-accent-to))',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                   }}
@@ -103,7 +103,7 @@ export function AiModifyDescriptionField({
               type="button"
               onClick={handleCloseModal}
               disabled={isAiModifying}
-              className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50"
+              className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg disabled:cursor-not-allowed"
             >
               {cancelLabel}
             </button>
@@ -111,10 +111,10 @@ export function AiModifyDescriptionField({
               type="button"
               onClick={() => void handleConfirmModify()}
               disabled={isAiModifying || !aiInstruction.trim()}
-              className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg disabled:cursor-not-allowed disabled:opacity-50 flex items-center gap-2"
+              className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isAiModifying ? (
-                <TaskStatusInline state={aiModifyingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={aiModifyingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 actionLabel
               )}

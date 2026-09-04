@@ -47,10 +47,10 @@ export default function CharacterCardActions(props: CharacterCardActionsProps) {
             <button
               onClick={props.onConfirmSelection}
               disabled={props.isConfirmingSelection}
-              className="px-4 py-2 bg-[var(--glass-tone-success-fg)] text-white rounded-lg hover:bg-[var(--glass-tone-success-fg)] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
+              className="px-4 py-2 bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-tone-success-fg)] transition-all active:scale-95 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
             >
               {props.isConfirmingSelection ? (
-                <TaskStatusInline state={props.confirmSelectionState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                <TaskStatusInline state={props.confirmSelectionState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
               ) : (
                 <>
                   <AppIcon name="check" className="w-4 h-4" />
@@ -85,8 +85,11 @@ export default function CharacterCardActions(props: CharacterCardActionsProps) {
             onValueChange={props.onGenerationCountChange}
             onClick={() => props.onGenerate(props.generationCount)}
             disabled={!props.hasDescription}
+            splitInteractiveZones
             ariaLabel={t('image.selectCount')}
-            className={`glass-btn-base flex w-full items-center justify-center gap-1 py-1 text-xs disabled:opacity-50 ${props.isPrimaryAppearance ? 'glass-btn-primary' : 'glass-btn-tone-info'}`}
+            className={`glass-btn-base flex w-full items-center justify-center gap-1 py-1 text-xs ${props.isPrimaryAppearance ? 'glass-btn-primary' : 'glass-btn-tone-info'}`}
+            actionClassName={`glass-btn-base flex items-center justify-center gap-1 px-3 py-1 text-xs ${props.isPrimaryAppearance ? 'glass-btn-primary' : 'glass-btn-tone-info'}`}
+            countClassName="glass-btn-base glass-btn-secondary"
             selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-xs font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
           />
         )

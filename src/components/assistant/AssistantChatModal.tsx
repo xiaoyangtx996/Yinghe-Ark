@@ -391,7 +391,7 @@ export function AssistantChatModal({
                 {shouldShowEmptyAssistantMessage && (
                   <Message from="assistant">
                     <MessageContent className="max-w-[84%] rounded-2xl rounded-bl-md border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-3 py-2">
-                      <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
+                      <div className="mb-1 text-[length:var(--glass-font-size-caption)] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
                         {assistantLabel}
                       </div>
                       <MessageResponse className="whitespace-pre-wrap break-words leading-relaxed">
@@ -411,7 +411,7 @@ export function AssistantChatModal({
                           ? 'max-w-[84%] rounded-2xl rounded-bl-md border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-3 py-2'
                           : 'max-w-[84%] rounded-2xl rounded-br-md bg-[var(--brand-primary)]/15 px-3 py-2'}
                       >
-                        <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
+                        <div className="mb-1 text-[length:var(--glass-font-size-caption)] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
                           {isAssistant ? assistantLabel : userLabel}
                         </div>
 
@@ -423,7 +423,7 @@ export function AssistantChatModal({
                           >
                             <ReasoningTrigger className="text-xs text-[var(--glass-text-secondary)]">
                               <span className="mr-2">{reasoningTitle}</span>
-                              <span className="text-[11px] text-[var(--glass-text-tertiary)]">
+                              <span className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)]">
                                 {expandedReasoningByMessageId[message.id] ? reasoningCollapseLabel : reasoningExpandLabel}
                               </span>
                             </ReasoningTrigger>
@@ -471,7 +471,7 @@ export function AssistantChatModal({
                 {pending && !completed && (
                   <Message from="assistant">
                     <MessageContent className="max-w-[84%] rounded-2xl rounded-bl-md border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-3 py-2">
-                      <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
+                      <div className="mb-1 text-[length:var(--glass-font-size-caption)] font-semibold uppercase tracking-wide text-[var(--glass-text-tertiary)]">
                         {assistantLabel}
                       </div>
                       <MessageResponse>{pendingLabel}</MessageResponse>
@@ -513,7 +513,7 @@ export function AssistantChatModal({
                 <button
                   onClick={onSend}
                   disabled={pending}
-                  className="glass-btn-base glass-btn-primary px-3 py-2 text-sm font-medium disabled:opacity-60"
+                  className="glass-btn-base glass-btn-primary px-3 py-2 text-sm font-medium"
                 >
                   {pending ? pendingLabel : sendLabel}
                 </button>

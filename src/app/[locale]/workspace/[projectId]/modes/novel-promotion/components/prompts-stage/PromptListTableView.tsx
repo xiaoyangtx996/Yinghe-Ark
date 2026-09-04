@@ -69,7 +69,7 @@ export default function PromptListTableView({ runtime }: PromptListTableViewProp
                       <button
                         onClick={() => onGenerateImage(shot.id, shotExtraAssets[shot.id])}
                         disabled={isShotTaskRunning(shot) || isBatchSubmitting}
-                        className={`glass-btn-base px-3 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 ${getGenerateButtonToneClass(shot)}`}
+                        className={`glass-btn-base px-3 py-1 text-xs disabled:cursor-not-allowed flex items-center space-x-1 ${getGenerateButtonToneClass(shot)}`}
                       >
                         {isShotTaskRunning(shot) ? <TaskStatusInline state={shotRunningState} /> : <span>{t('common.generate')}</span>}
                       </button>

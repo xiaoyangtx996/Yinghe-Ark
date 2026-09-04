@@ -134,7 +134,7 @@ export default function VoiceDesignGeneratorSection({
           <div className="flex items-center justify-center gap-2">
             <span>{tv('generateSchemesPrefix')}</span>
             <div
-              className="group relative inline-flex items-center rounded-md px-1.5 py-0.5 transition-colors hover:bg-white/12 focus-within:bg-white/14"
+              className="group relative inline-flex items-center rounded-md px-1.5 py-0.5 transition-colors hover:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_12%,transparent)] focus-within:bg-[color-mix(in_srgb,var(--glass-text-on-accent)_14%,transparent)]"
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
             >
@@ -142,18 +142,18 @@ export default function VoiceDesignGeneratorSection({
                 value={String(normalizedSchemeCount)}
                 onChange={(event) => onSchemeCountChange(event.target.value)}
                 aria-label={tv('schemeCountAriaLabel')}
-                className="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-white/96 outline-none cursor-pointer leading-none transition-colors group-hover:text-white focus:text-white"
+                className="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-[color-mix(in_srgb,var(--glass-text-on-accent)_96%,transparent)] outline-none cursor-pointer leading-none transition-colors group-hover:text-[var(--glass-text-on-accent)] focus:text-[var(--glass-text-on-accent)]"
               >
                 {Array.from({ length: MAX_VOICE_SCHEME_COUNT - MIN_VOICE_SCHEME_COUNT + 1 }, (_, index) => {
                   const value = String(index + MIN_VOICE_SCHEME_COUNT)
                   return (
-                    <option key={value} value={value} className="text-black">
+                    <option key={value} value={value} className="text-[var(--glass-text-primary)]">
                       {value}
                     </option>
                   )
                 })}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-1 flex items-center text-white/82 transition-colors group-hover:text-white group-focus-within:text-white">
+              <div className="pointer-events-none absolute inset-y-0 right-1 flex items-center text-[color-mix(in_srgb,var(--glass-text-on-accent)_82%,transparent)] transition-colors group-hover:text-[var(--glass-text-on-accent)] group-focus-within:text-[var(--glass-text-on-accent)]">
                 <AppIcon name="chevronDown" className="h-3 w-3" />
               </div>
             </div>
@@ -187,7 +187,7 @@ export default function VoiceDesignGeneratorSection({
               >
                 {selectedIndex === index && (
                   <div className="absolute -top-1.5 -right-1.5 w-5 h-5 glass-chip glass-chip-info rounded-full flex items-center justify-center p-0">
-                    <AppIcon name="checkSolid" className="w-3 h-3 text-white" />
+                    <AppIcon name="checkSolid" className="w-3 h-3 text-[var(--glass-text-on-accent)]" />
                   </div>
                 )}
                 <div className="text-sm font-medium text-[var(--glass-text-primary)] mb-2">{tv('schemeN', { n: index + 1 })}</div>

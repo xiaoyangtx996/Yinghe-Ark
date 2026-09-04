@@ -237,7 +237,11 @@ export function useCreateProjectStoryboardGroup(projectId: string) {
 export function useMoveProjectStoryboardGroup(projectId: string) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async (payload: { episodeId: string; clipId: string; direction: 'up' | 'down' }) => {
+        mutationFn: async (
+            payload:
+                | { episodeId: string; clipId: string; direction: 'up' | 'down' }
+                | { episodeId: string; clipId: string; overClipId: string },
+        ) => {
             return await requestJsonWithError(`/api/novel-promotion/${projectId}/storyboard-group`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },

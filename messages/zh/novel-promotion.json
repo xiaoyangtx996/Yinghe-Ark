@@ -4,8 +4,15 @@
     "script": "剧本",
     "storyboard": "分镜",
     "video": "成片",
+    "voice": "配音",
     "editor": "AI剪辑",
     "editorComingSoon": "开发中，关注我们获取最新消息"
+  },
+  "editorGate": {
+    "title": "成片编辑暂未开放",
+    "description": "时间线精剪仍在准备中。你可先在成片页预览与导出视频，能力就绪后再开放剪辑。",
+    "goVideos": "前往成片导出",
+    "hint": "我们避免空头承诺：未开放的能力会明确告知。"
   },
   "buttons": {
     "assetLibrary": "资产库",

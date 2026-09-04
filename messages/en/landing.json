@@ -1,27 +1,140 @@
 {
-  "title": "waoowaoo",
+  "title": "Yinghe Ark",
   "subtitle": "AI Film & TV Studio",
   "enterWorkspace": "Enter Workspace",
   "loading": "Loading...",
   "getStarted": "Get Started",
   "learnMore": "Learn More",
+  "hero": {
+    "eyebrow": "OPEN SOURCE FILM SUITE",
+    "headline": "From script to final cut",
+    "support": "An AI workbench for short drama and comic-video: parse text, build characters and scenes, board shots, dub, and export."
+  },
+  "workflow": {
+    "title": "One production pipeline",
+    "subtitle": "Move in creative order. Review and rerun each step—no single black-box render.",
+    "steps": {
+      "analyze": {
+        "title": "Text analysis",
+        "description": "Import a novel or draft script; extract characters, scenes, conflict, and dialogue structure."
+      },
+      "assets": {
+        "title": "Characters & scenes",
+        "description": "Generate reusable people and locations so later shots share the same look and space."
+      },
+      "board": {
+        "title": "Storyboard",
+        "description": "Turn text into boards; tune pacing, framing, and prompts before generating frames."
+      },
+      "produce": {
+        "title": "Voice & export",
+        "description": "Multi-character dubbing and shot synthesis, then export a publishable cut."
+      }
+    }
+  },
   "features": {
-    "title": "Unleash Infinite Creativity",
-    "subtitle": "Full-process AI assistance, from script to final cut",
+    "title": "Workbench capabilities",
+    "subtitle": "Focus on the costly parts of short-form production: consistent assets, controllable boards, voice, and export.",
     "character": {
-      "title": "Character Workshop",
-      "description": "Create unique anime characters with high consistency"
-    },
-    "storyboard": {
-      "title": "Smart Storyboard",
-      "description": "One-click text to storyboard, precise narrative control"
+      "title": "Character workshop",
+      "description": "Define cast and generate looks that stay consistent across shots."
     },
     "world": {
-      "title": "World Building",
-      "description": "Immersive scene generation to build grand story backgrounds"
+      "title": "Scene building",
+      "description": "Generate locations per scene as stable spatial references for boards."
+    },
+    "storyboard": {
+      "title": "Smart storyboard",
+      "description": "Lay out shots from text; edit prompts and rerun a single shot without restarting the episode."
+    },
+    "voice": {
+      "title": "Voice & export",
+      "description": "Multi-character speech synthesis, then combine with picture and export."
+    },
+    "script": {
+      "title": "Script analysis",
+      "description": "Auto-detect cast, locations, and plot beats to cut manual breakdown work."
+    },
+    "assets": {
+      "title": "Asset hub",
+      "description": "Keep characters, scenes, and props in one place; reuse them across projects."
+    }
+  },
+  "useCases": {
+    "title": "Who it’s for",
+    "subtitle": "Creators and small teams who need to move text into watchable picture quickly.",
+    "items": {
+      "shortDrama": {
+        "title": "Short-drama previews",
+        "description": "Run boards and voice first to test pacing before heavy polish."
+      },
+      "comic": {
+        "title": "Comic-video adaptation",
+        "description": "Pull cast and boards from a novel or outline to shorten early prep."
+      },
+      "team": {
+        "title": "Small-team workflow",
+        "description": "Keep assets and shots in one workbench instead of scattered drives and chats."
+      }
+    }
+  },
+  "highlights": {
+    "title": "Self-host ready, zh / en UI",
+    "items": {
+      "open": {
+        "title": "Open source & self-host",
+        "description": "Deploy locally or privately; keep keys and media on your own stack."
+      },
+      "locale": {
+        "title": "Bilingual UI",
+        "description": "Switch Simplified Chinese / English in one click for mixed teams."
+      },
+      "iterate": {
+        "title": "Rerun by step",
+        "description": "Rerun character, board, or voice jobs without resetting the whole pipeline."
+      }
+    }
+  },
+  "cta": {
+    "title": "Start with your first project",
+    "subtitle": "Sign up, open the workbench, and try analysis and boards on your own text.",
+    "primary": "Create account",
+    "secondary": "Sign in"
+  },
+  "pipeline": {
+    "story": "Story",
+    "script": "Script",
+    "storyboard": "Storyboard",
+    "output": "Video · Voice",
+    "previewTitle": "Workbench preview",
+    "stages": {
+      "story": {
+        "label": "Story",
+        "hint": "Characters and conflict",
+        "body": "Pull lead, antagonist, and core conflict from text before building assets.",
+        "tiles": ["Lead", "Antagonist", "Conflict"]
+      },
+      "script": {
+        "label": "Script",
+        "hint": "Scenes and dialogue",
+        "body": "Break into runnable scenes: locations, entrances, and dialogue lines for boarding.",
+        "tiles": ["Scene list", "Dialogue", "Locations"]
+      },
+      "storyboard": {
+        "label": "Storyboard",
+        "hint": "Shots and pacing",
+        "body": "Generate per-shot prompts; rerun one shot without resetting the episode.",
+        "tiles": ["Shot 01", "Shot 02", "Shot 03"]
+      },
+      "output": {
+        "label": "Final cut",
+        "hint": "Voice and export",
+        "body": "Lay multi-character voice on the timeline, compose video, then export.",
+        "tiles": ["Dubbing", "Compose", "Export"]
+      }
     }
   },
   "footer": {
-    "copyright": "2026 waoowaoo AI. All rights reserved."
+    "copyright": "2026 Yinghe Ark. All rights reserved."
   }
 }

@@ -53,7 +53,7 @@ export default function StoryboardGroupHeader({
           <AppIcon name="chevronDown" className="w-4 h-4" />
         </button>
       </div>
-      <div className="glass-surface-soft flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-bold text-[var(--glass-tone-info-fg)]">
+      <div className="glass-surface-soft flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-medium text-[var(--glass-tone-info-fg)]">
         {sbIndex + 1}
       </div>
       <div>

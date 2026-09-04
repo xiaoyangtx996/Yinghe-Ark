@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Newsreader, Source_Sans_3 } from 'next/font/google';
 import { GeistMono } from 'geist/font/mono';
-import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import "../globals.css";
 import { Providers } from "./providers";
+import { IntlClientProvider } from "./IntlClientProvider";
 
 import { locales } from '@/i18n/routing';
+import { brandAssetUrl, brandLogo } from '@/lib/brand/assets';
 
 const sourceSans = Source_Sans_3({
     subsets: ['latin'],
@@ -37,9 +38,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         title: t('title'),
         description: t('description'),
         icons: {
-            icon: '/logo.ico?v=2',
-            shortcut: '/logo.ico?v=2',
-            apple: '/logo.png?v=2',
+            icon: [
+                { url: brandAssetUrl(brandLogo.favicon), type: 'image/png' },
+                { url: '/favicon.ico', type: 'image/x-icon' },
+            ],
+            shortcut: brandAssetUrl(brandLogo.favicon),
+            apple: brandAssetUrl(brandLogo.appIcon512),
         },
     };
 }
@@ -70,10 +74,11 @@ export default async function LocaleLayout({
             <head>
                 <script
                     dangerouslySetInnerHTML={{
-                        __html: `(function(){try{var k='waoowaoo-theme';var t=localStorage.getItem(k);if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}var r=document.documentElement;if(t==='dark')r.classList.add('dark');else r.classList.remove('dark');r.dataset.theme=t;}catch(e){}})();`,
+                        __html: `(function(){try{var k='yinghe-ark-theme';var t=localStorage.getItem(k)||localStorage.getItem('waoowaoo-theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}var r=document.documentElement;if(t==='dark')r.classList.add('dark');else r.classList.remove('dark');r.dataset.theme=t;}catch(e){}})();`,
                     }}
                 />
-                {process.env.NODE_ENV === "development" && (
+                {process.env.NODE_ENV === "development" &&
+                    process.env.NEXT_PUBLIC_ENABLE_REACT_GRAB === "1" && (
                     <Script
                         src="//unpkg.com/react-grab/dist/index.global.js"
                         crossOrigin="anonymous"
@@ -84,11 +89,11 @@ export default async function LocaleLayout({
             <body
                 className={`${sourceSans.variable} ${newsreader.variable} ${GeistMono.variable} antialiased`}
             >
-                <NextIntlClientProvider messages={messages}>
+                <IntlClientProvider locale={locale} messages={messages}>
                     <Providers>
                         {children}
                     </Providers>
-                </NextIntlClientProvider>
+                </IntlClientProvider>
 
             </body>
         </html>

@@ -1,6 +1,14 @@
 import { decodeImageUrlsFromDb } from '@/lib/contracts/image-urls-contract'
+import { toDisplayImageUrl } from '@/lib/media/image-url'
 import { resolveMediaRef, resolveMediaRefFromLegacyValue } from './service'
 import type { MediaRef } from './types'
+
+function asDisplayUrl(mediaUrl: string | null | undefined, legacy: unknown): string | null {
+  if (mediaUrl) return mediaUrl
+  if (typeof legacy !== 'string' || !legacy.trim()) return null
+  if (legacy.startsWith('PENDING:')) return legacy
+  return toDisplayImageUrl(legacy) || legacy
+}
 
 function parseStringArray(value: unknown): string[] {
   if (!value) return []
@@ -18,7 +26,7 @@ async function resolveAppearanceImageArray(raw: unknown, fieldName: string): Pro
   const values = decodeImageUrlsFromDb(raw as string | null | undefined, fieldName)
   const refs = await Promise.all(values.map((value) => resolveMediaRefFromLegacyValue(value)))
   return {
-    urls: values.map((value, index) => refs[index]?.url || value),
+    urls: values.map((value, index) => asDisplayUrl(refs[index]?.url, value) || value),
     medias: refs.filter((ref): ref is MediaRef => !!ref),
   }
 }
@@ -36,8 +44,8 @@ async function attachMediaFieldsToAppearance<T extends Record<string, unknown>>(
     previousImageMedia,
     imageMedias: imageResult.medias,
     previousImageMedias: previousImageResult.medias,
-    imageUrl: imageMedia?.url || appearance.imageUrl || null,
-    previousImageUrl: previousImageMedia?.url || appearance.previousImageUrl || null,
+    imageUrl: asDisplayUrl(imageMedia?.url, appearance.imageUrl),
+    previousImageUrl: asDisplayUrl(previousImageMedia?.url, appearance.previousImageUrl),
     imageUrls: imageResult.urls,
     previousImageUrls: previousImageResult.urls,
   }
@@ -68,8 +76,8 @@ export async function attachMediaFieldsToGlobalLocation<T extends Record<string,
       media: imageMedia,
       imageMedia,
       previousImageMedia,
-      imageUrl: imageMedia?.url || img.imageUrl || null,
-      previousImageUrl: previousImageMedia?.url || img.previousImageUrl || null,
+      imageUrl: asDisplayUrl(imageMedia?.url, img.imageUrl),
+      previousImageUrl: asDisplayUrl(previousImageMedia?.url, img.previousImageUrl),
     }
     }),
   )
@@ -105,7 +113,7 @@ async function attachMediaFieldsToPanel<T extends Record<string, unknown>>(panel
       continue
     }
     const media = await resolveMediaRefFromLegacyValue(candidate)
-    candidateMediaUrls.push(media?.url || candidate)
+    candidateMediaUrls.push(asDisplayUrl(media?.url, candidate) || candidate)
   }
 
   return {
@@ -116,11 +124,11 @@ async function attachMediaFieldsToPanel<T extends Record<string, unknown>>(panel
     lipSyncVideoMedia,
     sketchImageMedia,
     previousImageMedia,
-    imageUrl: imageMedia?.url || panel.imageUrl || null,
-    videoUrl: videoMedia?.url || panel.videoUrl || null,
-    lipSyncVideoUrl: lipSyncVideoMedia?.url || panel.lipSyncVideoUrl || null,
-    sketchImageUrl: sketchImageMedia?.url || panel.sketchImageUrl || null,
-    previousImageUrl: previousImageMedia?.url || panel.previousImageUrl || null,
+    imageUrl: asDisplayUrl(imageMedia?.url, panel.imageUrl),
+    videoUrl: videoMedia?.url || (typeof panel.videoUrl === 'string' ? panel.videoUrl : null) || null,
+    lipSyncVideoUrl: lipSyncVideoMedia?.url || (typeof panel.lipSyncVideoUrl === 'string' ? panel.lipSyncVideoUrl : null) || null,
+    sketchImageUrl: asDisplayUrl(sketchImageMedia?.url, panel.sketchImageUrl),
+    previousImageUrl: asDisplayUrl(previousImageMedia?.url, panel.previousImageUrl),
     candidateImages: candidateRaw.length > 0 ? JSON.stringify(candidateMediaUrls) : panel.candidateImages,
   }
 }
@@ -135,7 +143,7 @@ async function attachMediaFieldsToStoryboard<T extends Record<string, unknown>>(
     ...storyboard,
     media: storyboardImageMedia,
     storyboardImageMedia,
-    storyboardImageUrl: storyboardImageMedia?.url || storyboard.storyboardImageUrl || null,
+    storyboardImageUrl: asDisplayUrl(storyboardImageMedia?.url, storyboard.storyboardImageUrl),
     panels,
   }
 }
@@ -164,8 +172,8 @@ async function attachMediaFieldsToProjectLocation<T extends Record<string, unkno
       media: imageMedia,
       imageMedia,
       previousImageMedia,
-      imageUrl: imageMedia?.url || img.imageUrl || null,
-      previousImageUrl: previousImageMedia?.url || img.previousImageUrl || null,
+      imageUrl: asDisplayUrl(imageMedia?.url, img.imageUrl),
+      previousImageUrl: asDisplayUrl(previousImageMedia?.url, img.previousImageUrl),
     }
     }),
   )
@@ -188,8 +196,8 @@ async function attachMediaFieldsToShot<T extends Record<string, unknown>>(shot: 
     media: imageMedia,
     imageMedia,
     videoMedia,
-    imageUrl: imageMedia?.url || shot.imageUrl || null,
-    videoUrl: videoMedia?.url || shot.videoUrl || null,
+    imageUrl: asDisplayUrl(imageMedia?.url, shot.imageUrl),
+    videoUrl: videoMedia?.url || (typeof shot.videoUrl === 'string' ? shot.videoUrl : null) || null,
   }
 }
 

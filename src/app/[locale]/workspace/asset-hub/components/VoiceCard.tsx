@@ -77,7 +77,7 @@ export function VoiceCard({ voice, onSelect, isSelected = false, selectionMode =
             {/* 选中标记 */}
             {isSelected && (
                 <div className="absolute top-2 right-2 w-6 h-6 glass-chip glass-chip-info rounded-full flex items-center justify-center z-10 p-0">
-                    <AppIcon name="checkSolid" className="w-4 h-4 text-white" />
+                    <AppIcon name="checkSolid" className="w-4 h-4 text-[var(--glass-text-on-accent)]" />
                 </div>
             )}
 

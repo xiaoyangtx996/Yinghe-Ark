@@ -172,7 +172,7 @@ function SmartSelector({
             <select
                 value={normalizedKey}
                 onChange={(event) => props.updateDefaultModel(field, event.target.value)}
-                className="glass-input-base w-full appearance-none px-3 py-2 text-[13px] outline-none transition-all text-[var(--glass-text-primary)]"
+                className="glass-input-base w-full appearance-none px-3 py-2 text-[length:var(--glass-font-size-body)] outline-none transition-all text-[var(--glass-text-primary)]"
             >
                 <option value="">{placeholder}</option>
                 {options.map((option, index) => (
@@ -265,8 +265,8 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
         <div className="space-y-4">
             <section className="admin-section-card !flex-none">
                 <div className="admin-section-card__head">
-                    <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
                             <AppIcon name="bolt" className="h-4 w-4" />
                         </div>
                         <div>
@@ -279,16 +279,16 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                     <div className="admin-tile">
                         <div className="mb-3 flex items-start justify-between gap-2">
                             <div className="flex min-w-0 items-center gap-2">
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]">
                                     <AppIcon name="fileText" className="h-4 w-4 text-[var(--film-gold)]" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreTextTitle')}</h4>
-                                    <p className="text-[12px] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.analysisModel')}</p>
+                                    <h4 className="text-sm font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.coreTextTitle')}</h4>
+                                    <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.analysisModel')}</p>
                                 </div>
                             </div>
                             <div className="flex shrink-0 items-center gap-1.5">
-                                <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                                <span className="whitespace-nowrap text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">
                                     {t('workflowConcurrency.analysis')}
                                 </span>
                                 <input
@@ -312,16 +312,16 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                     <div className="admin-tile">
                         <div className="mb-3 flex items-start justify-between gap-2">
                             <div className="flex min-w-0 items-center gap-2">
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[var(--glass-tone-info-bg)]">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)]">
                                     <AppIcon name="clapperboard" className="h-4 w-4 text-[var(--film-gold)]" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="text-sm font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.coreVideoTitle')}</h4>
-                                    <p className="text-[12px] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.videoModel')}</p>
+                                    <h4 className="text-sm font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.coreVideoTitle')}</h4>
+                                    <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]">{t('defaultModelDesc.videoModel')}</p>
                                 </div>
                             </div>
                             <div className="flex shrink-0 items-center gap-1.5">
-                                <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                                <span className="whitespace-nowrap text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">
                                     {t('workflowConcurrency.video')}
                                 </span>
                                 <input
@@ -347,8 +347,8 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
             <section className="admin-section-card !flex-none">
                 <div className="admin-section-card__head">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
                                 <AppIcon name="sparklesAlt" className="h-4 w-4" />
                             </div>
                             <div>
@@ -357,7 +357,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                             </div>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <span className="whitespace-nowrap text-[12px] font-medium text-[var(--glass-text-secondary)]">
+                            <span className="whitespace-nowrap text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-text-secondary)]">
                                 {t('workflowConcurrency.image')}
                             </span>
                             <input
@@ -375,12 +375,12 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                 <div className="admin-section-card__body space-y-4">
                     <div className="flex items-start gap-2 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-warning)] bg-[var(--glass-tone-warning-bg)] px-3 py-2.5 text-[var(--glass-tone-warning-fg)]">
                         <AppIcon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
-                        <span className="text-[12px] leading-relaxed">{t('imageModelTip')}</span>
+                        <span className="text-[length:var(--glass-font-size-caption)] leading-relaxed">{t('imageModelTip')}</span>
                     </div>
 
                     <div className="admin-tile flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                         <div>
-                            <div className="text-[14px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.unifiedOverride')}</div>
+                            <div className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.unifiedOverride')}</div>
                         </div>
                         <div className="w-full sm:w-[280px]">
                             <ModelCapabilityDropdown
@@ -410,7 +410,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                                 <div key={item.field} className="admin-tile flex flex-col gap-3">
                                     <div className="flex items-center gap-2">
                                         <AppIcon name={item.icon} className="h-4 w-4 text-[var(--glass-text-secondary)]" />
-                                        <span className="text-[13px] font-semibold text-[var(--glass-text-primary)]">{t(item.titleKey)}</span>
+                                        <span className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{t(item.titleKey)}</span>
                                     </div>
                                     <SmartSelector
                                         field={item.field} modelType={item.modelType}
@@ -427,8 +427,8 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
 
             <section className="admin-section-card !flex-none">
                 <div className="admin-section-card__head">
-                    <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--glass-radius-sm)] bg-[var(--glass-tone-info-bg)] text-[var(--film-gold)]">
                             <AppIcon name="cube" className="h-4 w-4" />
                         </div>
                         <div>
@@ -439,7 +439,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                 </div>
                 <div className="admin-section-card__body grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div className="admin-tile">
-                        <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extLipSync')}</h4>
+                        <h4 className="mb-3 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.extLipSync')}</h4>
                         <SmartSelector
                             field="lipSyncModel" modelType="lipsync"
                             options={lipsyncModel.options} normalizedKey={lipsyncModel.normalizedKey} current={lipsyncModel.current}
@@ -448,7 +448,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                         />
                     </div>
                     <div className="admin-tile">
-                        <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extTTS')}</h4>
+                        <h4 className="mb-3 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.extTTS')}</h4>
                         <SmartSelector
                             field="audioModel" modelType="audio"
                             options={audioModel.options} normalizedKey={audioModel.normalizedKey} current={audioModel.current}
@@ -457,7 +457,7 @@ export function DefaultModelCards(allProps: DefaultModelCardsProps) {
                         />
                     </div>
                     <div className="admin-tile">
-                        <h4 className="mb-3 text-[13px] font-semibold text-[var(--glass-text-primary)]">{t('defaultModelSection.extVoiceDesign')}</h4>
+                        <h4 className="mb-3 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{t('defaultModelSection.extVoiceDesign')}</h4>
                         <SmartSelector
                             field="voiceDesignModel" modelType="voicedesign"
                             options={voiceDesignModel.options} normalizedKey={voiceDesignModel.normalizedKey} current={voiceDesignModel.current}

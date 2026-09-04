@@ -240,7 +240,7 @@ export function CharacterCard({ character, onImageClick, onImageEdit, onVoiceDes
                 {/* 顶部：名字 + 操作 */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[var(--glass-text-primary)]">{character.name}</span>
+                        <span className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">{character.name}</span>
                         <span className="glass-chip glass-chip-neutral px-2 py-0.5 text-xs">{appearance.changeReason}</span>
                         {isPrimaryAppearance ? (
                             <span className="glass-chip glass-chip-success px-2 py-0.5 text-xs">{tAssets('character.primary')}</span>
@@ -253,12 +253,12 @@ export function CharacterCard({ character, onImageClick, onImageEdit, onVoiceDes
                             prefix={isAppearanceTaskRunning ? (
                                 <>
                                     <TaskStatusInline state={displayTaskPresentation} className="[&_span]:sr-only [&_svg]:text-[var(--glass-tone-info-fg)]" />
-                                    <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
+                                    <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
                                 </>
                             ) : (
                                 <>
                                     <AppIcon name="refresh" className="w-4 h-4 text-[var(--glass-tone-info-fg)]" />
-                                    <span className="text-[10px] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
+                                    <span className="text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)]">{tAssets('image.regenCountPrefix')}</span>
                                 </>
                             )}
                             value={generationCount}
@@ -271,7 +271,7 @@ export function CharacterCard({ character, onImageClick, onImageEdit, onVoiceDes
                             disabled={isAppearanceTaskRunning}
                             showCountControl={false}
                             ariaLabel={tAssets('image.regenCountPrefix')}
-                            className="inline-flex h-6 items-center justify-center gap-1 rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors disabled:opacity-50"
+                            className="inline-flex h-6 items-center justify-center gap-1 rounded-md px-1.5 hover:bg-[var(--glass-tone-info-bg)] transition-colors"
                         />
                         {hasPreviousVersion && (
                             <button onClick={handleUndo} className="glass-btn-base glass-btn-soft h-6 w-6 rounded-md" title={tAssets('image.undo')}>
@@ -338,7 +338,7 @@ export function CharacterCard({ character, onImageClick, onImageEdit, onVoiceDes
                     <div className="mt-4 flex justify-end">
                         <button onClick={handleConfirmSelection} disabled={selectImage.isPending} className="glass-btn-base glass-btn-tone-success px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                             {selectImage.isPending ? (
-                                <TaskStatusInline state={selectImageRunningState} className="text-white [&>span]:sr-only [&_svg]:text-white" />
+                                <TaskStatusInline state={selectImageRunningState} className="text-[var(--glass-text-on-accent)] [&>span]:sr-only [&_svg]:text-[var(--glass-text-on-accent)]" />
                             ) : (
                                 <AppIcon name="check" className="w-4 h-4" />
                             )}
@@ -433,7 +433,7 @@ export function CharacterCard({ character, onImageClick, onImageEdit, onVoiceDes
                             onClick={() => handleGenerate(generationCount)}
                             ariaLabel={tAssets('image.selectCount')}
                             className="glass-btn-base glass-btn-primary flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg"
-                            selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-sm font-semibold text-current outline-none cursor-pointer leading-none transition-colors"
+                            selectClassName="appearance-none bg-transparent border-0 pl-0 pr-3 text-[length:var(--glass-font-size-body)] font-medium text-current outline-none cursor-pointer leading-none transition-colors"
                         />
                     </div>
                 )}

@@ -148,7 +148,7 @@ export function PropEditModal({
       <div className="glass-surface-modal max-w-2xl w-full max-h-[80vh] flex flex-col">
         <div className="p-6 space-y-4 overflow-y-auto flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-[var(--glass-text-primary)]">
+            <h3 className="text-[length:var(--glass-font-size-h3)] font-medium text-[var(--glass-text-primary)]">
               {t('modal.editProp')} - {propName}
             </h3>
             <button
@@ -203,7 +203,7 @@ export function PropEditModal({
         <div className="flex gap-3 justify-end p-4 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] rounded-b-lg flex-shrink-0">
           <button
             onClick={onClose}
-            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg"
+            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-[var(--glass-radius-sm)]"
             disabled={isSaving}
           >
             {t('common.cancel')}
@@ -211,10 +211,10 @@ export function PropEditModal({
           <button
             onClick={() => void handleSaveOnly()}
             disabled={isSaving || !editingName.trim() || !editingSummary.trim() || !editingDescription.trim()}
-            className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="glass-btn-base glass-btn-tone-info px-4 py-2 rounded-[var(--glass-radius-sm)] disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isSaving ? (
-              <TaskStatusInline state={savingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+              <TaskStatusInline state={savingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
             ) : (
               t('modal.saveOnly')
             )}
@@ -222,7 +222,7 @@ export function PropEditModal({
           <button
             onClick={() => void handleSaveAndGenerate()}
             disabled={isSaving || !editingName.trim() || !editingSummary.trim() || !editingDescription.trim()}
-            className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="glass-btn-base glass-btn-primary px-4 py-2 rounded-[var(--glass-radius-sm)] disabled:cursor-not-allowed"
           >
             {t('modal.saveAndGenerate')}
           </button>

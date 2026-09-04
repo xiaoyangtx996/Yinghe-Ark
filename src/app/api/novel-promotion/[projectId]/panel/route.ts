@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { requireProjectAuthLight, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
 import { serializeStructuredJsonField } from '@/lib/novel-promotion/panel-ai-data-sync'
+import {
+  requirePanelOwnedByProject,
+  requireStoryboardOwnedByProject,
+} from '@/lib/novel-promotion/resource-ownership'
 
 function parseNullableNumberField(value: unknown): number | null {
   if (value === null || value === '') return null
@@ -60,7 +64,9 @@ export const POST = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  // 验证 storyboard 存在，并获取现有 panels 以计算正确的 panelIndex
+  await requireStoryboardOwnedByProject(storyboardId, projectId)
+
+  // 获取现有 panels 以计算正确的 panelIndex
   const storyboard = await prisma.novelPromotionStoryboard.findUnique({
     where: { id: storyboardId },
     include: {
@@ -134,15 +140,7 @@ export const DELETE = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  // 获取要删除的 Panel 信息
-  const panel = await prisma.novelPromotionPanel.findUnique({
-    where: { id: panelId }
-  })
-
-  if (!panel) {
-    throw new ApiError('NOT_FOUND')
-  }
-
+  const panel = await requirePanelOwnedByProject(panelId, projectId)
   const storyboardId = panel.storyboardId
 
   // 使用事务确保删除和重新排序的原子性
@@ -233,13 +231,7 @@ export const PATCH = apiHandler(async (
 
   // 🔥 方式1：通过 panelId 直接更新（优先）
   if (panelId) {
-    const panel = await prisma.novelPromotionPanel.findUnique({
-      where: { id: panelId }
-    })
-
-    if (!panel) {
-      throw new ApiError('NOT_FOUND')
-    }
+    await requirePanelOwnedByProject(panelId, projectId)
 
     // 构建更新数据
     const updateData: {
@@ -262,14 +254,7 @@ export const PATCH = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  // 验证 storyboard 存在
-  const storyboard = await prisma.novelPromotionStoryboard.findUnique({
-    where: { id: storyboardId }
-  })
-
-  if (!storyboard) {
-    throw new ApiError('NOT_FOUND')
-  }
+  await requireStoryboardOwnedByProject(storyboardId, projectId)
 
   // 构建更新数据
   const updateData: {
@@ -351,14 +336,7 @@ export const PUT = apiHandler(async (
     throw new ApiError('INVALID_PARAMS')
   }
 
-  // 验证 storyboard 存在
-  const storyboard = await prisma.novelPromotionStoryboard.findUnique({
-    where: { id: storyboardId }
-  })
-
-  if (!storyboard) {
-    throw new ApiError('NOT_FOUND')
-  }
+  await requireStoryboardOwnedByProject(storyboardId, projectId)
 
   // 构建更新数据 - 包含所有可编辑字段
   const updateData: {

@@ -11,7 +11,7 @@ import { useState, useRef, useEffect, useLayoutEffect, useCallback, type CSSProp
 import { AppIcon } from '@/components/ui/icons'
 
 const TRIGGER_CLASSNAME = 'glass-input-base flex h-10 w-full items-center justify-between gap-2 px-2.5 transition-colors'
-const TRIGGER_TEXT_CLASSNAME = 'text-[13px] font-medium text-[var(--glass-text-primary)]'
+const TRIGGER_TEXT_CLASSNAME = 'text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]'
 
 const VIEWPORT_EDGE_GAP = 8
 const DEFAULT_MAX_HEIGHT = 280
@@ -362,14 +362,14 @@ export function StylePresetBadge({
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(99,102,241,0.1))',
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--glass-accent-from) 8%, transparent), color-mix(in srgb, var(--glass-accent-to) 10%, transparent))',
         }}
       />
       <AppIcon name="clapperboard" className="relative h-4 w-4 shrink-0 text-[var(--glass-accent-from)]" />
-      <span className="relative min-w-0 flex-1 truncate text-[13px] font-semibold text-[var(--glass-text-primary)]">
+      <span className="relative min-w-0 flex-1 truncate text-[length:var(--glass-font-size-body)] font-semibold text-[var(--glass-text-primary)]">
         {label}
       </span>
-      <span className="relative shrink-0 rounded-full bg-[var(--glass-tone-info-bg)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--glass-tone-info-fg)]">
+      <span className="relative shrink-0 rounded-full bg-[var(--glass-tone-info-bg)] px-1.5 py-0.5 text-[length:var(--glass-font-size-caption)] font-semibold text-[var(--glass-tone-info-fg)]">
         {description}
       </span>
     </div>

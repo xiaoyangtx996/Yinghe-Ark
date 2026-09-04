@@ -87,10 +87,10 @@ function EpisodeChip({
             <button
                 ref={triggerRef}
                 onClick={() => setOpen((prev) => !prev)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium transition-all duration-200 cursor-pointer border ${
+                className={`inline-flex min-h-[var(--glass-control-min-size-compact)] items-center gap-2 rounded-full border px-3 py-1 text-[length:var(--glass-font-size-caption)] font-medium transition-[background-color,border-color,color] duration-[var(--glass-motion-duration)] ease-[var(--glass-motion-easing)] cursor-pointer ${
                     episodeId
                         ? 'bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] border-[var(--glass-tone-info-fg)]/20'
-                        : 'bg-[#f2f2f7] dark:bg-[#2c2c2e] text-[var(--glass-text-secondary)] border-[var(--glass-stroke-base)] hover:bg-[#e8e8ed] dark:hover:bg-[#3a3a3c]'
+                        : 'bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)] border-[var(--glass-stroke-base)] hover:bg-[var(--glass-fill-hover)]'
                 }`}
             >
                 <AppIcon name="film" className="w-3.5 h-3.5" />
@@ -113,7 +113,7 @@ function EpisodeChip({
             {open && menuPos && createPortal(
                 <div
                     ref={menuRef}
-                    className="fixed z-[9999] min-w-[180px] max-h-[320px] overflow-y-auto py-1.5 rounded-xl bg-white dark:bg-[#2c2c2e] shadow-[0_8px_32px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.08)] border border-[var(--glass-stroke-base)] animate-in fade-in-0 zoom-in-95 duration-150"
+                    className="fixed z-[9999] min-w-[180px] max-h-[320px] overflow-y-auto py-1.5 rounded-xl bg-[var(--glass-bg-surface-modal)] shadow-[var(--glass-shadow-md)] border border-[var(--glass-stroke-base)] animate-in fade-in-0 zoom-in-95 duration-150"
                     style={{ top: menuPos.top, left: menuPos.left }}
                 >
                     {/* All episodes option */}
@@ -270,7 +270,7 @@ export default function AssetToolbar({
                         <button
                             onClick={onGlobalAnalyze}
                             disabled={isGlobalAnalyzing || isBatchSubmitting || isAnalyzingAssets}
-                            className="glass-btn-base glass-btn-primary flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="glass-btn-base glass-btn-primary flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed"
                             title={t("toolbar.globalAnalyzeHint")}
                         >
                             <AppIcon name="idea" className="w-3.5 h-3.5" />
@@ -284,7 +284,7 @@ export default function AssetToolbar({
                         onClick={handleDownloadAll}
                         disabled={isDownloading || totalAssets === 0}
                         title={t("toolbar.downloadAll")}
-                        className="glass-btn-base glass-btn-secondary flex items-center justify-center w-9 h-9 disabled:opacity-50 disabled:cursor-not-allowed border border-[var(--glass-stroke-base)]"
+                        className="glass-btn-base glass-btn-secondary flex items-center justify-center w-9 h-9 disabled:cursor-not-allowed border border-[var(--glass-stroke-base)]"
                     >
                         <AppIcon
                             name={isDownloading ? 'refresh' : 'download'}

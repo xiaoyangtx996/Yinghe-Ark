@@ -129,34 +129,36 @@ export default function StoryInputComposer({
         />
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto px-5 pb-4">
-        <div className="flex min-w-max flex-1 items-center gap-2">
-          <div className="w-[118px] flex-shrink-0">
-            <RatioSelector
-              value={videoRatio}
-              onChange={onVideoRatioChange}
-              options={ratioOptions}
-              getUsage={getRatioUsage}
-            />
-          </div>
-          <div className="w-[132px] flex-shrink-0">
-            <StyleSelector
-              value={artStyle}
-              onChange={onArtStyleChange}
-              options={styleOptions}
-            />
-          </div>
-          {stylePresetOptions.length > 0 ? (
-            <div className="w-[152px] flex-shrink-0">
-              <StylePresetSelector
-                value={stylePresetValue}
-                onChange={onStylePresetChange}
-                options={stylePresetOptions}
+      <div className="flex flex-col gap-3 px-5 pb-4 sm:flex-row sm:items-center sm:gap-2">
+        <div className="min-w-0 flex-1 overflow-x-auto app-scrollbar">
+          <div className="flex min-w-max items-center gap-2">
+            <div className="w-[118px] flex-shrink-0">
+              <RatioSelector
+                value={videoRatio}
+                onChange={onVideoRatioChange}
+                options={ratioOptions}
+                getUsage={getRatioUsage}
               />
             </div>
-          ) : null}
+            <div className="w-[132px] flex-shrink-0">
+              <StyleSelector
+                value={artStyle}
+                onChange={onArtStyleChange}
+                options={styleOptions}
+              />
+            </div>
+            {stylePresetOptions.length > 0 ? (
+              <div className="w-[152px] flex-shrink-0">
+                <StylePresetSelector
+                  value={stylePresetValue}
+                  onChange={onStylePresetChange}
+                  options={stylePresetOptions}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
-        <div className="ml-auto flex min-w-max items-center gap-2">
+        <div className="flex shrink-0 items-center justify-end gap-2">
           {secondaryActions}
           {primaryAction}
         </div>

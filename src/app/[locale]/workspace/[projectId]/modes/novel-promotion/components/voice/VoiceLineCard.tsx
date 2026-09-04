@@ -80,7 +80,7 @@ export default function VoiceLineCard({
                         {/* 播放按钮 */}
                         <button
                             onClick={() => onTogglePlay(line.id, line.audioUrl!)}
-                            className="flex items-center justify-center w-9 h-9 bg-[var(--glass-tone-success-fg)] text-white rounded-xl hover:bg-[var(--glass-tone-success-fg)] shadow-[var(--glass-shadow-sm)] transition-all"
+                            className="flex items-center justify-center w-9 h-9 bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] rounded-xl hover:bg-[var(--glass-tone-success-fg)] shadow-[var(--glass-shadow-sm)] transition-all"
                             title={isPlaying ? t("lineCard.pause") : t("lineCard.play")}
                         >
                             {isPlaying ? (
@@ -93,7 +93,7 @@ export default function VoiceLineCard({
                         <button
                             onClick={() => onGenerate(line.id)}
                             disabled={!hasVoice || isVoiceTaskRunning}
-                            className="flex items-center justify-center w-8 h-8 text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-info-fg)] hover:bg-[var(--glass-tone-info-bg)] rounded-xl transition-all disabled:opacity-50"
+                            className="flex items-center justify-center w-8 h-8 text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-info-fg)] hover:bg-[var(--glass-tone-info-bg)] rounded-xl transition-all"
                             title={t("common.regenerate")}
                         >
                             {isVoiceTaskRunning ? (
@@ -114,8 +114,8 @@ export default function VoiceLineCard({
                 ) : isVoiceTaskRunning ? (
                     /* 生成中状态：显示状态指示器 */
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 px-5 py-2 bg-[var(--glass-accent-from)] text-white rounded-xl text-sm font-medium shadow-[var(--glass-shadow-sm)]">
-                            <TaskStatusInline state={inlineStatusState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                        <div className="flex items-center gap-2 px-5 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-xl text-sm font-medium shadow-[var(--glass-shadow-sm)]">
+                            <TaskStatusInline state={inlineStatusState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                         </div>
                     </div>
                 ) : (
@@ -123,7 +123,7 @@ export default function VoiceLineCard({
                     <button
                         onClick={() => onGenerate(line.id)}
                         disabled={!hasVoice}
-                        className="flex items-center gap-2 px-5 py-2 bg-[var(--glass-accent-from)] text-white rounded-xl text-sm font-medium hover:bg-[var(--glass-accent-to)] shadow-[var(--glass-shadow-sm)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-5 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-xl text-sm font-medium hover:bg-[var(--glass-accent-to)] shadow-[var(--glass-shadow-sm)] transition-all disabled:cursor-not-allowed"
                     >
                         <AppIcon name="mic" className="w-4 h-4" />
                         {t("common.generate")}
@@ -132,7 +132,7 @@ export default function VoiceLineCard({
             </div>
 
             {/* 序号标签 */}
-            <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] backdrop-blur-sm text-white px-2 py-0.5 rounded-lg text-xs font-medium">
+            <div className="absolute top-2 left-2 bg-[var(--glass-overlay)] backdrop-blur-sm text-[var(--glass-text-on-accent)] px-2 py-0.5 rounded-lg text-xs font-medium">
                 #{line.lineIndex}
             </div>
 
@@ -140,12 +140,12 @@ export default function VoiceLineCard({
             {
                 line.audioUrl && (
                     <div className="absolute top-2 right-2 flex items-center gap-1">
-                        <div className="flex items-center justify-center bg-[var(--glass-tone-success-fg)] text-white px-2 py-0.5 rounded-lg text-xs font-medium shadow-[var(--glass-shadow-sm)]">
+                        <div className="flex items-center justify-center bg-[var(--glass-tone-success-fg)] text-[var(--glass-text-on-accent)] px-2 py-0.5 rounded-lg text-xs font-medium shadow-[var(--glass-shadow-sm)]">
                             <AppIcon name="checkXs" className="h-3 w-3" />
                         </div>
                         <button
                             onClick={() => onDeleteAudio(line.id)}
-                            className="flex items-center justify-center w-5 h-5 bg-[var(--glass-tone-warning-fg)] text-white rounded-md shadow-[var(--glass-shadow-sm)] hover:bg-[var(--glass-tone-warning-fg)] transition-colors"
+                            className="flex items-center justify-center w-5 h-5 bg-[var(--glass-tone-warning-fg)] text-[var(--glass-text-on-accent)] rounded-md shadow-[var(--glass-shadow-sm)] hover:bg-[var(--glass-tone-warning-fg)] transition-colors"
                             title={t("lineCard.deleteAudio")}
                         >
                             <AppIcon name="close" className="w-3 h-3" />
@@ -165,7 +165,7 @@ export default function VoiceLineCard({
                         {hasPanelBinding && (
                             <button
                                 onClick={() => onLocatePanel?.(line)}
-                                className="px-2 py-1 text-[11px] leading-none text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-info-fg)] hover:bg-[var(--glass-tone-info-bg)] border border-[var(--glass-stroke-base)] hover:border-[var(--glass-stroke-focus)] rounded-md transition-colors"
+                                className="px-2 py-1 text-[length:var(--glass-font-size-caption)] leading-none text-[var(--glass-text-tertiary)] hover:text-[var(--glass-tone-info-fg)] hover:bg-[var(--glass-tone-info-bg)] border border-[var(--glass-stroke-base)] hover:border-[var(--glass-stroke-focus)] rounded-md transition-colors"
                                 title={locateTitle}
                             >
                                 <span>{t("lineCard.locateVideo")}</span>

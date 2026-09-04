@@ -98,7 +98,7 @@ export default function ImageEditModal({
                 onPaste={handlePaste}
             >
                 <div className="p-6 border-b shrink-0">
-                    <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">{title}</h3>
+                    <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">{title}</h3>
                     <p className="text-sm text-[var(--glass-text-tertiary)] mt-1">{subtitle} · {t('imageEdit.subtitle')}</p>
                 </div>
                 <div className="p-6 space-y-4 overflow-y-auto app-scrollbar flex-1 min-h-0">
@@ -140,7 +140,7 @@ export default function ImageEditModal({
                                     />
                                     <button
                                         onClick={() => removeImage(idx)}
-                                        className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--glass-tone-danger-fg)] text-white rounded-full text-xs flex items-center justify-center hover:bg-[var(--glass-tone-danger-fg)]"
+                                        className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--glass-tone-danger-fg)] text-[var(--glass-text-on-accent)] rounded-full text-xs flex items-center justify-center hover:bg-[var(--glass-tone-danger-fg)]"
                                     >
                                         <AppIcon name="closeSm" className="h-3 w-3" />
                                     </button>
@@ -165,7 +165,7 @@ export default function ImageEditModal({
                     <button
                         onClick={handleSubmit}
                         disabled={!modifyPrompt.trim()}
-                        className="px-4 py-2 bg-[var(--glass-accent-from)] text-white rounded-lg hover:bg-[var(--glass-accent-to)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-4 py-2 bg-[var(--glass-accent-from)] text-[var(--glass-text-on-accent)] rounded-lg hover:bg-[var(--glass-accent-to)] disabled:cursor-not-allowed transition-colors"
                     >
                         {t('imageEdit.startEditing')}
                     </button>

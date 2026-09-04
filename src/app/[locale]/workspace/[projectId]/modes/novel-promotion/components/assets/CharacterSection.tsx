@@ -195,7 +195,7 @@ export default function CharacterSection({
                     <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)]">
                         <AppIcon name="user" className="h-5 w-5" />
                     </span>
-                    <h3 className="text-lg font-bold text-[var(--glass-text-primary)]">{t("stage.characterAssets")}</h3>
+                    <h3 className="text-lg font-medium text-[var(--glass-text-primary)]">{t("stage.characterAssets")}</h3>
                     {isAnalyzingAssets && (
                         <span className="px-2 py-1 text-xs bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] rounded-lg flex items-center gap-1">
                             <TaskStatusInline state={analyzingAssetsState} />
@@ -228,10 +228,10 @@ export default function CharacterSection({
                         <button
                             onClick={onBatchConfirm}
                             disabled={batchConfirming}
-                            className="glass-btn-base glass-btn-primary px-3 py-1.5 text-sm disabled:opacity-50 flex items-center gap-1.5"
+                            className="glass-btn-base glass-btn-primary px-3 py-1.5 text-sm flex items-center gap-1.5"
                         >
                             {batchConfirming ? (
-                                <TaskStatusInline state={batchConfirmingState} className="text-white [&>span]:text-white [&_svg]:text-white" />
+                                <TaskStatusInline state={batchConfirmingState} className="text-[var(--glass-text-on-accent)] [&>span]:text-[var(--glass-text-on-accent)] [&_svg]:text-[var(--glass-text-on-accent)]" />
                             ) : (
                                 t('stage.confirmAll', { count: unconfirmedCharacters.length })
                             )}
@@ -282,7 +282,7 @@ export default function CharacterSection({
                             {/* 角色标题 */}
                             <div className="flex items-center justify-between pb-2">
                                 <div className="flex items-center gap-3">
-                                    <h3 className="text-base font-semibold text-[var(--glass-text-primary)]">{character.name}</h3>
+                                    <h3 className="text-base font-medium text-[var(--glass-text-primary)]">{character.name}</h3>
                                     <span className="text-xs text-[var(--glass-text-tertiary)]">
                                         {t("character.assetCount", { count: sortedAppearances.length })}
                                     </span>

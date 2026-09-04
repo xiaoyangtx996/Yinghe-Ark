@@ -1,5 +1,55 @@
 {
     "title": "Voice Lines",
+    "review": {
+        "title": "Pre-voice self-check",
+        "subtitle": "Check items you verified — hints never block generation",
+        "progress": "{checked}/{total}",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "empty": "Self-check appears once dialogue lines are available",
+        "hints": {
+            "no_lines": "No lines yet — analyze dialogue or add a line first.",
+            "single_line": "Only one line — confirm dialogue coverage is complete.",
+            "speakers_missing_voice": "Some speakers lack a reference voice — bind in Asset Library or inline.",
+            "lines_missing_audio": "Some lines have no audio yet — generate one or all.",
+            "lines_missing_panel": "Some lines are not matched to a panel — useful for locating shots.",
+            "lines_empty_content": "Some lines have empty text — fill in the dialogue first."
+        },
+        "gates": {
+            "speakers_have_voice": {
+                "label": "Does every speaker have a reference voice?",
+                "tip": "Missing voices cause failed or mismatched synthesis"
+            },
+            "lines_complete": {
+                "label": "Are all spoken lines extracted?",
+                "tip": "Compare with the script — don’t miss key dialogue"
+            },
+            "speaker_attribution": {
+                "label": "Is speaker attribution correct?",
+                "tip": "Don’t swap characters or mis-tag monologues"
+            },
+            "emotion_fit": {
+                "label": "Do emotion prompts fit each line?",
+                "tip": "Tone and strength should match — not one setting for all"
+            },
+            "panel_match": {
+                "label": "Are lines matched to the right panels?",
+                "tip": "Helps jump from voice to picture for lip-sync checks"
+            },
+            "audio_ready": {
+                "label": "Do spoken lines have audio?",
+                "tip": "Empty audio means silence or desync in export"
+            },
+            "listen_pass": {
+                "label": "Have you previewed key lines?",
+                "tip": "Catch mispronunciation, cuts, and wrong emotion"
+            },
+            "export_ready": {
+                "label": "Ready to download / move to final cut?",
+                "tip": "Voices, attribution, and audio should all be set"
+            }
+        }
+    },
     "linesCount": "{count} lines total, ",
     "audioGeneratedCount": "{count} audio generated",
     "emotionPrompt": "Emotion Prompt",

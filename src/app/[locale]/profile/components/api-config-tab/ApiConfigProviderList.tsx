@@ -124,7 +124,7 @@ export function ApiConfigProviderList({
   const hiddenProviderNames = hiddenProviders.map((provider) => provider.name).join(' / ')
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {!hideAddButton ? (
         <div className="flex justify-end">
           <button
@@ -136,9 +136,20 @@ export function ApiConfigProviderList({
           </button>
         </div>
       ) : null}
+
+      {visibleProviders.length > 0 ? (
+        <div
+          className="flex items-center gap-2 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_55%,transparent)] px-3 py-2.5 text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-secondary)]"
+          role="note"
+        >
+          <AppIcon name="gripVertical" className="h-3.5 w-3.5 shrink-0 text-[var(--film-gold)]" aria-hidden />
+          <span>{labels.dragToSortHint}</span>
+        </div>
+      ) : null}
+
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={visibleProviders.map((provider) => provider.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
             {visibleProviders.map((provider) => (
               <SortableProviderCardItem key={provider.id} providerId={provider.id} dragLabel={labels.dragToSort}>
                 {({ dragHandle }) => (
@@ -171,44 +182,47 @@ export function ApiConfigProviderList({
           <button
             type="button"
             onClick={() => setShowHiddenProviders((prev) => !prev)}
-            className="glass-btn-base glass-btn-secondary flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left"
+            className="admin-section-card admin-provider-card !flex-none w-full cursor-pointer text-left transition-colors hover:border-[var(--glass-stroke-strong)]"
           >
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-[var(--glass-text-primary)]">
-                {showHiddenProviders
-                  ? labels.hideHiddenProviders
-                  : `${labels.showHiddenProviders} (${hiddenProviders.length})`}
-              </p>
-              <p className="truncate text-xs text-[var(--glass-text-secondary)]">
-                {labels.hiddenProvidersPrefix}: {hiddenProviderNames}
-              </p>
+            <div className="admin-section-card__head !border-b-0">
+              <div className="min-w-0">
+                <p className="admin-section-card__title truncate">
+                  {showHiddenProviders
+                    ? labels.hideHiddenProviders
+                    : `${labels.showHiddenProviders} (${hiddenProviders.length})`}
+                </p>
+                <p className="admin-section-card__desc truncate">
+                  {labels.hiddenProvidersPrefix}: {hiddenProviderNames}
+                </p>
+              </div>
+              <AppIcon
+                name={showHiddenProviders ? 'chevronUp' : 'chevronDown'}
+                className="h-4 w-4 shrink-0 text-[var(--glass-text-secondary)]"
+              />
             </div>
-            <AppIcon
-              name={showHiddenProviders ? 'chevronUp' : 'chevronDown'}
-              className="h-4 w-4 shrink-0 text-[var(--glass-text-secondary)]"
-            />
           </button>
           {showHiddenProviders && (
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
               {hiddenProviders.map((provider) => (
-                <ProviderCard
-                  key={`hidden-${provider.id}`}
-                  provider={provider}
-                  models={providerModelsById.get(provider.id) || []}
-                  allModels={allModels}
-                  defaultModels={defaultModels}
-                  onToggleModel={(modelKey) => onToggleModel(modelKey, provider.id)}
-                  onUpdateApiKey={onUpdateApiKey}
-                  onUpdateBaseUrl={onUpdateBaseUrl}
-                  onDeleteModel={(modelKey) => onDeleteModel(modelKey, provider.id)}
-                  onUpdateModel={(modelKey, updates) => onUpdateModel(modelKey, updates, provider.id)}
-                  onDeleteProvider={onDeleteProvider}
-                  onAddModel={onAddModel}
-                  onFlushConfig={onFlushConfig}
-                  onToggleProviderHidden={onToggleProviderHidden}
-                  hideProviderLabel={labels.hideProvider}
-                  showProviderLabel={labels.showProvider}
-                />
+                <div key={`hidden-${provider.id}`} className="h-full">
+                  <ProviderCard
+                    provider={provider}
+                    models={providerModelsById.get(provider.id) || []}
+                    allModels={allModels}
+                    defaultModels={defaultModels}
+                    onToggleModel={(modelKey) => onToggleModel(modelKey, provider.id)}
+                    onUpdateApiKey={onUpdateApiKey}
+                    onUpdateBaseUrl={onUpdateBaseUrl}
+                    onDeleteModel={(modelKey) => onDeleteModel(modelKey, provider.id)}
+                    onUpdateModel={(modelKey, updates) => onUpdateModel(modelKey, updates, provider.id)}
+                    onDeleteProvider={onDeleteProvider}
+                    onAddModel={onAddModel}
+                    onFlushConfig={onFlushConfig}
+                    onToggleProviderHidden={onToggleProviderHidden}
+                    hideProviderLabel={labels.hideProvider}
+                    showProviderLabel={labels.showProvider}
+                  />
+                </div>
               ))}
             </div>
           )}
@@ -242,7 +256,7 @@ function SortableProviderCardItem({ providerId, dragLabel, children }: SortableP
   }
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="h-full">
       {children({
         dragHandle: (
           <button
