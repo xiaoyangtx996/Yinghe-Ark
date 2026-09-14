@@ -32,6 +32,8 @@ export type LLMStageStreamCardProps = {
   selectedStageId?: string
   onSelectStage?: (stageId: string) => void
   onRetryStage?: (stageId: string) => void
+  onContinue?: () => void
+  continueLabel?: string
   outputText: string
   placeholderText?: string
   activeMessage?: string
@@ -175,6 +177,8 @@ export default function LLMStageStreamCard({
   selectedStageId,
   onSelectStage,
   onRetryStage,
+  onContinue,
+  continueLabel,
   outputText,
   placeholderText,
   activeMessage,
@@ -221,6 +225,28 @@ export default function LLMStageStreamCard({
     () => resolveAgentActivityFeed(stages),
     [stages],
   )
+
+  const failedRetryableStages = useMemo(
+    () => stages.filter((stage) => stage.status === 'failed' && stage.retryable !== false),
+    [stages],
+  )
+  const allStagesSettled = stages.length > 0 && stages.every(
+    (stage) => stage.status === 'completed' || stage.status === 'stale' || stage.status === 'failed',
+  )
+  const allStagesSucceeded = stages.length > 0 && stages.every(
+    (stage) => stage.status === 'completed' || stage.status === 'stale',
+  )
+  const showContinue =
+    typeof onContinue === 'function'
+    && (
+      allStagesSucceeded
+      || (allStagesSettled && stages.some((stage) => stage.status === 'completed' || stage.status === 'stale'))
+    )
+  const showRetryFailed =
+    typeof onRetryStage === 'function' && failedRetryableStages.length > 0
+  const continueButtonLabel = failedRetryableStages.length > 0
+    ? t('runConsole.viewPartialResults')
+    : (continueLabel || t('runConsole.continueNext'))
 
   const statusLabel = useCallback((status: LLMStageViewStatus): string => {
     if (status === 'completed') return t('status.completed')
@@ -459,6 +485,7 @@ export default function LLMStageStreamCard({
                 items={activityFeedItems}
                 activeId={outputStageId}
                 onSelect={onSelectStage}
+                onRetry={onRetryStage}
                 resolveTitle={(title) => resolveProgressText(title, 'stageCard.currentStage')}
               />
             </div>
@@ -524,7 +551,7 @@ export default function LLMStageStreamCard({
                           }}
                           className="glass-btn-base glass-btn-primary rounded-md px-2.5 py-1 text-[length:var(--glass-font-size-caption)]"
                         >
-                          重试
+                          {t('runConsole.retry')}
                         </button>
                       </div>
                     )}
@@ -580,6 +607,32 @@ export default function LLMStageStreamCard({
         </section>
       </div>
       )}
+
+      {(showRetryFailed || showContinue) ? (
+        <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-[var(--glass-stroke-base)] px-5 py-4 md:px-6">
+          {showRetryFailed ? (
+            <button
+              type="button"
+              onClick={() => {
+                const firstFailed = failedRetryableStages[0]
+                if (firstFailed) void onRetryStage?.(firstFailed.id)
+              }}
+              className="glass-btn-base glass-btn-primary rounded-lg px-4 py-2 text-sm font-medium"
+            >
+              {t('runConsole.retryFailed', { count: failedRetryableStages.length })}
+            </button>
+          ) : null}
+          {showContinue ? (
+            <button
+              type="button"
+              onClick={() => onContinue?.()}
+              className="glass-btn-base glass-btn-primary rounded-lg px-4 py-2 text-sm font-medium"
+            >
+              {continueButtonLabel}
+            </button>
+          ) : null}
+        </footer>
+      ) : null}
     </article>
   )
 }

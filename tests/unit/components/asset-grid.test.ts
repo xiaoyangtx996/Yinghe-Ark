@@ -7,25 +7,6 @@ import { NextIntlClientProvider } from 'next-intl'
 import type { AbstractIntlMessages } from 'next-intl'
 import { AssetGrid } from '@/app/[locale]/workspace/asset-hub/components/AssetGrid'
 
-vi.mock('react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react')>()
-
-  return {
-    ...actual,
-    useState: <T,>(initialState: T | (() => T)) => {
-      const resolvedInitialState = typeof initialState === 'function'
-        ? (initialState as () => T)()
-        : initialState
-
-      if (resolvedInitialState === 'all') {
-        return actual.useState('location' as T)
-      }
-
-      return actual.useState(resolvedInitialState)
-    },
-  }
-})
-
 vi.mock('@/app/[locale]/workspace/asset-hub/components/CharacterCard', () => ({
   CharacterCard: () => null,
 }))
@@ -44,22 +25,22 @@ vi.mock('@/components/task/TaskStatusInline', () => ({
 
 const messages = {
   assetHub: {
-    allAssets: '所有资产',
+    allAssets: '全部资产',
     characters: '角色',
     locations: '场景',
     props: '道具',
     voices: '音色',
+    soundEffects: '音效',
     addAsset: '新建资产',
     addCharacter: '新建角色',
     addLocation: '新建场景',
     addProp: '新建道具',
     addVoice: '新建音色',
-    downloadAll: '打包下载',
-    downloadAllTitle: '下载全部图片资产',
-    downloading: '打包中...',
-    emptyState: '暂无资产',
-    emptyStateHint: '点击上方按钮添加角色或场景',
+    emptyState: '您还没有任何资产',
+    emptyStateHint: '创建角色、场景或音色后，可在各项目中复用。',
     filteredEmptyHint: '点击新建资产添加资产',
+    sfxEmptyTitle: '音效库即将上线',
+    sfxEmptyHint: '音效资产管理正在准备中，敬请期待。',
     pagination: {
       previous: '上一页',
       next: '下一页',
@@ -80,27 +61,27 @@ const renderWithIntl = (node: ReactElement) => {
   )
 }
 
+const baseHandlers = {
+  onAddCharacter: () => undefined,
+  onAddLocation: () => undefined,
+  onAddProp: () => undefined,
+  onAddVoice: () => undefined,
+}
+
 describe('AssetGrid', () => {
-  it('空状态下使用与资产库一致的 compact 分段控件，并在中间显示新建资产按钮', () => {
+  it('空状态下展示空态文案与新建资产按钮', () => {
     Reflect.set(globalThis, 'React', React)
 
     const html = renderWithIntl(
       createElement(AssetGrid, {
         assets: [],
         loading: false,
-        onAddCharacter: () => undefined,
-        onAddLocation: () => undefined,
-        onAddProp: () => undefined,
-        onAddVoice: () => undefined,
-        onDownloadAll: () => undefined,
-        isDownloading: false,
-        selectedFolderId: null,
+        filter: 'all',
+        ...baseHandlers,
       }),
     )
 
-    expect(html).toContain('inline-block max-w-full min-w-max')
-    expect(html).toContain('inline-grid grid-flow-col auto-cols-[minmax(96px,max-content)]')
-    expect(html).toContain('justify-center')
+    expect(html).toContain('您还没有任何资产')
     expect(html).toContain('>新建资产<')
   })
 
@@ -143,16 +124,26 @@ describe('AssetGrid', () => {
           },
         ],
         loading: false,
-        onAddCharacter: () => undefined,
-        onAddLocation: () => undefined,
-        onAddProp: () => undefined,
-        onAddVoice: () => undefined,
-        onDownloadAll: () => undefined,
-        isDownloading: false,
-        selectedFolderId: null,
+        filter: 'location',
+        ...baseHandlers,
       }),
     )
 
     expect(html).toContain('点击新建资产添加资产')
+  })
+
+  it('音效筛选展示即将上线提示', () => {
+    Reflect.set(globalThis, 'React', React)
+
+    const html = renderWithIntl(
+      createElement(AssetGrid, {
+        assets: [],
+        loading: false,
+        filter: 'sfx',
+        ...baseHandlers,
+      }),
+    )
+
+    expect(html).toContain('音效库即将上线')
   })
 })

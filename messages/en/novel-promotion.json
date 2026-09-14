@@ -1,7 +1,7 @@
 {
   "stages": {
     "story": "Story",
-    "script": "Script",
+    "script": "Breakdown",
     "storyboard": "Storyboard",
     "video": "Video",
     "voice": "Voice",
@@ -21,17 +21,19 @@
     "enterVideoGeneration": "Enter Video Generation →"
   },
   "smartImport": {
-    "title": "Start Your Creative Journey",
-    "subtitle": "First, choose your creation method",
+    "title": "Start creating",
+    "subtitle": "Import a novel file and split by chapter, or add one episode",
     "manualCreate": {
-      "title": "Create from Episode 1",
-      "description": "Start from episode 1, suitable for episodic creation or single short videos",
-      "button": "Start Creating"
+      "title": "Add one episode",
+      "description": "Create a blank episode for single-episode drafts",
+      "button": "Breakdown",
+      "enterButton": "Enter Breakdown",
+      "rebuildButton": "Rebuild Breakdown"
     },
     "smartImport": {
-      "title": "Smart Import Full Book",
-      "description": "Upload a complete novel or script, AI engine automatically recognizes chapter structure and splits into episodes.",
-      "button": "Import Now",
+      "title": "Import episodes",
+      "description": "Upload a TXT / DOCX novel; chapter markers become the left episode list",
+      "button": "Start split",
       "recommended": "Recommended"
     },
     "upload": {
@@ -44,14 +46,20 @@
       "filePlaceholder": "File uploaded mode",
       "clickUpload": "Click to upload document",
       "clearTextFirst": "Please clear left text first",
-      "supportedFormats": "Supports Word, TXT formats",
+      "supportedFormats": "Supports TXT, DOCX",
       "preview": "Preview",
       "expandPreview": "Expand More",
       "collapsePreview": "Collapse",
       "deleteFile": "Delete File",
-      "startAnalysis": "Start Smart Analysis",
+      "startAnalysis": "Start split",
       "back": "Back",
-      "words": "words"
+      "words": "words",
+      "dropHint": "Drop a file here, or click to choose",
+      "markerHint": "Supports TXT and DOCX files only",
+      "startSplit": "Start split",
+      "importing": "Reading...",
+      "changeFile": "Click to replace file",
+      "clearFile": "Clear"
     },
     "analyzing": {
       "title": "AI is Analyzing Your Story",
@@ -98,7 +106,22 @@
   },
   "storyInput": {
     "currentEditing": "Currently editing: {name}",
-    "editingTip": "The following workflow is for this episode only. Switch episodes in the top left if needed",
+    "editingTip": "Write the novel body here. Select text to expand / polish / rewrite; use the bottom bar to enter script.",
+    "stageChip": "01 Story · Novel draft",
+    "blankWrite": "Blank page · AI write chapter",
+    "placeholder": "Write this episode’s novel body…\n\nOr tap “AI write chapter” to start from a one-line idea.\nSelecting a passage shows Expand / Polish / Rewrite.",
+    "selectionAi": {
+      "expand": "Expand",
+      "optimize": "Polish",
+      "rewrite": "Rewrite",
+      "working": "Rewriting…"
+    },
+    "processBar": {
+      "title": "Next: enter 02 Script",
+      "description": "Hand this episode’s novel text to the script flow; the six-step nav moves to Script.",
+      "cta": "Add script",
+      "hint": "Your story text won’t be lost"
+    },
     "wordCount": "Word count:",
     "assetLibraryTip": {
       "title": "Need custom characters and locations?",
@@ -171,7 +194,9 @@
   "rebuildConfirm": {
     "storyToScript": {
       "title": "Script Flow Will Be Rebuilt",
-      "message": "Downstream storyboard data is detected for this episode ({storyboardCount} storyboards, {panelCount} panels). Continuing will clear and rebuild this data. Continue?"
+      "message": "Downstream storyboard data is detected for this episode ({storyboardCount} storyboards, {panelCount} panels). Continuing will clear and rebuild this data. Continue?",
+      "scriptOnlyTitle": "Confirm Rebuild Breakdown",
+      "scriptOnlyMessage": "Existing breakdown is detected for this episode ({clipCount} clips). Rebuilding will overwrite the current script. Continue?"
     },
     "scriptToStoryboard": {
       "title": "Storyboard Data Will Be Rebuilt",

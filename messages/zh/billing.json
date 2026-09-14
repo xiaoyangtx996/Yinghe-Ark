@@ -11,5 +11,21 @@
   "accountRecharge": "账户充值",
   "serviceConsumption": "服务消费",
   "balance": "余额",
-  "allTypes": "全部类型"
+  "allTypes": "全部类型",
+  "time": "时间",
+  "type": "类型",
+  "amount": "金额",
+  "project": "项目",
+  "episode": "集数",
+  "action": "操作",
+  "description": "说明",
+  "balanceAfter": "余额",
+  "detail": "详情",
+  "statTotal": "记录总数",
+  "statPage": "本页笔数",
+  "statFilter": "当前筛选",
+  "statFilterAll": "全部类型",
+  "exportCsv": "导出 CSV",
+  "tableDesc": "按时间倒序展示充值与扣费记录",
+  "refresh": "刷新"
 }

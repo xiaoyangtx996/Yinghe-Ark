@@ -13,6 +13,8 @@ import type {
 } from '@/lib/model-config-contract'
 import { filterNormalVideoModelOptions } from '@/lib/model-capabilities/video-model-options'
 import { RatioSelector, StyleSelector } from './config-modal-selectors'
+import { StylePresetSelector } from '@/components/selectors/RatioStyleSelectors'
+import { STYLE_PRESETS, DEFAULT_STYLE_PRESET_VALUE } from '@/lib/style-presets'
 import { ModelCapabilityDropdown } from './ModelCapabilityDropdown'
 import { AppIcon } from '@/components/ui/icons'
 
@@ -54,6 +56,7 @@ interface SettingsModalProps {
     videoRatio?: string
     capabilityOverrides?: CapabilitySelections
     ttsRate?: string
+    genrePack?: string
     onArtStyleChange?: (value: string) => void
     onAnalysisModelChange?: (value: string) => void
     onCharacterModelChange?: (value: string) => void
@@ -64,6 +67,7 @@ interface SettingsModalProps {
     onVideoModelChange?: (value: string) => void
     onAudioModelChange?: (value: string) => void
     onVideoRatioChange?: (value: string) => void
+    onGenrePackChange?: (value: string) => void
     onCapabilityOverridesChange?: (value: CapabilitySelections) => void
     onTTSRateChange?: (value: string) => void
 }
@@ -138,6 +142,7 @@ export function SettingsModal({
     videoRatio = '9:16',
     capabilityOverrides,
     ttsRate,
+    genrePack = DEFAULT_STYLE_PRESET_VALUE,
     onArtStyleChange,
     onAnalysisModelChange,
     onCharacterModelChange,
@@ -147,6 +152,7 @@ export function SettingsModal({
     onVideoModelChange,
     onAudioModelChange,
     onVideoRatioChange,
+    onGenrePackChange,
     onCapabilityOverridesChange,
     onTTSRateChange,
 }: SettingsModalProps) {
@@ -335,9 +341,9 @@ export function SettingsModal({
                 if (e.target === e.currentTarget) onClose()
             }}
         >
-            <div className="glass-surface-modal p-7 w-full max-w-3xl transform transition-all scale-100 max-h-[90vh] flex flex-col">
+            <div className="glass-surface-modal film-settings-modal p-7 w-full max-w-3xl transform transition-all scale-100 max-h-[90vh] flex flex-col">
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-2xl font-medium text-[var(--glass-text-primary)]">{t('title')}</h2>
+                    <h2 className="film-settings-modal__title text-2xl font-medium">{t('title')}</h2>
                     <div className="flex items-center gap-3">
                         <div className={`glass-chip text-xs transition-all duration-300 ${saveStatus === 'saved'
                             ? 'glass-chip-success'
@@ -357,19 +363,19 @@ export function SettingsModal({
                         </div>
                         <button
                             onClick={onClose}
-                            className="glass-btn-base glass-btn-soft rounded-full p-2 text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]"
+                            className="glass-btn-base glass-btn-secondary rounded-[10px] p-2 text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-primary)]"
                         >
-                            <AppIcon name="close" className="w-6 h-6" />
+                            <AppIcon name="close" className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
                 <p className="text-[length:var(--glass-font-size-caption)] text-[var(--glass-text-tertiary)] mb-6">{t('subtitle')}</p>
                 <div className="space-y-5 flex-1 min-h-0 overflow-y-auto app-scrollbar">
-                    <div className="glass-surface-soft p-5 sm:p-6 space-y-4">
-                        <h3 className="text-sm font-semibold text-[var(--glass-text-tertiary)]">{t('visualSettings')}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <section className="film-settings-section space-y-4">
+                        <h3 className="film-settings-section__heading">{t('visualSettings')}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('visualStyle')}</label>
+                                <label className="film-settings-label">{t('visualStyle')}</label>
                                 <StyleSelector
                                     value={artStyle}
                                     onChange={(value) => handleChange(onArtStyleChange)(value)}
@@ -377,24 +383,32 @@ export function SettingsModal({
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('aspectRatio')}</label>
+                                <label className="film-settings-label">{t('aspectRatio')}</label>
                                 <RatioSelector
                                     value={videoRatio}
                                     onChange={(value) => { handleChange(onVideoRatioChange)(value) }}
                                     options={VIDEO_RATIOS}
                                 />
                             </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="film-settings-label">{t('genrePack')}</label>
+                                <StylePresetSelector
+                                    value={genrePack || DEFAULT_STYLE_PRESET_VALUE}
+                                    onChange={(value) => handleChange(onGenrePackChange)(value)}
+                                    options={STYLE_PRESETS}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div className="glass-surface-soft p-5 sm:p-6 space-y-4">
-                        <h3 className="text-sm font-semibold text-[var(--glass-text-tertiary)]">{t('modelParams')}</h3>
+                    <section className="film-settings-section space-y-4">
+                        <h3 className="film-settings-section__heading">{t('modelParams')}</h3>
                         {!modelsLoaded && (
                             <div className="text-xs text-[var(--glass-text-tertiary)]">{t('loadingModels')}</div>
                         )}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('analysisModel')}</label>
+                                <label className="film-settings-label">{t('analysisModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.llm}
                                     value={analysisModel}
@@ -410,7 +424,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('characterModel')}</label>
+                                <label className="film-settings-label">{t('characterModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.image}
                                     value={characterModel}
@@ -425,7 +439,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('locationModel')}</label>
+                                <label className="film-settings-label">{t('locationModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.image}
                                     value={locationModel}
@@ -440,7 +454,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('storyboardModel')}</label>
+                                <label className="film-settings-label">{t('storyboardModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.image}
                                     value={imageModel}
@@ -455,7 +469,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('editModel')}</label>
+                                <label className="film-settings-label">{t('editModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.image}
                                     value={editModel}
@@ -470,7 +484,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('videoModel')}</label>
+                                <label className="film-settings-label">{t('videoModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={normalVideoModels}
                                     value={videoModel}
@@ -485,7 +499,7 @@ export function SettingsModal({
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-[var(--glass-text-secondary)]">{t('audioModel')}</label>
+                                <label className="film-settings-label">{t('audioModel')}</label>
                                 <ModelCapabilityDropdown
                                     models={userModels.audio}
                                     value={audioModel}
@@ -500,7 +514,7 @@ export function SettingsModal({
                                 />
                             </div>
                         </div>
-                    </div>
+                    </section>
 
 
                 </div>

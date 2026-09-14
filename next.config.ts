@@ -13,10 +13,11 @@ const nextConfig: NextConfig = {
   // Hide Next.js dev indicator overlay during visual QA / product screenshots.
   // React Grab stays opt-in via NEXT_PUBLIC_ENABLE_REACT_GRAB=1.
   devIndicators: false,
-  // Brand assets use ?v= cache-bust; required for Next 16 localPatterns.
+  // Brand assets use ?v= cache-bust; media proxy uses /m/{publicId}.
   images: {
     localPatterns: [
       { pathname: '/brand/**' },
+      { pathname: '/m/**' },
       { pathname: '/logo.png' },
       { pathname: '/logo-small.png' },
       { pathname: '/icon.png' },

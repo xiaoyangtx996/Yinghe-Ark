@@ -15,11 +15,6 @@ interface FolderModalProps {
     onSave: (name: string) => void
 }
 
-// 内联 SVG 图标
-const XMarkIcon = ({ className }: { className?: string }) => (
-    <AppIcon name="close" className={className} />
-)
-
 export function FolderModal({ folder, onClose, onSave }: FolderModalProps) {
     const t = useTranslations('assetHub')
     const [name, setName] = useState(folder?.name || '')
@@ -35,22 +30,23 @@ export function FolderModal({ folder, onClose, onSave }: FolderModalProps) {
         <div className="fixed inset-0 glass-overlay flex items-center justify-center z-50 p-4">
             <div className="glass-surface-modal max-w-sm w-full">
                 <div className="p-5">
-                    {/* 标题 */}
-                    <div className="flex items-center justify-between mb-5">
+                    <div className="mb-5 flex items-center justify-between gap-3">
                         <h3 className="text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">
                             {folder ? t('editFolder') : t('newFolder')}
                         </h3>
                         <button
+                            type="button"
                             onClick={onClose}
-                            className="glass-btn-base glass-btn-soft h-8 w-8 rounded-full flex items-center justify-center text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)]"
+                            className="glass-btn-base glass-btn-secondary glass-btn-icon rounded-full text-[var(--glass-text-primary)]"
+                            aria-label={t('cancel')}
                         >
-                            <XMarkIcon className="w-5 h-5" />
+                            <AppIcon name="close" className="h-4 w-4" strokeWidth={2.25} />
                         </button>
                     </div>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-5">
-                            <label className="block text-sm font-medium text-[var(--glass-text-secondary)] mb-2">
+                            <label className="mb-2 block text-sm font-medium text-[var(--glass-text-secondary)]">
                                 {t('folderName')}
                             </label>
                             <input
@@ -63,18 +59,18 @@ export function FolderModal({ folder, onClose, onSave }: FolderModalProps) {
                             />
                         </div>
 
-                        <div className="flex gap-3 justify-end">
+                        <div className="flex justify-end gap-3">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm"
+                                className="glass-btn-base glass-btn-secondary rounded-lg px-4 py-2 text-sm"
                             >
                                 {t('cancel')}
                             </button>
                             <button
                                 type="submit"
                                 disabled={!name.trim()}
-                                className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm disabled:cursor-not-allowed"
+                                className="glass-btn-base glass-btn-primary rounded-lg px-4 py-2 text-sm disabled:cursor-not-allowed"
                             >
                                 {folder ? t('save') : t('create')}
                             </button>

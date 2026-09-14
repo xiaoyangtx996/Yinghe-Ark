@@ -137,7 +137,13 @@
     "storyToScriptSubtitle": "Story To Script V2",
     "scriptToStoryboardSubtitle": "Script To Storyboard V2",
     "stop": "Stop",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "retry": "Retry",
+    "retryFailed": "Retry failed steps ({count})",
+    "continueNext": "Continue",
+    "continueToScript": "Go to Script",
+    "continueToStoryboard": "Go to Storyboard",
+    "viewPartialResults": "View partial results"
   },
   "pipelineChecklist": {
     "title": "Creation progress",

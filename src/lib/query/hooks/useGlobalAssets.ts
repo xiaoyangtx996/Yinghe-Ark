@@ -83,9 +83,12 @@ export interface GlobalVoice {
     folderId: string | null
 }
 
+export type GlobalFolderKind = 'character' | 'location' | 'voice' | 'sfx'
+
 export interface GlobalFolder {
     id: string
     name: string
+    kind?: GlobalFolderKind | null
 }
 
 // ============ 查询 Hooks ============
@@ -256,11 +259,11 @@ export function useCreateFolder() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ name }: { name: string }) => {
+        mutationFn: async ({ name, kind }: { name: string; kind?: GlobalFolderKind | null }) => {
             const res = await apiFetch('/api/asset-hub/folders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({ name, kind: kind ?? null }),
             })
             if (!res.ok) {
                 const error = await res.json()

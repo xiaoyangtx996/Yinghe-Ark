@@ -271,10 +271,12 @@ export function LocationCreationModal({
                             {t('location.title')}
                         </h3>
                         <button
+                            type="button"
                             onClick={onClose}
-                            className="glass-btn-base glass-btn-soft w-8 h-8 rounded-full flex items-center justify-center text-[var(--glass-text-tertiary)]"
+                            className="glass-btn-base glass-btn-secondary glass-btn-icon rounded-full text-[var(--glass-text-primary)]"
+                            aria-label="Close"
                         >
-                            <XMarkIcon className="w-5 h-5" />
+                            <XMarkIcon className="h-4 w-4" />
                         </button>
                     </div>
 

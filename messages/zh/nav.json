@@ -7,12 +7,14 @@
   "signup": "注册",
   "logout": "退出登录",
   "railHome": "创作",
-  "railBrandHome": "首页",
+  "railBrandHome": "项目首页",
   "railPrimary": "主导航",
   "railProjects": "项目",
   "railAssets": "资产",
+  "railFilms": "成片管理",
   "railLogs": "日志",
   "railSettings": "设置",
+  "railAccount": "账户",
   "themeToLight": "切换到浅色模式",
   "themeToDark": "切换到深色模式"
 }

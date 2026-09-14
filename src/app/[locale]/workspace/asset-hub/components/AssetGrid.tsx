@@ -7,39 +7,23 @@ import { CharacterCard } from './CharacterCard'
 import { LocationCard } from './LocationCard'
 import { VoiceCard } from './VoiceCard'
 import { AppIcon } from '@/components/ui/icons'
-import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { groupAssetsByKind } from '@/lib/assets/grouping'
 import type { AssetSummary } from '@/lib/assets/contracts'
-interface AssetGridProps {
-    assets: AssetSummary[]
-    loading: boolean
-    onAddCharacter: () => void
-    onAddLocation: () => void
-    onAddProp: () => void
-    onAddVoice: () => void
-    onDownloadAll?: () => void
-    isDownloading?: boolean
-    selectedFolderId: string | null
-    onImageClick?: (url: string) => void
-    onImageEdit?: (type: 'character' | 'location' | 'prop', id: string, name: string, imageIndex: number, appearanceIndex?: number) => void
-    onVoiceDesign?: (characterId: string, characterName: string) => void
-    onCharacterEdit?: (character: unknown, appearance: unknown) => void
-    onLocationEdit?: (location: unknown, imageIndex: number) => void
-    onPropEdit?: (prop: unknown, imageIndex: number) => void
-    onVoiceSelect?: (characterId: string) => void
-}
 
-// ─── 新建资产下拉菜单 ──────────────────────────────────
-function AddAssetDropdown({
+export type AssetHubFilter = 'all' | 'character' | 'location' | 'voice' | 'sfx' | 'prop'
+
+export function AddAssetDropdown({
     onAddCharacter,
     onAddLocation,
     onAddProp,
     onAddVoice,
+    size = 'md',
 }: {
     onAddCharacter: () => void
     onAddLocation: () => void
     onAddProp: () => void
     onAddVoice: () => void
+    size?: 'md' | 'lg'
 }) {
     const t = useTranslations('assetHub')
     const [open, setOpen] = useState(false)
@@ -82,12 +66,17 @@ function AddAssetDropdown({
         { label: t('addVoice'), icon: 'mic' as const, action: onAddVoice },
     ]
 
+    const sizeClass = size === 'lg'
+        ? 'px-5 py-2.5 text-[14px] rounded-xl'
+        : 'px-4 py-2 text-sm rounded-lg'
+
     return (
         <>
             <button
                 ref={triggerRef}
+                type="button"
                 onClick={() => setOpen((prev) => !prev)}
-                className="glass-btn-base glass-btn-primary px-4 py-2 rounded-lg text-sm flex items-center gap-1.5"
+                className={`glass-btn-base glass-btn-primary flex items-center gap-1.5 ${sizeClass}`}
             >
                 <AppIcon name="plus" className="w-4 h-4" />
                 <span>{t('addAsset')}</span>
@@ -105,6 +94,7 @@ function AddAssetDropdown({
                     {menuItems.map((item) => (
                         <button
                             key={item.label}
+                            type="button"
                             onClick={() => handleSelect(item.action)}
                             className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--glass-text-primary)] hover:bg-[var(--glass-bg-muted)] transition-colors cursor-pointer"
                         >
@@ -119,39 +109,64 @@ function AddAssetDropdown({
     )
 }
 
-// 内联 SVG 图标
-const PlusIcon = ({ className }: { className?: string }) => (
-    <AppIcon name="plus" className={className} />
-)
+interface AssetGridProps {
+    assets: AssetSummary[]
+    loading: boolean
+    filter: AssetHubFilter
+    onAddCharacter: () => void
+    onAddLocation: () => void
+    onAddProp: () => void
+    onAddVoice: () => void
+    /** When set, empty state uses a single category CTA instead of the multi-type dropdown */
+    primaryAddLabel?: string
+    onPrimaryAdd?: () => void
+    onImageClick?: (url: string) => void
+    onImageEdit?: (type: 'character' | 'location' | 'prop', id: string, name: string, imageIndex: number, appearanceIndex?: number) => void
+    onVoiceDesign?: (characterId: string, characterName: string) => void
+    onCharacterEdit?: (character: unknown, appearance: unknown) => void
+    onLocationEdit?: (location: unknown, imageIndex: number) => void
+    onPropEdit?: (prop: unknown, imageIndex: number) => void
+    onVoiceSelect?: (characterId: string) => void
+}
+
+export function useAssetKindCounts(assets: AssetSummary[]) {
+    const grouped = groupAssetsByKind(assets)
+    return {
+        character: grouped.character.length,
+        location: grouped.location.length,
+        prop: grouped.prop.length,
+        voice: grouped.voice.length,
+        sfx: 0,
+        all: grouped.character.length + grouped.location.length + grouped.prop.length + grouped.voice.length,
+    }
+}
 
 export function AssetGrid({
     assets,
     loading,
+    filter,
     onAddCharacter,
     onAddLocation,
     onAddProp,
     onAddVoice,
-    onDownloadAll,
-    isDownloading,
-    selectedFolderId: _selectedFolderId,
+    primaryAddLabel,
+    onPrimaryAdd,
     onImageClick,
     onImageEdit,
     onVoiceDesign,
     onCharacterEdit,
     onLocationEdit,
     onPropEdit,
-    onVoiceSelect
+    onVoiceSelect,
 }: AssetGridProps) {
     const t = useTranslations('assetHub')
-    void _selectedFolderId
-
-    const [filter, setFilter] = useState<'all' | 'character' | 'location' | 'prop' | 'voice'>('all')
-    const [sectionPage, setSectionPage] = useState<{ character: number; location: number; prop: number; voice: number }>({
+    const [sectionPage, setSectionPage] = useState({
         character: 1,
         location: 1,
         prop: 1,
         voice: 1,
     })
+
     const groupedAssets = groupAssetsByKind(assets)
     const characters = groupedAssets.character.map((asset) => ({
         id: asset.id,
@@ -243,6 +258,7 @@ export function AssetGrid({
         return (
             <div className="mt-4 flex items-center justify-end gap-2">
                 <button
+                    type="button"
                     onClick={() => setPage(type, page - 1)}
                     disabled={page <= 1}
                     className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:cursor-not-allowed"
@@ -253,6 +269,7 @@ export function AssetGrid({
                     {page} / {totalPages}
                 </span>
                 <button
+                    type="button"
                     onClick={() => setPage(type, page + 1)}
                     disabled={page >= totalPages}
                     className="glass-btn-base glass-btn-secondary px-3 py-1.5 text-xs rounded-md disabled:cursor-not-allowed"
@@ -265,33 +282,77 @@ export function AssetGrid({
 
     if (loading) {
         return (
-            <div className="flex-1 min-w-0">
-                <div className="mb-6 flex items-center justify-between gap-3">
-                    <div className="h-9 w-64 max-w-full animate-pulse rounded-lg bg-[var(--glass-bg-muted)]" />
-                    <div className="h-9 w-28 animate-pulse rounded-lg bg-[var(--glass-bg-muted)]" />
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                    {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="overflow-hidden rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)]">
-                            <div className="aspect-square animate-pulse bg-[var(--glass-bg-muted)]" />
-                            <div className="space-y-2 p-3">
-                                <div className="h-3.5 w-3/4 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
-                                <div className="h-3 w-1/2 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
-                            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="overflow-hidden rounded-[var(--glass-radius-lg)] border border-[var(--glass-stroke-base)]">
+                        <div className="aspect-square animate-pulse bg-[var(--glass-bg-muted)]" />
+                        <div className="space-y-2 p-3">
+                            <div className="h-3.5 w-3/4 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
+                            <div className="h-3 w-1/2 animate-pulse rounded bg-[var(--glass-bg-muted)]" />
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
             </div>
         )
     }
 
     const isEmpty = characters.length === 0 && locations.length === 0 && props.length === 0 && voices.length === 0
+
+    if (filter === 'sfx') {
+        return (
+            <div className="flex min-h-[280px] flex-col items-center justify-center text-center px-6">
+                <AppIcon name="volumeOff" className="mb-3 h-8 w-8 text-[var(--glass-text-tertiary)]" />
+                <p className="text-[15px] font-medium text-[var(--glass-text-primary)]">{t('sfxEmptyTitle')}</p>
+                <p className="mt-1.5 max-w-sm text-[13px] text-[var(--glass-text-secondary)]">{t('sfxEmptyHint')}</p>
+            </div>
+        )
+    }
+
+    if (isEmpty) {
+        return (
+            <div className="asset-hub-empty">
+                <div className="asset-hub-empty__mark" aria-hidden>
+                    <div className="asset-hub-empty__folder">
+                        <AppIcon name="folderCards" className="h-10 w-10 text-[var(--film-gold)]" />
+                    </div>
+                    <span className="asset-hub-empty__badge">
+                        <AppIcon name="plus" className="h-3.5 w-3.5" />
+                    </span>
+                    <AppIcon name="sparkles" className="asset-hub-empty__spark asset-hub-empty__spark--a" />
+                    <AppIcon name="sparkles" className="asset-hub-empty__spark asset-hub-empty__spark--b" />
+                </div>
+                <p className="asset-hub-empty__title">{t('emptyState')}</p>
+                <p className="asset-hub-empty__desc">{t('emptyStateHint')}</p>
+                <div className="mt-6">
+                    {onPrimaryAdd && primaryAddLabel ? (
+                        <button
+                            type="button"
+                            onClick={onPrimaryAdd}
+                            className="glass-btn-base glass-btn-primary inline-flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-[14px]"
+                        >
+                            <AppIcon name="plus" className="h-4 w-4" />
+                            <span>{primaryAddLabel}</span>
+                        </button>
+                    ) : (
+                        <AddAssetDropdown
+                            size="lg"
+                            onAddCharacter={onAddCharacter}
+                            onAddLocation={onAddLocation}
+                            onAddProp={onAddProp}
+                            onAddVoice={onAddVoice}
+                        />
+                    )}
+                </div>
+            </div>
+        )
+    }
+
     const visibleAssetCount = (() => {
         switch (filter) {
             case 'character':
                 return characters.length
             case 'location':
-                return locations.length
+                return locations.length + props.length
             case 'prop':
                 return props.length
             case 'voice':
@@ -302,159 +363,103 @@ export function AssetGrid({
         }
     })()
 
-    const tabs = [
-        { id: 'all', label: t('allAssets') },
-        { id: 'character', label: t('characters') },
-        { id: 'location', label: t('locations') },
-        { id: 'prop', label: t('props') },
-        { id: 'voice', label: t('voices') },
-    ]
+    if (visibleAssetCount === 0) {
+        return (
+            <div className="flex min-h-[280px] items-center justify-center">
+                <p className="text-sm text-[var(--glass-text-tertiary)]">{t('filteredEmptyHint')}</p>
+            </div>
+        )
+    }
 
     return (
-        <div className="flex-1 min-w-0">
-            {/* Header: 筛选 Tab + 操作按钮 */}
-            <div className="flex items-center justify-between mb-6">
-                {/* 左侧筛选 */}
-                <SegmentedControl
-                    options={tabs.map(tab => ({ value: tab.id, label: tab.label }))}
-                    value={filter}
-                    onChange={(val) => setFilter(val as 'all' | 'character' | 'location' | 'prop' | 'voice')}
-                    layout="compact"
-                    className="min-w-max"
-                />
-
-                {/* 右侧操作按钮 */}
-                <div className="flex items-center gap-3">
-                    {onDownloadAll && (
-                        <button
-                            onClick={onDownloadAll}
-                            disabled={isDownloading || isEmpty}
-                            title={t('downloadAllTitle')}
-                            className="glass-btn-base glass-btn-secondary px-4 py-2 rounded-lg text-sm disabled:cursor-not-allowed"
-                        >
-                            <AppIcon name={isDownloading ? 'refresh' : 'download'} className={`w-4 h-4 ${isDownloading ? 'animate-spin' : ''}`} />
-                            <span>{isDownloading ? t('downloading') : t('downloadAll')}</span>
-                        </button>
-                    )}
-                    <AddAssetDropdown
-                        onAddCharacter={onAddCharacter}
-                        onAddLocation={onAddLocation}
-                        onAddProp={onAddProp}
-                        onAddVoice={onAddVoice}
-                    />
-                </div>
-            </div>
-
-            {isEmpty ? (
-                /* 空状态 */
-                <div className="mx-auto max-w-md rounded-[var(--glass-radius-md)] border border-dashed border-[var(--glass-stroke-base)] bg-[color-mix(in_srgb,var(--glass-bg-muted)_55%,transparent)] px-6 py-10 text-center">
-                    <PlusIcon className="mx-auto mb-4 h-8 w-8 text-[var(--glass-text-secondary)]" />
-                    <p className="mb-2 text-[length:var(--glass-font-size-title)] font-medium text-[var(--glass-text-primary)]">{t('emptyState')}</p>
-                    <p className="mx-auto max-w-sm text-[length:var(--glass-font-size-body)] leading-[var(--glass-line-height-body)] text-[var(--glass-text-secondary)]">{t('emptyStateHint')}</p>
-                    <div className="mt-6 flex justify-center">
-                        <AddAssetDropdown
-                            onAddCharacter={onAddCharacter}
-                            onAddLocation={onAddLocation}
-                            onAddProp={onAddProp}
-                            onAddVoice={onAddVoice}
-                        />
+        <div className="space-y-8">
+            {(filter === 'all' || filter === 'character') && characters.length > 0 && (
+                <section>
+                    {filter === 'all' ? (
+                        <h2 className="mb-3 flex items-center gap-2 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">
+                            {t('characters')}
+                            <span className="glass-chip glass-chip-neutral px-2 py-0.5">{characters.length}</span>
+                        </h2>
+                    ) : null}
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                        {charactersPage.items.map((character) => (
+                            <CharacterCard
+                                key={character.id}
+                                character={character}
+                                onImageClick={onImageClick}
+                                onImageEdit={onImageEdit}
+                                onVoiceDesign={onVoiceDesign}
+                                onEdit={onCharacterEdit}
+                                onVoiceSelect={onVoiceSelect}
+                            />
+                        ))}
                     </div>
-                </div>
-            ) : visibleAssetCount === 0 ? (
-                <div className="flex min-h-[320px] items-center justify-center">
-                    <p className="text-sm text-[var(--glass-text-tertiary)]">
-                        {t('filteredEmptyHint')}
-                    </p>
-                </div>
-            ) : (
-                <div className="space-y-8">
-                    {/* 角色区块 */}
-                    {(filter === 'all' || filter === 'character') && characters.length > 0 && (
-                        <section>
-                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
-                                {t('characters')}
-                                <span className="glass-chip glass-chip-neutral px-2 py-0.5">{characters.length}</span>
-                            </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                {charactersPage.items.map((character) => (
-                                    <CharacterCard
-                                        key={character.id}
-                                        character={character}
-                                        onImageClick={onImageClick}
-                                        onImageEdit={onImageEdit}
-                                        onVoiceDesign={onVoiceDesign}
-                                        onEdit={onCharacterEdit}
-                                        onVoiceSelect={onVoiceSelect}
-                                    />
-                                ))}
-                            </div>
-                            {renderPagination('character', charactersPage.page, charactersPage.totalPages)}
-                        </section>
-                    )}
+                    {renderPagination('character', charactersPage.page, charactersPage.totalPages)}
+                </section>
+            )}
 
-                    {/* 场景区块 */}
-                    {(filter === 'all' || filter === 'location') && locations.length > 0 && (
-                        <section>
-                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
-                                {t('locations')}
-                                <span className="glass-chip glass-chip-neutral px-2 py-0.5">{locations.length}</span>
-                            </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {locationsPage.items.map((location) => (
-                                    <LocationCard
-                                        key={location.id}
-                                        location={location}
-                                        onImageClick={onImageClick}
-                                        onImageEdit={onImageEdit}
-                                        onEdit={onLocationEdit}
-                                    />
-                                ))}
-                            </div>
-                            {renderPagination('location', locationsPage.page, locationsPage.totalPages)}
-                        </section>
-                    )}
+            {(filter === 'all' || filter === 'location' || filter === 'prop') && locations.length > 0 && (
+                <section>
+                    {filter === 'all' ? (
+                        <h2 className="mb-3 flex items-center gap-2 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">
+                            {t('locations')}
+                            <span className="glass-chip glass-chip-neutral px-2 py-0.5">{locations.length}</span>
+                        </h2>
+                    ) : null}
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                        {locationsPage.items.map((location) => (
+                            <LocationCard
+                                key={location.id}
+                                location={location}
+                                onImageClick={onImageClick}
+                                onImageEdit={onImageEdit}
+                                onEdit={onLocationEdit}
+                            />
+                        ))}
+                    </div>
+                    {renderPagination('location', locationsPage.page, locationsPage.totalPages)}
+                </section>
+            )}
 
-                    {(filter === 'all' || filter === 'prop') && props.length > 0 && (
-                        <section>
-                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
-                                {t('props')}
-                                <span className="glass-chip glass-chip-neutral px-2 py-0.5">{props.length}</span>
-                            </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {propsPage.items.map((prop) => (
-                                    <LocationCard
-                                        key={prop.id}
-                                        location={prop}
-                                        assetType="prop"
-                                        onImageClick={onImageClick}
-                                        onImageEdit={onImageEdit}
-                                        onEdit={onPropEdit}
-                                    />
-                                ))}
-                            </div>
-                            {renderPagination('prop', propsPage.page, propsPage.totalPages)}
-                        </section>
-                    )}
+            {(filter === 'all' || filter === 'location' || filter === 'prop') && props.length > 0 && (
+                <section>
+                    {filter === 'all' || filter === 'location' ? (
+                        <h2 className="mb-3 flex items-center gap-2 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">
+                            {t('props')}
+                            <span className="glass-chip glass-chip-neutral px-2 py-0.5">{props.length}</span>
+                        </h2>
+                    ) : null}
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                        {propsPage.items.map((prop) => (
+                            <LocationCard
+                                key={prop.id}
+                                location={prop}
+                                assetType="prop"
+                                onImageClick={onImageClick}
+                                onImageEdit={onImageEdit}
+                                onEdit={onPropEdit}
+                            />
+                        ))}
+                    </div>
+                    {renderPagination('prop', propsPage.page, propsPage.totalPages)}
+                </section>
+            )}
 
-                    {/* 音色区块 */}
-                    {(filter === 'all' || filter === 'voice') && voices.length > 0 && (
-                        <section>
-                            <h2 className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] mb-3 flex items-center gap-2">
-                                {t('voices')}
-                                <span className="glass-chip glass-chip-info px-2 py-0.5">{voices.length}</span>
-                            </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                {voicesPage.items.map((voice) => (
-                                    <VoiceCard
-                                        key={voice.id}
-                                        voice={voice}
-                                    />
-                                ))}
-                            </div>
-                            {renderPagination('voice', voicesPage.page, voicesPage.totalPages)}
-                        </section>
-                    )}
-                </div>
+            {(filter === 'all' || filter === 'voice') && voices.length > 0 && (
+                <section>
+                    {filter === 'all' ? (
+                        <h2 className="mb-3 flex items-center gap-2 text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)]">
+                            {t('voices')}
+                            <span className="glass-chip glass-chip-info px-2 py-0.5">{voices.length}</span>
+                        </h2>
+                    ) : null}
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                        {voicesPage.items.map((voice) => (
+                            <VoiceCard key={voice.id} voice={voice} />
+                        ))}
+                    </div>
+                    {renderPagination('voice', voicesPage.page, voicesPage.totalPages)}
+                </section>
             )}
         </div>
     )

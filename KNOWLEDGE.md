@@ -1,5 +1,15 @@
 # 影核 Ark Knowledge
 
+## Story workspace chrome (2026-09)
+
+- Secondary sidebar title row has **<<** exit icon (rounded box) → `/workspace`.
+- Custom episode list scrollbar is interactive (drag thumb / click track); hit area ~14px.
+- Story composer no longer shows ratio / art style / genre; those live under **项目配置** (incl. `genrePack`).
+- Project settings modal uses `film-settings-modal` / `film-settings-section` (white-cream surface, gold section labels) — avoid nested `glass-surface-soft` mud.
+- Stage switcher trigger min-width ≈ menu width (`workspace-stage-switcher`).
+- Story stage shell fills main column (`data-fill` composer + flex height chain).
+- **Story stage IA (direction C)**: selection bubble = AI rewrite (`expand` / `optimize` / `rewrite` via `/api/user/ai-story-expand` `mode`); top ghost = from-scratch chapter write (`AiWriteModal`); bottom `story-process-bar` = enter script. Do not put AI rewrite and process CTA in the same toolbar row. Selection result must replace only `[start,end)` (`replaceTextRange`), never the whole chapter.
+
 ## Product positioning
 
 - **Primary product**: Yinghe Ark (影核) Web AI short-drama studio — project folder `Yinghe-Ark/`.
@@ -13,8 +23,8 @@
 
 ## P1 genre packs + vendor probe (shipped)
 
-- **Genre packs** (`src/lib/genre-packs.ts`): `urban_slice` / `romance_mogul` / `mystery_rules` — distilled from drama-skills; shown as StylePreset options on home **and** workspace story config.
-- Persisted on `NovelPromotionProject.genrePack`; create launch PATCHes it; workspace story page can change it via `handleUpdateConfig('genrePack')`.
+- **Genre packs** (`src/lib/genre-packs.ts`): `urban_slice` / `romance_mogul` / `mystery_rules` — distilled from drama-skills; shown as StylePreset options on home create flow and **project settings** (`SettingsModal` / 项目配置). Story workspace page no longer exposes ratio / art style / genre in the composer toolbar.
+- Persisted on `NovelPromotionProject.genrePack`; create launch PATCHes it; workspace changes via `handleUpdateConfig('genrePack')` from project settings.
 - Injected via `resolveVisualGenerationPrompt` into analyze + character/location/panel image prompts.
 - Injected into **story→script** via `genreConstraint` / `applyGenreConstraint` in `runStoryToScriptOrchestrator` (handler reads `novelData.genrePack`).
 - Home recent projects show a genre label when `genrePack` is set.
@@ -24,7 +34,7 @@
 
 - **P2.1 Agent activity feed**: Run console defaults to **Simple** view — `resolveAgentActivityFeed` (理解/创作/核对). **Detailed** restores raw stream.
 - **P2.2 Clip event graph**: Script stage horizontal **剧情节点** from clips (`resolveClipEventNodes` + `ClipEventGraph`).
-- **P2.3 Script review checklist**: Beginner self-check on script stage (`script-review-gates.ts` + `ScriptReviewChecklist`); auto hints from clip gaps; checkbox state in `localStorage` per project/episode. Does **not** block storyboard. Distilled from drama-skills rubric — no STY/SCR IDs at runtime.
+- **P2.3 Script review checklist**: Beginner self-check on script stage (`script-review-gates.ts` + `ScriptReviewChecklist`); auto hints from clip gaps; checkbox state in `localStorage` per project/episode. Compact entry bar on script panel; full checklist + AI findings open in a modal. Does **not** block storyboard. Distilled from drama-skills rubric — no STY/SCR IDs at runtime.
 
 ## P3 (shipped through P3.6)
 
@@ -154,10 +164,37 @@
 - **Progress key in composite subtitle**: `LLMStageStreamCard.resolveProgressText` translates embedded `progress.*` tokens inside strings like `并行组: … | progress.runtime.stage.llmStreaming`.
 - **Generate button click zones**: Asset / panel `ImageGenerationInlineCountButton` uses `splitInteractiveZones` so 「生成」and the count `<select>` are separate hit targets.
 - **URL param races**: `updateUrlParams` merges from `window.location.search` first so episode backfill cannot drop `stage` from a stale `useSearchParams` snapshot.
+- **Stage menu latency**: Do **not** use App Router `router.replace` for stage/episode query-only switches. Use native `History.prototype.replaceState` + React query mirror in `startTransition`. Stage switcher is a **one-click tab rail**. Visible body flips via imperative `applyWorkspaceStagePanes` (toggle `hidden` on keep-alive panes) inside the click — do not `flushSync` the whole page. Idle premount warms script/storyboard/videos/voice. Never return `AppBootScreen` after episode shell painted. Asset-library deep-link cleanup uses live `location.search` + replaceState. `SecondarySidebar` is `memo`’d.
 
-## Do not regress
+## Asset Hub IA (secondary sidebar)
 
-- Do not restore `editor → videos` silent remap in `page.tsx` / `useWorkspaceProjectSnapshot.ts`.
-- Do not call `createHomeProjectLaunch` before confirm wizard completion on home.
-- Do not load drama-skills / Toonflow trees at runtime — distill only.
-- Do not skip project ownership checks on novel-promotion mutations that accept episode/clip/storyboard/panel IDs — use `resource-ownership.ts` helpers (cross-project → `NOT_FOUND`).
+- **Shell**: Asset Hub uses `SecondarySidebar` with **fixed product categories only** (全部资产 / 角色 / 场景 / 音色 / 音效). User folders never appear in the secondary menu — they live only in the main content folder grid.
+- **全部资产** = kanban board (`AssetHubDashboard`: per-category columns with inventory + recent strip) — **not** a dump of every asset or a quick-create jump wall.
+- **Type categories**: main pane is a **compact folder card grid** (create like projects, smaller cards). Enter a folder to manage assets; header CTA creates **only that category’s** asset. Sidebar `+` creates folders for the active category. Legacy `kind=null` folders appear under every type; 「未分类」virtual card covers `folderId=null` assets.
+- Icon-only controls must use `glass-btn-icon` (zero padding) — `glass-btn-base` horizontal padding clips icons inside `w-8` buttons.
+- Destructive confirms use compact `ConfirmDialog` (`film-confirm`): Apple-inspired short decision rhythm, Yinghe glass chrome + solid actions — not iOS system alert clone.
+- **音效**: UI category + folders only; asset CRUD still stubbed.
+- **道具**: not a top-level fixed item; still creatable under 场景 views.
+
+## Performance (API / UX measure notes)
+
+- **DEV floor**: Next 15 + Turbopack local DEV adds ~300–400ms even to trivial `GET /api/system/boot-id` (no auth/DB). Do not chase sub-200ms totals in `next dev`; re-baseline with `next start` for real handler cost.
+- **Hot-path app cost (warm, small data)**: typically only ~30–70ms above boot-id for session/balance/projects/folders.
+- **Projects list stats**: `src/lib/projects/list-stats.ts` aggregates panel image/video counts via SQL (truthy URL ≠ empty string) and picks cover with `findFirst` — avoids nested panel URL materialization on list cards.
+- **Watchdog ownership**: `startTaskWatchdog` (BullMQ/DB reconcile) runs from `scripts/watchdog.ts` only — **not** from Next `instrumentation.ts` — so the request process does not share Redis/DB poll loops. Boot-time orphan re-enqueue in instrumentation remains.
+- **Reqable MCP**: live capture returns request/response bodies but **no millisecond timing fields**; use browser `performance` / curl `%{time_total}` / Next server `in Xms` for latency. Capture still useful for payload/status proof.
+- **Click UX**: Theatre rail navigations measured ~40–65ms to first DOM feedback (passes ≤100ms target).
+- **Projects list order**: Cross-page ranking uses SQL matching `compareProjectsByAccessRecency` (never-accessed by `createdAt` desc first, then `lastAccessedAt` desc) — not page-local re-sort after `updatedAt` pagination.
+- **Media attach prefetch**: `attachMediaFieldsToProject` parallel-prefetches media ids **and** legacy storage keys (`prefetchMediaObjectsByIds` + `prefetchMediaObjectsByStorageKeys`) into ALS; id hits also seed `key:`/`public:` aliases.
+- **Project data / entry**: `GET /api/projects/[id]/data` — authz then novel **shell only** (config + counts; `episodes: []`). Episode index is a **separate** RQ key for small projects (`episodeCount < 400`) storing columnar compact with decode-on-window. At **≥400** episodes the sidebar uses **remote windows** (`useRemoteEpisodeIndex` + `?offset&limit&focusId`; search via `?q=`). Zero-state uses `episodeCount`. Hover warms shell (+ compact only when small) + default episode(`script`) + workspace chunk.
+- **Rail soft-nav**: Navbar idle-prefetches secondary routes; profile/logs/account heavy panels are `dynamic()`; films list uses React Query (`filmsProjects`).
+- **Project costs**: `getProjectCostDetails` parallelizes groupBy/recent and derives `total` from `byType`.
+- **Assets read**: `readAssets` skips unused kinds when `kind=` is set.
+- **Episodes list**: one novel findUnique with nested episodes select (404 if mode data missing).
+- **List stats SQL**: panel counts + `SUBSTRING(novelText,1,100)` preview + cover `ROW_NUMBER()` — no full LongText pull, no N× findFirst covers.
+- **Episode detail views**: `GET …/episodes/[id]?view=` — `full` signed storyboards; `script`/`text` **clips only** (empty storyboards); `panels` lean bind index for voice (no media signing). Client `resolveEpisodeDataView`: storyboard/video→full, voice→panels, else script. Voice stage + page share `panels` query cache.
+- **Episode sidebar virtualization**: `SecondarySidebar` windows rows when `items.length >= 48` (`virtual-list.ts`). Workspace uses lean items + `renderTrailing` (menus only for visible rows). Active episode scrolled into view; nav “+” stays outside the scroll pane.
+- **Review checklists**: Script/storyboard/voice/video use compact entry bar + modal (`ReviewChecklistShell`); AI findings open the modal. Does not block next stage.
+- **Script clip list**: only the selected clip expands screenplay JSON; unselected rows stay peek-only. At ≥48 clips, list uses padding-window virtualization (`SCRIPT_CLIP_PEEK_STRIDE_PX`) and scrolls the selected peek into the window.
+- **Env**: BullMQ warns Redis 5.0.14 (recommend ≥6.2); not fixed in app code. Write-path API load tests intentionally skipped.
+- **Perf baseline (DEV warm curl)**: `boot-id` ~200ms floor on this host; prefer `next start` for absolute handler cost. Index `view=index` with `limit` and no `q` uses DB `skip/take`; `focusId` centers the window. Follow-up: `next start` latency sheet; Redis ≥6.2.

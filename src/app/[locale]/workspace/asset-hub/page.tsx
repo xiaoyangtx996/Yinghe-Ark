@@ -3,12 +3,15 @@ import { logError as _ulogError } from '@/lib/logging/core'
 import { apiFetch } from '@/lib/api-fetch'
 import JSZip from 'jszip'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useQueryClient } from '@tanstack/react-query'
 import Navbar from '@/components/Navbar'
 import { SecondarySidebar } from '@/components/SecondarySidebar'
-import { AssetGrid } from './components/AssetGrid'
+import ConfirmDialog from '@/components/ConfirmDialog'
+import { AssetGrid, type AssetHubFilter } from './components/AssetGrid'
+import { AssetHubDashboard } from './components/AssetHubChrome'
+import { AssetFolderGrid, UNCATEGORIZED_FOLDER_ID } from './components/AssetFolderGrid'
 import { CharacterCreationModal, LocationCreationModal, PropCreationModal, CharacterEditModal, LocationEditModal, PropEditModal } from '@/components/shared/assets'
 import { FolderModal } from './components/FolderModal'
 import ImagePreviewModal from '@/components/ui/ImagePreviewModal'
@@ -22,12 +25,22 @@ import {
     useRefreshAssets,
     useGlobalFolders,
     useSSE,
+    type GlobalFolderKind,
 } from '@/lib/query/hooks'
 import { queryKeys } from '@/lib/query/keys'
-import BrandOpIcon from '@/components/brand/BrandOpIcon'
 import { AppIcon } from '@/components/ui/icons'
 import { Link } from '@/i18n/navigation'
 import { useImageGenerationCount } from '@/lib/image-generation/use-image-generation-count'
+
+type AssetHubCategory = 'all' | GlobalFolderKind
+
+const FIXED_CATEGORIES: { id: AssetHubCategory; labelKey: 'allAssets' | 'characters' | 'locations' | 'voices' | 'soundEffects'; icon: 'folderCards' | 'user' | 'image' | 'mic' | 'volumeOff' }[] = [
+    { id: 'all', labelKey: 'allAssets', icon: 'folderCards' },
+    { id: 'character', labelKey: 'characters', icon: 'user' },
+    { id: 'location', labelKey: 'locations', icon: 'image' },
+    { id: 'voice', labelKey: 'voices', icon: 'mic' },
+    { id: 'sfx', labelKey: 'soundEffects', icon: 'volumeOff' },
+]
 
 export default function AssetHubPage() {
     const t = useTranslations('assetHub')
@@ -35,14 +48,24 @@ export default function AssetHubPage() {
     const { count: characterGenerationCount } = useImageGenerationCount('character')
     const { count: locationGenerationCount } = useImageGenerationCount('location')
 
-    // 文件夹选择状态
+    const [category, setCategory] = useState<AssetHubCategory>('all')
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
+    const [showFolderModal, setShowFolderModal] = useState(false)
+    const [editingFolder, setEditingFolder] = useState<{ id: string; name: string } | null>(null)
+    const [folderPendingDelete, setFolderPendingDelete] = useState<{ id: string; name: string } | null>(null)
+    const [folderHint, setFolderHint] = useState(false)
 
-    // 使用 React Query 获取数据
     const { data: folders = [], isLoading: foldersLoading } = useGlobalFolders()
+    const isFolderBrowser = category !== 'all' && selectedFolderId === null
+    const isUncategorizedView = selectedFolderId === UNCATEGORIZED_FOLDER_ID
+    const queryFolderId =
+        category === 'all' || isFolderBrowser || isUncategorizedView
+            ? null
+            : selectedFolderId
+
     const { data: assets = [], isLoading: assetsLoading } = useAssets({
         scope: 'global',
-        folderId: selectedFolderId,
+        folderId: queryFolderId,
     })
     const characterActions = useAssetActions({ scope: 'global', kind: 'character' })
     const locationActions = useAssetActions({ scope: 'global', kind: 'location' })
@@ -52,12 +75,63 @@ export default function AssetHubPage() {
     const loading = foldersLoading || assetsLoading
     useSSE({ projectId: 'global-asset-hub', enabled: true })
 
+    const categoryFolders = useMemo(() => {
+        if (category === 'all') return []
+        return folders.filter((folder) => folder.kind === category || folder.kind == null)
+    }, [folders, category])
+
+    const matchesCategory = (kind: string) => {
+        if (category === 'character') return kind === 'character'
+        if (category === 'location') return kind === 'location' || kind === 'prop'
+        if (category === 'voice') return kind === 'voice'
+        if (category === 'sfx') return false
+        return true
+    }
+
+    const folderCards = useMemo(() => {
+        if (category === 'all') return []
+        const uncategorizedCount = assets.filter(
+            (asset) => asset.folderId == null && matchesCategory(asset.kind),
+        ).length
+        const cards = [
+            {
+                id: UNCATEGORIZED_FOLDER_ID,
+                name: t('uncategorizedFolder'),
+                assetCount: uncategorizedCount,
+                isUncategorized: true,
+            },
+            ...categoryFolders.map((folder) => ({
+                id: folder.id,
+                name: folder.name,
+                assetCount: assets.filter(
+                    (asset) => asset.folderId === folder.id && matchesCategory(asset.kind),
+                ).length,
+            })),
+        ]
+        return cards
+    }, [assets, category, categoryFolders, t])
+
+    const folderScopedAssets = useMemo(() => {
+        if (isUncategorizedView) {
+            return assets.filter((asset) => asset.folderId == null)
+        }
+        return assets
+    }, [assets, isUncategorizedView])
+
+    const gridFilter: AssetHubFilter = category === 'all' ? 'all' : category
+
+    const creationFolderId =
+        !selectedFolderId || isUncategorizedView ? null : selectedFolderId
+
+    const selectCategory = (next: AssetHubCategory) => {
+        setCategory(next)
+        setSelectedFolderId(null)
+    }
+
     // 弹窗状态
     const [showAddCharacter, setShowAddCharacter] = useState(false)
     const [showAddLocation, setShowAddLocation] = useState(false)
     const [showAddProp, setShowAddProp] = useState(false)
-    const [showFolderModal, setShowFolderModal] = useState(false)
-    const [editingFolder, setEditingFolder] = useState<{ id: string; name: string } | null>(null)
     const [previewImage, setPreviewImage] = useState<string | null>(null)
     const [imageEditModal, setImageEditModal] = useState<{
         type: 'character' | 'location' | 'prop'
@@ -107,30 +181,42 @@ export default function AssetHubPage() {
         variantId?: string
     } | null>(null)
 
-    // 创建文件夹
+    const categoryAddConfig = (() => {
+        switch (category) {
+            case 'character':
+                return { label: t('addCharacter'), open: () => setShowAddCharacter(true) }
+            case 'location':
+                return { label: t('addLocation'), open: () => setShowAddLocation(true) }
+            case 'voice':
+                return { label: t('addVoice'), open: () => setShowAddVoice(true) }
+            default:
+                return null
+        }
+    })()
+
     const handleCreateFolder = async (name: string) => {
+        if (category === 'all') return
         try {
             const res = await apiFetch('/api/asset-hub/folders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name })
+                body: JSON.stringify({ name, kind: category }),
             })
             if (res.ok) {
                 queryClient.invalidateQueries({ queryKey: queryKeys.globalAssets.folders() })
                 setShowFolderModal(false)
             }
         } catch (error) {
-            _ulogError('创建文件夹失败:', error)
+            _ulogError('创建文件夹失败', error)
         }
     }
 
-    // 更新文件夹
     const handleUpdateFolder = async (folderId: string, name: string) => {
         try {
             const res = await apiFetch(`/api/asset-hub/folders/${folderId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name })
+                body: JSON.stringify({ name }),
             })
             if (res.ok) {
                 queryClient.invalidateQueries({ queryKey: queryKeys.globalAssets.folders() })
@@ -138,33 +224,44 @@ export default function AssetHubPage() {
                 setShowFolderModal(false)
             }
         } catch (error) {
-            _ulogError('更新文件夹失败:', error)
+            _ulogError('更新文件夹失败', error)
         }
     }
 
-    // 删除文件夹
     const handleDeleteFolder = async (folderId: string) => {
-        if (!confirm(t('confirmDeleteFolder'))) return
-
         try {
             const res = await apiFetch(`/api/asset-hub/folders/${folderId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
             })
             if (res.ok) {
                 if (selectedFolderId === folderId) {
                     setSelectedFolderId(null)
                 }
+                queryClient.invalidateQueries({ queryKey: queryKeys.globalAssets.folders() })
                 queryClient.invalidateQueries({ queryKey: queryKeys.globalAssets.all() })
             }
         } catch (error) {
-            _ulogError('删除文件夹失败:', error)
+            _ulogError('删除文件夹失败', error)
+        } finally {
+            setFolderPendingDelete(null)
         }
+    }
+
+    const openNewFolder = () => {
+        if (category === 'all') {
+            setFolderHint(true)
+            window.setTimeout(() => setFolderHint(false), 2400)
+            return
+        }
+        setEditingFolder(null)
+        setShowFolderModal(true)
     }
 
     // 打开图片编辑弹窗
     const handleOpenImageEdit = (type: 'character' | 'location' | 'prop', id: string, name: string, imageIndex: number, appearanceIndex?: number) => {
         setImageEditModal({ type, id, name, imageIndex, appearanceIndex })
     }
+
 
     // 处理图片编辑确认 - 使用 mutation
     const handleImageEdit = async (modifyPrompt: string, extraImageUrls?: string[]) => {
@@ -315,7 +412,9 @@ export default function AssetHubPage() {
     }
 
     // 角色编辑后触发生成
-    const handleCharacterEditGenerate = async () => {
+    const handleCharacterEditGenerate = async (_characterId?: string, _appearanceId?: string) => {
+        void _characterId
+        void _appearanceId
         if (!characterEditModal) return
 
         try {
@@ -332,7 +431,8 @@ export default function AssetHubPage() {
     }
 
     // 场景编辑后触发生成
-    const handleLocationEditGenerate = async () => {
+    const handleLocationEditGenerate = async (_locationId?: string) => {
+        void _locationId
         if (!locationEditModal) return
 
         try {
@@ -457,102 +557,155 @@ export default function AssetHubPage() {
             <SecondarySidebar
                 title={t('title')}
                 description={t('description')}
-                headerAction={(
+                navAction={(
                     <button
                         type="button"
-                        onClick={() => {
-                            setEditingFolder(null)
-                            setShowFolderModal(true)
-                        }}
-                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_var(--glass-focus-ring-strong)]"
-                        title={t('newFolder')}
+                        onClick={openNewFolder}
+                        className="theater-secondary__nav-action-btn"
+                        title={category === 'all' ? t('selectCategoryFirst') : t('newFolder')}
                         aria-label={t('newFolder')}
                     >
-                        <BrandOpIcon name="new" size={32} />
+                        <AppIcon name="plus" className="h-5 w-5 shrink-0" />
                     </button>
                 )}
-                items={[
-                    {
-                        id: 'all',
-                        label: t('allAssets'),
-                        icon: 'folder',
-                        active: selectedFolderId === null,
-                        onClick: () => setSelectedFolderId(null),
-                    },
-                    ...folders.map((folder) => ({
-                        id: folder.id,
-                        label: folder.name,
-                        icon: 'folder' as const,
-                        active: selectedFolderId === folder.id,
-                        onClick: () => setSelectedFolderId(folder.id),
-                        trailing: (
-                            <>
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        setEditingFolder(folder)
-                                        setShowFolderModal(true)
-                                    }}
-                                    className="glass-btn-base glass-btn-soft flex h-6 w-6 items-center justify-center rounded"
-                                    title={t('editFolder')}
-                                >
-                                    <AppIcon name="edit" className="h-3 w-3" />
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        void handleDeleteFolder(folder.id)
-                                    }}
-                                    className="glass-btn-base glass-btn-tone-danger flex h-6 w-6 items-center justify-center rounded"
-                                    title={t('deleteFolder')}
-                                >
-                                    <AppIcon name="trash" className="h-3 w-3" />
-                                </button>
-                            </>
-                        ),
-                    })),
-                ]}
+                items={FIXED_CATEGORIES.map((item) => ({
+                    id: item.id,
+                    label: t(item.labelKey),
+                    icon: item.icon,
+                    active: category === item.id,
+                    onClick: () => selectCategory(item.id),
+                }))}
             />
 
             <main className="mx-auto flex h-dvh max-w-[1440px] flex-col px-4 py-4 sm:px-6">
                 <header className="mb-4 border-b border-[var(--glass-stroke-base)] pb-4">
-                    <h1 className="font-display text-[length:var(--glass-font-size-h2)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">
-                        {selectedFolderId
-                            ? (folders.find((folder) => folder.id === selectedFolderId)?.name || t('title'))
-                            : t('allAssets')}
-                    </h1>
-                    <p className="mt-2 max-w-3xl text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-secondary)]">
-                        {t('scopeHint')}
-                    </p>
-                    <p className="mt-2 flex flex-wrap items-center gap-1 text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
-                        <AppIcon name="info" className="h-3.5 w-3.5 shrink-0" />
-                        {t('modelHint')}
-                        <Link href={{ pathname: '/profile' }} className="text-[var(--film-gold)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--glass-stroke-focus)]">{t('modelHintLink')}</Link>
-                        {t('modelHintSuffix')}
-                    </p>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                            {category !== 'all' && selectedFolderId ? (
+                                <nav
+                                    className="flex min-w-0 flex-wrap items-center gap-1.5"
+                                    aria-label={t('breadcrumb')}
+                                >
+                                    <button
+                                        type="button"
+                                        onClick={() => setSelectedFolderId(null)}
+                                        className="font-display text-[length:var(--glass-font-size-h2)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-secondary)] transition-colors hover:text-[var(--film-gold-2)]"
+                                    >
+                                        {t(FIXED_CATEGORIES.find((item) => item.id === category)?.labelKey || 'title')}
+                                    </button>
+                                    <AppIcon
+                                        name="chevronRight"
+                                        className="h-4 w-4 shrink-0 text-[var(--glass-text-tertiary)]"
+                                    />
+                                    <h1 className="min-w-0 truncate font-display text-[length:var(--glass-font-size-h2)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">
+                                        {selectedFolderId === UNCATEGORIZED_FOLDER_ID
+                                            ? t('uncategorizedFolder')
+                                            : (categoryFolders.find((folder) => folder.id === selectedFolderId)?.name || t('folders'))}
+                                    </h1>
+                                </nav>
+                            ) : (
+                                <h1 className="font-display text-[length:var(--glass-font-size-h2)] font-medium leading-[var(--glass-line-height-heading)] text-[var(--glass-text-primary)]">
+                                    {category === 'all'
+                                        ? t('allAssets')
+                                        : t(FIXED_CATEGORIES.find((item) => item.id === category)?.labelKey || 'title')}
+                                </h1>
+                            )}
+                            <p className="mt-2 max-w-3xl text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-secondary)]">
+                                {category === 'all'
+                                    ? t('dashboardHint')
+                                    : isFolderBrowser
+                                        ? t('folderBrowserHint')
+                                        : t('scopeHint')}
+                            </p>
+                            <p className="mt-2 flex flex-wrap items-center gap-1 text-[length:var(--glass-font-size-caption)] leading-[var(--glass-line-height-caption)] text-[var(--glass-text-tertiary)]">
+                                <AppIcon name="info" className="h-3.5 w-3.5 shrink-0" />
+                                {t('modelHint')}
+                                <Link href={{ pathname: '/profile' }} className="text-[var(--film-gold)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--glass-stroke-focus)]">{t('modelHintLink')}</Link>
+                                {t('modelHintSuffix')}
+                            </p>
+                        </div>
+                        {category !== 'all' && selectedFolderId ? (
+                            <div className="flex shrink-0 flex-wrap items-center gap-2">
+                                {categoryAddConfig ? (
+                                    <button
+                                        type="button"
+                                        onClick={categoryAddConfig.open}
+                                        className="glass-btn-base glass-btn-primary inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm"
+                                    >
+                                        <AppIcon name="plus" className="h-4 w-4 shrink-0" />
+                                        <span>{categoryAddConfig.label}</span>
+                                    </button>
+                                ) : null}
+                                {category !== 'sfx' ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => { void handleDownloadAll() }}
+                                        disabled={isDownloading}
+                                        title={t('downloadAllTitle')}
+                                        aria-label={t('downloadAll')}
+                                        className="glass-btn-base glass-btn-secondary glass-btn-icon glass-btn-icon-md rounded-lg text-[var(--glass-text-primary)] disabled:cursor-not-allowed"
+                                    >
+                                        <AppIcon
+                                            name={isDownloading ? 'refresh' : 'download'}
+                                            className={`h-4 w-4 ${isDownloading ? 'animate-spin' : ''}`}
+                                        />
+                                    </button>
+                                ) : null}
+                            </div>
+                        ) : null}
+                    </div>
+                    {folderHint ? (
+                        <div className="mt-3 rounded-xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] px-3 py-2 text-[12.5px] text-[var(--glass-text-secondary)]">
+                            {t('selectCategoryFirst')}
+                        </div>
+                    ) : null}
                 </header>
 
-                <div className="min-h-0 flex-1 overflow-hidden">
-                    <AssetGrid
-                        assets={assets}
-                        loading={loading}
-                        onAddCharacter={() => setShowAddCharacter(true)}
-                        onAddLocation={() => setShowAddLocation(true)}
-                        onAddProp={() => setShowAddProp(true)}
-                        onAddVoice={() => setShowAddVoice(true)}
-                        onDownloadAll={handleDownloadAll}
-                        isDownloading={isDownloading}
-                        selectedFolderId={selectedFolderId}
-                        onImageClick={setPreviewImage}
-                        onImageEdit={handleOpenImageEdit}
-                        onVoiceDesign={handleOpenVoiceDesign}
-                        onCharacterEdit={handleOpenCharacterEdit}
-                        onLocationEdit={handleOpenLocationEdit}
-                        onPropEdit={handleOpenPropEdit}
-                        onVoiceSelect={(characterId) => setVoicePickerCharacterId(characterId)}
-                    />
+                <div className="min-h-0 flex-1 overflow-y-auto">
+                    {category === 'all' ? (
+                        <AssetHubDashboard
+                            assets={assets}
+                            folders={folders}
+                            onOpenCategory={(next) => {
+                                if (next === 'prop') {
+                                    selectCategory('location')
+                                    return
+                                }
+                                selectCategory(next === 'all' ? 'all' : next)
+                            }}
+                        />
+                    ) : isFolderBrowser ? (
+                        <AssetFolderGrid
+                            folders={folderCards}
+                            loading={loading}
+                            onOpenFolder={setSelectedFolderId}
+                            onCreateFolder={openNewFolder}
+                            onEditFolder={(folder) => {
+                                setEditingFolder(folder)
+                                setShowFolderModal(true)
+                            }}
+                            onDeleteFolder={(folder) => setFolderPendingDelete(folder)}
+                        />
+                    ) : (
+                        <AssetGrid
+                            assets={folderScopedAssets}
+                            loading={loading}
+                            filter={gridFilter}
+                            onAddCharacter={() => setShowAddCharacter(true)}
+                            onAddLocation={() => setShowAddLocation(true)}
+                            onAddProp={() => setShowAddProp(true)}
+                            onAddVoice={() => setShowAddVoice(true)}
+                            primaryAddLabel={categoryAddConfig?.label}
+                            onPrimaryAdd={categoryAddConfig?.open}
+                            onImageClick={setPreviewImage}
+                            onImageEdit={handleOpenImageEdit}
+                            onVoiceDesign={handleOpenVoiceDesign}
+                            onCharacterEdit={handleOpenCharacterEdit}
+                            onLocationEdit={handleOpenLocationEdit}
+                            onPropEdit={handleOpenPropEdit}
+                            onVoiceSelect={(characterId) => setVoicePickerCharacterId(characterId)}
+                        />
+                    )}
                 </div>
             </main>
 
@@ -560,7 +713,7 @@ export default function AssetHubPage() {
             {showAddCharacter && (
                 <CharacterCreationModal
                     mode="asset-hub"
-                    folderId={selectedFolderId}
+                    folderId={creationFolderId}
                     onClose={() => setShowAddCharacter(false)}
                     onSuccess={() => {
                         setShowAddCharacter(false)
@@ -574,7 +727,7 @@ export default function AssetHubPage() {
             {showAddLocation && (
                 <LocationCreationModal
                     mode="asset-hub"
-                    folderId={selectedFolderId}
+                    folderId={creationFolderId}
                     onClose={() => setShowAddLocation(false)}
                     onSuccess={() => {
                         setShowAddLocation(false)
@@ -587,7 +740,7 @@ export default function AssetHubPage() {
             {showAddProp && (
                 <PropCreationModal
                     mode="asset-hub"
-                    folderId={selectedFolderId}
+                    folderId={creationFolderId}
                     onClose={() => setShowAddProp(false)}
                     onSuccess={() => {
                         setShowAddProp(false)
@@ -596,7 +749,6 @@ export default function AssetHubPage() {
                 />
             )}
 
-            {/* 文件夹编辑弹窗 */}
             {showFolderModal && (
                 <FolderModal
                     folder={editingFolder}
@@ -606,13 +758,26 @@ export default function AssetHubPage() {
                     }}
                     onSave={(name) => {
                         if (editingFolder) {
-                            handleUpdateFolder(editingFolder.id, name)
+                            void handleUpdateFolder(editingFolder.id, name)
                         } else {
-                            handleCreateFolder(name)
+                            void handleCreateFolder(name)
                         }
                     }}
                 />
             )}
+
+            <ConfirmDialog
+                show={!!folderPendingDelete}
+                title={t('confirmDeleteFolderTitle')}
+                message={t('confirmDeleteFolder')}
+                detail={folderPendingDelete?.name}
+                confirmText={t('delete')}
+                onConfirm={() => {
+                    if (folderPendingDelete) void handleDeleteFolder(folderPendingDelete.id)
+                }}
+                onCancel={() => setFolderPendingDelete(null)}
+                type="danger"
+            />
 
             {/* 图片预览弹窗 */}
             {previewImage && (
@@ -689,7 +854,7 @@ export default function AssetHubPage() {
             {showAddVoice && (
                 <VoiceCreationModal
                     isOpen={showAddVoice}
-                    folderId={selectedFolderId}
+                    folderId={creationFolderId}
                     onClose={() => setShowAddVoice(false)}
                     onSuccess={() => {
                         setShowAddVoice(false)

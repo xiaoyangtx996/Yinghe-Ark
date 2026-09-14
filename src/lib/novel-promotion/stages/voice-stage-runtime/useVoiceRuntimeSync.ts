@@ -10,6 +10,7 @@ import type {
 } from './types'
 
 interface UseVoiceRuntimeSyncParams {
+  cacheKey?: string
   loadData: () => Promise<void>
   voiceLines: VoiceLine[]
   activeVoiceTaskLineIds: Set<string>
@@ -25,6 +26,8 @@ interface UseVoiceRuntimeSyncParams {
 
 const TASK_STATUS_POLL_INTERVAL_MS = 1200
 const PENDING_RESULT_POLL_INTERVAL_MS = 1500
+const VOICE_MOUNT_LOAD_COOLDOWN_MS = 30_000
+const voiceMountLoadAtByKey = new Map<string, number>()
 
 function resolvePendingBaseline(pending: PendingVoiceGenerationState) {
   const startedTs = Date.parse(pending.startedAt)
@@ -85,6 +88,7 @@ async function fetchTaskStatus(taskId: string): Promise<{
 }
 
 export function useVoiceRuntimeSync({
+  cacheKey = 'voice',
   loadData,
   voiceLines,
   activeVoiceTaskLineIds,
@@ -98,8 +102,13 @@ export function useVoiceRuntimeSync({
   const completedPendingEntries = pendingEntries.filter(([, pending]) => pending.taskStatus === 'completed')
 
   useEffect(() => {
+    // Menu remounts recreate this effect; skip repeat network within stale window.
+    const now = Date.now()
+    const lastAt = voiceMountLoadAtByKey.get(cacheKey) || 0
+    if (now - lastAt < VOICE_MOUNT_LOAD_COOLDOWN_MS) return
+    voiceMountLoadAtByKey.set(cacheKey, now)
     void loadData()
-  }, [loadData])
+  }, [cacheKey, loadData])
 
   useEffect(() => {
     for (const [lineId, pending] of pendingEntries) {

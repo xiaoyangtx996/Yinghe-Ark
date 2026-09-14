@@ -1,4 +1,4 @@
-export const AUTHENTICATED_HOME_PATHNAME = '/home' as const
+export const AUTHENTICATED_HOME_PATHNAME = '/workspace' as const
 
 export interface AuthenticatedHomeTarget {
   pathname: typeof AUTHENTICATED_HOME_PATHNAME

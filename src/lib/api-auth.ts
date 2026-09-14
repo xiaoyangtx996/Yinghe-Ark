@@ -38,9 +38,10 @@ async function getInternalTaskSession(): Promise<AuthSession | null> {
     const expectedToken = process.env.INTERNAL_TASK_TOKEN || ''
 
     const incomingHeaders = await readHeaders()
-    const token = incomingHeaders.get('x-internal-task-token') || ''
     const userId = incomingHeaders.get('x-internal-user-id') || ''
     if (!userId) return null
+
+    const token = incomingHeaders.get('x-internal-task-token') || ''
     if (expectedToken) {
         if (token !== expectedToken) return null
     } else if (process.env.NODE_ENV === 'production') {
@@ -168,13 +169,58 @@ export function serverError(message = 'Internal server error') {
 
 /**
  * 验证用户 Session
- * @returns session 或 null
+ * 短 TTL 进程内缓存：冷启动并行 API 共享同一次 getServerSession。
  */
+const AUTH_SESSION_CACHE_TTL_MS = 2_000
+const authSessionCache = new Map<string, { at: number; session: AuthSession | null }>()
+
+function extractSessionTokenFromCookieHeader(cookieHeader: string): string {
+    if (!cookieHeader) return ''
+    for (const part of cookieHeader.split(';')) {
+        const [rawName, ...rest] = part.trim().split('=')
+        const name = rawName?.trim()
+        if (
+            name === 'next-auth.session-token'
+            || name === '__Secure-next-auth.session-token'
+            || name === '__Host-next-auth.session-token'
+        ) {
+            return rest.join('=')
+        }
+    }
+    return ''
+}
+
+function pruneAuthSessionCache(now: number) {
+    if (authSessionCache.size <= 64) return
+    for (const [key, entry] of authSessionCache) {
+        if (now - entry.at > AUTH_SESSION_CACHE_TTL_MS) {
+            authSessionCache.delete(key)
+        }
+    }
+}
+
 export async function getAuthSession(): Promise<AuthSession | null> {
     const internalSession = await getInternalTaskSession()
     if (internalSession) return internalSession
-    const session = await getServerSession(authOptions)
-    return session as AuthSession | null
+
+    let cacheKey = 'anon'
+    try {
+        const headerList = await readHeaders()
+        cacheKey = extractSessionTokenFromCookieHeader(headerList.get('cookie') || '') || 'anon'
+    } catch {
+        // outside request scope — skip cache keying
+    }
+
+    const now = Date.now()
+    const cached = authSessionCache.get(cacheKey)
+    if (cached && now - cached.at < AUTH_SESSION_CACHE_TTL_MS) {
+        return cached.session
+    }
+
+    const session = (await getServerSession(authOptions)) as AuthSession | null
+    authSessionCache.set(cacheKey, { at: now, session })
+    pruneAuthSessionCache(now)
+    return session
 }
 
 /**
@@ -318,7 +364,16 @@ export async function requireUserAuth(): Promise<{ session: AuthSession } | Next
  */
 export async function requireProjectAuthLight(
     projectId: string
-): Promise<{ session: AuthSession; project: { id: string; userId: string; name: string; [key: string]: unknown } } | NextResponse> {
+): Promise<{ session: AuthSession; project: {
+    id: string
+    userId: string
+    name: string
+    description: string | null
+    createdAt: Date
+    updatedAt: Date
+    lastAccessedAt: Date | null
+    [key: string]: unknown
+} } | NextResponse> {
     const session = await getAuthSession()
     if (!session?.user?.id) {
         return unauthorized()
@@ -327,7 +382,16 @@ export async function requireProjectAuthLight(
 
     const project = await withPrismaRetry(() =>
         prisma.project.findUnique({
-            where: { id: projectId }
+            where: { id: projectId },
+            select: {
+                id: true,
+                userId: true,
+                name: true,
+                description: true,
+                createdAt: true,
+                updatedAt: true,
+                lastAccessedAt: true,
+            },
         })
     )
 

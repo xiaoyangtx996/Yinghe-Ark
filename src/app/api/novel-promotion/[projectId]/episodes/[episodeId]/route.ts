@@ -7,54 +7,155 @@ import { apiHandler, ApiError } from '@/lib/api-errors'
 import { attachMediaFieldsToProject } from '@/lib/media/attach'
 import { resolveMediaRefFromLegacyValue } from '@/lib/media/service'
 
+type EpisodeDetailView = 'full' | 'script' | 'text' | 'panels'
+
+function readEpisodeView(raw: string | null): EpisodeDetailView {
+  const view = (raw || 'full').trim().toLowerCase()
+  if (view === 'script' || view === 'text' || view === 'panels' || view === 'full') return view
+  return 'full'
+}
+
 /**
- * GET - 获取单个剧集的完整数据
+ * GET - 获取单个剧集数据
+ * - view=full（默认）：clips + storyboards/panels（签名分镜媒体）+ voiceLines(id)
+ * - view=script|text：仅 clips（配置/拆解）；storyboards/voiceLines 为空数组
+ * - view=panels：clips(id) + 精简 panels（配音绑镜，不签名媒体）
  */
 export const GET = apiHandler(async (
   request: NextRequest,
   context: { params: Promise<{ projectId: string; episodeId: string }> }
 ) => {
   const { projectId, episodeId } = await context.params
+  const view = readEpisodeView(request.nextUrl.searchParams.get('view'))
+  const scriptView = view === 'script' || view === 'text'
+  const panelsView = view === 'panels'
 
-  // 🔐 统一权限验证
   const authResult = await requireProjectAuthLight(projectId)
   if (isErrorResponse(authResult)) return authResult
 
-  // 获取剧集及其关联数据
+  if (scriptView) {
+    const episode = await prisma.novelPromotionEpisode.findUnique({
+      where: { id: episodeId },
+      include: {
+        clips: { orderBy: { createdAt: 'asc' } },
+      },
+    })
+    if (!episode) throw new ApiError('NOT_FOUND')
+
+    prisma.novelPromotionProject.update({
+      where: { projectId },
+      data: { lastEpisodeId: episodeId },
+    }).catch((err) => _ulogError('更新 lastEpisodeId 失败:', err))
+
+    const episodeWithSignedUrls = await attachMediaFieldsToProject(
+      {
+        ...episode,
+        storyboards: [],
+        voiceLines: [],
+      } as unknown as Record<string, unknown>,
+      {
+        sections: {
+          audio: false,
+          characters: false,
+          locations: false,
+          props: false,
+          shots: false,
+          voiceLines: false,
+          storyboards: false,
+        },
+      },
+    )
+
+    return NextResponse.json({ episode: episodeWithSignedUrls })
+  }
+
+  if (panelsView) {
+    const episode = await prisma.novelPromotionEpisode.findUnique({
+      where: { id: episodeId },
+      select: {
+        id: true,
+        episodeNumber: true,
+        name: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+        clips: {
+          orderBy: { createdAt: 'asc' },
+          select: { id: true },
+        },
+        storyboards: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            clipId: true,
+            panels: {
+              orderBy: { panelIndex: 'asc' },
+              select: {
+                id: true,
+                panelIndex: true,
+                description: true,
+                srtSegment: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    if (!episode) throw new ApiError('NOT_FOUND')
+
+    prisma.novelPromotionProject.update({
+      where: { projectId },
+      data: { lastEpisodeId: episodeId },
+    }).catch((err) => _ulogError('更新 lastEpisodeId 失败:', err))
+
+    return NextResponse.json({
+      episode: {
+        ...episode,
+        projectId,
+        voiceLines: [],
+      },
+    })
+  }
+
   const episode = await prisma.novelPromotionEpisode.findUnique({
     where: { id: episodeId },
     include: {
       clips: {
-        orderBy: { createdAt: 'asc' }
+        orderBy: { createdAt: 'asc' },
       },
       storyboards: {
         include: {
-          clip: true,
-          panels: { orderBy: { panelIndex: 'asc' } }
+          panels: { orderBy: { panelIndex: 'asc' } },
         },
-        orderBy: { createdAt: 'asc' }
-      },
-      shots: {
-        orderBy: { shotId: 'asc' }
+        orderBy: { createdAt: 'asc' },
       },
       voiceLines: {
-        orderBy: { lineIndex: 'asc' }
-      }
-    }
+        select: { id: true },
+        orderBy: { lineIndex: 'asc' },
+      },
+    },
   })
 
   if (!episode) {
     throw new ApiError('NOT_FOUND')
   }
 
-  // 更新最后编辑的剧集ID（异步，不阻塞响应）
   prisma.novelPromotionProject.update({
     where: { projectId },
-    data: { lastEpisodeId: episodeId }
-  }).catch(err => _ulogError('更新 lastEpisodeId 失败:', err))
+    data: { lastEpisodeId: episodeId },
+  }).catch((err) => _ulogError('更新 lastEpisodeId 失败:', err))
 
-  // 转换为稳定媒体 URL（并保留兼容字段）
-  const episodeWithSignedUrls = await attachMediaFieldsToProject(episode)
+  const episodeWithSignedUrls = await attachMediaFieldsToProject(episode as unknown as Record<string, unknown>, {
+    sections: {
+      audio: false,
+      characters: false,
+      locations: false,
+      props: false,
+      shots: false,
+      voiceLines: false,
+      storyboards: true,
+    },
+  })
 
   return NextResponse.json({ episode: episodeWithSignedUrls })
 })
@@ -68,7 +169,6 @@ export const PATCH = apiHandler(async (
 ) => {
   const { projectId, episodeId } = await context.params
 
-  // 🔐 统一权限验证
   const authResult = await requireProjectAuthLight(projectId)
   if (isErrorResponse(authResult)) return authResult
 
@@ -103,29 +203,25 @@ export const DELETE = apiHandler(async (
 ) => {
   const { projectId, episodeId } = await context.params
 
-  // 🔐 统一权限验证
   const authResult = await requireProjectAuthLight(projectId)
   if (isErrorResponse(authResult)) return authResult
 
-  // 删除剧集（关联数据会级联删除）
   await prisma.novelPromotionEpisode.delete({
     where: { id: episodeId }
   })
 
-  // 如果删除的是最后编辑的剧集，更新 lastEpisodeId
   const novelPromotionProject = await prisma.novelPromotionProject.findUnique({
     where: { projectId }
   })
 
   if (novelPromotionProject?.lastEpisodeId === episodeId) {
-    // 找到另一个剧集作为默认
     const anotherEpisode = await prisma.novelPromotionEpisode.findFirst({
       where: { novelPromotionProjectId: novelPromotionProject.id },
-      orderBy: { episodeNumber: 'asc' }
+      orderBy: { episodeNumber: 'asc' },
+      select: { id: true },
     })
-
     await prisma.novelPromotionProject.update({
-      where: { id: novelPromotionProject.id },
+      where: { projectId },
       data: { lastEpisodeId: anotherEpisode?.id || null }
     })
   }

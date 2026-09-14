@@ -1,17 +1,18 @@
 {
-  "title": "Start Your Creative Journey",
-  "subtitle": "First, choose your creation method",
+  "title": "Start creating",
+  "subtitle": "Import a novel file and split by chapter, or add one episode",
+  "continueImportHint": "New episodes will be appended after the current list (nothing overwritten)",
   "manualCreate": {
-    "title": "Create from Episode 1",
-    "description": "Start from episode 1, suitable for episodic creation or single short videos",
-    "button": "Start Creating"
+    "title": "Add one episode",
+    "description": "Create a blank episode for single-episode drafts or write-as-you-go",
+    "button": "Add episode"
   },
-  "manualDesc": "Start from the first episode, suitable for serialized or single short video production",
-  "startCreate": "Start Creating",
+  "manualDesc": "Create a blank episode for single-episode drafts or write-as-you-go",
+  "startCreate": "Add episode",
   "smartImport": {
-    "title": "Smart Text Split",
-    "description": "Upload a complete novel or script, AI engine automatically recognizes chapter structure and splits into episodes.",
-    "button": "Import Now",
+    "title": "Import episodes",
+    "description": "Upload a TXT / DOCX novel; chapter markers become the left episode list",
+    "button": "Start split",
     "recommended": "Recommended"
   },
   "markerDetection": {
@@ -23,20 +24,20 @@
   "importNow": "Import Now",
   "uploadTitle": "Upload Source Material",
   "uploadSubtitle": "AI engine ready, one-click auto-split and format",
-  "maxWords": "Max 30,000 words",
+  "maxWords": "Full novels supported",
   "textInput": "Enter Text Content",
   "textPlaceholder": "Paste your novel chapter or script content here...",
   "uploadDoc": "Upload Complete Document",
   "clickUpload": "Click to Upload",
   "clearText": "Please clear left text first",
-  "supportFormat": "Supports Word, TXT formats",
-  "fileMax": "Max 30,000 words",
+  "supportFormat": "Supports TXT, DOCX",
+  "fileMax": "Recommended under 50MB per file",
   "words": "words",
   "startAnalyzing": "Start Analysis",
   "analyzing": {
-    "title": "AI is Analyzing Your Story",
-    "description": "Recognizing chapter structure, smart splitting in progress...",
-    "autoSave": "Will auto-save after analysis complete"
+    "title": "Splitting by chapters",
+    "description": "Running the local chapter-marker algorithm...",
+    "autoSave": "You can preview and confirm when done"
   },
   "analyzingDesc": "Identifying chapter structure, smart splitting...",
   "autoSave": "Will auto-save after analysis",
@@ -59,11 +60,13 @@
   "confirmDelete": "Confirm Delete",
   "deleteConfirmMsg": "Are you sure you want to delete \"{title}\"?",
   "preview": {
-    "title": "Smart Splitting Complete",
-    "episodeCount": "Automatically split into {count} episodes",
+    "title": "Split complete",
+    "episodeCount": "Split into {count} episodes by chapter",
     "totalWords": "Total {count} words",
     "autoSaved": "✓ Auto-saved",
-    "reanalyze": "Re-analyze",
+    "notSaved": "⚠ Not saved yet — click Confirm to retry",
+    "reanalyze": "Import again",
+    "continueImport": "Continue import",
     "confirm": "Confirm Complete",
     "saving": "Saving...",
     "episodeList": "Episode List",
@@ -98,33 +101,42 @@
   "cancelConfirm": "Are you sure you want to cancel? Analyzed episodes will be cleared.",
   "deleteEpisode": "Delete Episode",
   "upload": {
-    "title": "Upload Raw Material",
-    "subtitle": "AI engine is ready, automatic episode splitting and formatting",
-    "maxWords": "(Max 30,000 words)",
+    "title": "Import novel file",
+    "subtitle": "Local chapter-marker split",
+    "maxWords": "(Full novels supported)",
     "textInput": "Enter Text Content",
     "documentUpload": "Upload Full Document",
-    "placeholder": "Paste your novel chapters or script content here...",
+    "placeholder": "Paste a full novel or script… markers like “Chapter X / Episode X” become the left episode list",
     "filePlaceholder": "File uploaded mode",
     "clickUpload": "Click to upload document",
     "clearTextFirst": "Please clear left text first",
-    "supportedFormats": "Supports Word, TXT formats",
+    "supportedFormats": "Supports TXT, DOCX",
     "preview": "Preview",
     "expandPreview": "Expand More",
     "collapsePreview": "Collapse",
     "deleteFile": "Delete File",
-    "startAnalysis": "Start Analysis",
+    "startAnalysis": "Start split",
     "back": "Back",
-    "words": "words"
+    "words": "words",
+    "dropHint": "Drop a file here, or click to choose",
+    "changeFile": "Click to replace file",
+    "clearFile": "Clear",
+    "markerHint": "Supports TXT and DOCX files only",
+    "startSplit": "Start split",
+    "importing": "Reading..."
   },
   "errors": {
-    "fileTooLarge": "File too large, please upload a file smaller than 10MB",
+    "fileTooLarge": "File exceeds 50MB. Please compress or split it before importing.",
     "docNotSupported": ".doc format not supported, please convert to .docx in Word",
     "fileEmpty": "File content is empty",
     "fileReadError": "File read failed, please try again",
-    "uploadFirst": "Please upload or paste content first",
-    "analyzeFailed": "Analysis failed",
+    "uploadFirst": "Please import a novel file first",
+    "analyzeFailed": "Split failed",
     "saveFailed": "Save failed",
-    "analysisModelNotConfigured": "Please configure an analysis model in settings first"
+    "analysisModelNotConfigured": "Please configure an analysis model in settings first",
+    "unsupportedFormat": "Only TXT and DOCX files are supported",
+    "noMarkers": "Not enough chapter markers found (need at least two chapter/episode headings). Check the file, or use Add one episode instead.",
+    "splitFailed": "Chapter split failed"
   },
   "common": {
     "edit": "Edit",
@@ -164,5 +176,10 @@
     "success": "Analysis complete: {characters} new characters, {locations} new locations",
     "failed": "Global analysis failed",
     "confirmAndAnalyze": "Confirm & Analyze Assets"
+  },
+  "importCard": {
+    "title": "Import episodes",
+    "description": "Upload a TXT / DOCX novel; chapter markers become the left episode list",
+    "recommended": "Recommended"
   }
 }

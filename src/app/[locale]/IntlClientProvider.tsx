@@ -14,6 +14,7 @@ export function IntlClientProvider({ locale, messages, children }: IntlClientPro
     <NextIntlClientProvider
       locale={locale}
       messages={messages}
+      timeZone="Asia/Shanghai"
       // Missing keys must not crash the whole workspace behind Next's error overlay.
       onError={(error: IntlError) => {
         if (error.code === 'MISSING_MESSAGE') {

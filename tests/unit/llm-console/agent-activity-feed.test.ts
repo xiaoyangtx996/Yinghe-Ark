@@ -33,6 +33,7 @@ describe('resolveAgentActivityFeed', () => {
         title: 'progress.streamStep.analyzeCharacters',
         status: 'done',
         subtitle: undefined,
+        retryable: true,
       },
       {
         id: 'split_clips',
@@ -40,6 +41,7 @@ describe('resolveAgentActivityFeed', () => {
         title: 'progress.streamStep.splitClips',
         status: 'active',
         subtitle: undefined,
+        retryable: true,
       },
       {
         id: 'screenplay_clip_1',
@@ -47,6 +49,7 @@ describe('resolveAgentActivityFeed', () => {
         title: 'progress.streamStep.screenplayConversion',
         status: 'pending',
         subtitle: undefined,
+        retryable: true,
       },
       {
         id: 'screenplay_clip_2',
@@ -54,6 +57,7 @@ describe('resolveAgentActivityFeed', () => {
         title: 'progress.streamStep.screenplayConversion',
         status: 'failed',
         subtitle: 'timeout',
+        retryable: true,
       },
     ])
   })

@@ -11,5 +11,21 @@
   "accountRecharge": "Account Recharge",
   "serviceConsumption": "Service Consumption",
   "balance": "Balance",
-  "allTypes": "All Types"
+  "allTypes": "All Types",
+  "time": "Time",
+  "type": "Type",
+  "amount": "Amount",
+  "project": "Project",
+  "episode": "Episode",
+  "action": "Action",
+  "description": "Description",
+  "balanceAfter": "Balance",
+  "detail": "Detail",
+  "statTotal": "Total records",
+  "statPage": "On this page",
+  "statFilter": "Active filter",
+  "statFilterAll": "All types",
+  "exportCsv": "Export CSV",
+  "tableDesc": "Charges and top-ups in reverse chronological order",
+  "refresh": "Refresh"
 }

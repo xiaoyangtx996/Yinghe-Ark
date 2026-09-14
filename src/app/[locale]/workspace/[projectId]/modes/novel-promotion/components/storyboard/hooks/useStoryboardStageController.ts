@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   NovelPromotionStoryboard,
   NovelPromotionClip,
@@ -29,6 +29,9 @@ interface UseStoryboardStageControllerProps {
   isTransitioning: boolean
 }
 
+/** Keep signed assets off the first storyboard paint; warm shortly after or on demand. */
+const STORYBOARD_ASSETS_WARM_MS = 2_000
+
 export function useStoryboardStageController({
   projectId,
   episodeId,
@@ -40,7 +43,25 @@ export function useStoryboardStageController({
     return phase === 'queued' || phase === 'processing'
   }, [])
 
-  const { data: assets } = useProjectAssets(projectId)
+  const {
+    assetPickerPanel,
+    setAssetPickerPanel,
+    aiDataPanel,
+    setAIDataPanel,
+    isEpisodeBatchSubmitting,
+    setIsEpisodeBatchSubmitting,
+  } = useStoryboardStageUiState()
+
+  const [assetsArmed, setAssetsArmed] = useState(false)
+  useEffect(() => {
+    const timer = window.setTimeout(() => setAssetsArmed(true), STORYBOARD_ASSETS_WARM_MS)
+    return () => window.clearTimeout(timer)
+  }, [])
+
+  const assetsEnabled =
+    assetsArmed || Boolean(assetPickerPanel) || Boolean(aiDataPanel)
+
+  const { data: assets } = useProjectAssets(projectId, { enabled: assetsEnabled })
   const characters: Character[] = useMemo(() => assets?.characters ?? [], [assets?.characters])
   const locations: Location[] = useMemo(() => assets?.locations ?? [], [assets?.locations])
 
@@ -139,17 +160,12 @@ export function useStoryboardStageController({
     clearStoryboardError,
   } = imageOps
 
+  useEffect(() => {
+    if (editingPanel) setAssetsArmed(true)
+  }, [editingPanel])
+
   const updatePhotographyPlanMutation = useUpdateProjectPhotographyPlan(projectId)
   const updatePanelActingNotesMutation = useUpdateProjectPanelActingNotes(projectId)
-
-  const {
-    assetPickerPanel,
-    setAssetPickerPanel,
-    aiDataPanel,
-    setAIDataPanel,
-    isEpisodeBatchSubmitting,
-    setIsEpisodeBatchSubmitting,
-  } = useStoryboardStageUiState()
 
   const {
     getDefaultAssetsForClip,

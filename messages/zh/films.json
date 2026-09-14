@@ -1,0 +1,13 @@
+{
+  "title": "成片管理",
+  "subtitle": "汇总已生成视频的项目，快速进入成片阶段预览与导出。",
+  "emptyTitle": "还没有成片",
+  "emptyDesc": "先在项目里完成视频生成后，这里会列出可管理的成片项目。",
+  "goProjects": "前往项目",
+  "openVideos": "打开成片",
+  "videoCount": "{count} 段视频",
+  "statEpisodes": "{n} 集",
+  "statImages": "{n} 图",
+  "statVideos": "{n} 视频",
+  "statPanels": "{n} 镜"
+}

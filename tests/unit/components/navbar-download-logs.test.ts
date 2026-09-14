@@ -11,6 +11,7 @@ const useSessionMock = vi.fn()
 
 vi.mock('next-auth/react', () => ({
   useSession: () => useSessionMock(),
+  signOut: vi.fn(),
 }))
 
 vi.mock('next/image', () => ({
@@ -22,7 +23,12 @@ vi.mock('@/components/LanguageSwitcher', () => ({
 }))
 
 vi.mock('@/i18n/navigation', () => ({
-  usePathname: () => '/home',
+  usePathname: () => '/workspace',
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
   Link: ({
     href,
     children,
@@ -44,11 +50,20 @@ const messages = {
     downloadLogs: '下载日志',
     signin: '登录',
     signup: '注册',
-    railHome: '创作',
+    railBrandHome: '项目首页',
+    railPrimary: '主导航',
     railProjects: '项目',
     railAssets: '资产',
+    railFilms: '成片管理',
     railLogs: '日志',
     railSettings: '设置',
+    railAccount: '账户',
+  },
+  profile: {
+    user: '用户',
+    personalAccount: '个人账户',
+    personalCenter: '个人中心',
+    logout: '退出登录',
   },
   common: {
     appName: 'Yinghe Ark',
@@ -79,10 +94,10 @@ describe('Navbar authenticated chrome', () => {
     useSessionMock.mockReset()
   })
 
-  it('renders theater rail with logs entry and without top-bar download logs for signed-in users', () => {
+  it('renders theater rail with projects entry and films, without create home', () => {
     Reflect.set(globalThis, 'React', React)
     useSessionMock.mockReturnValue({
-      data: { user: { name: 'Earth' } },
+      data: { user: { name: 'Earth', email: 'earth@example.com' } },
       status: 'authenticated',
     })
 
@@ -90,9 +105,26 @@ describe('Navbar authenticated chrome', () => {
 
     expect(html).toContain('aria-label="日志"')
     expect(html).toContain('href="/logs"')
-    expect(html).toContain('href="/home"')
+    expect(html).toContain('href="/workspace"')
+    expect(html).toContain('aria-label="成片管理"')
+    expect(html).toContain('href="/workspace/films"')
+    expect(html).toContain('aria-label="账户"')
+    expect(html).not.toContain('aria-label="创作"')
     expect(html).not.toContain('下载日志')
     expect(html).not.toContain('/api/admin/download-logs')
+  })
+
+  it('avatar links straight into account secondary sidebar', () => {
+    Reflect.set(globalThis, 'React', React)
+    useSessionMock.mockReturnValue({
+      data: { user: { name: 'Earth', email: 'earth@example.com' } },
+      status: 'authenticated',
+    })
+
+    const html = renderWithIntl(createElement(Navbar))
+    expect(html).toContain('aria-label="账户"')
+    expect(html).toContain('href="/account"')
+    expect(html).not.toContain('aria-haspopup="menu"')
   })
 
   it('does not render theater rail for signed-out users', () => {

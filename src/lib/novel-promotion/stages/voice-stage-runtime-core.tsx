@@ -58,7 +58,7 @@ export function useVoiceStageRuntime({
     throw new Error('VoiceStage requires searchParams')
   }
   const { data: assets } = useProjectAssets(projectId)
-  const { data: episodeData } = useEpisodeData(projectId, episodeId)
+  const { data: episodeData } = useEpisodeData(projectId, episodeId, 'panels')
   const analyzeVoiceMutation = useAnalyzeProjectVoice(projectId)
   const generateVoiceMutation = useGenerateProjectVoice(projectId)
   const createVoiceLineMutation = useCreateProjectVoiceLine(projectId)
@@ -141,6 +141,7 @@ export function useVoiceStageRuntime({
     submittingVoiceLineIds,
   })
   useVoiceRuntimeSync({
+    cacheKey: `${projectId}:${episodeId}`,
     loadData,
     voiceLines,
     activeVoiceTaskLineIds,

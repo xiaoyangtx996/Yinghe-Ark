@@ -62,6 +62,8 @@ export type UseRunStreamStateOptions<TParams extends Record<string, unknown>> = 
   endpoint: (projectId: string) => string
   storageKeyPrefix: string
   storageScopeKey?: string
+  /** When false, skip mount recovery probe (stage-gated). Default true. */
+  recoveryEnabled?: boolean
   buildRequestBody: (params: TParams) => Record<string, unknown>
   validateParams?: (params: TParams) => void
   resolveActiveRunId?: (context: { projectId: string; storageScopeKey?: string }) => Promise<string | null>

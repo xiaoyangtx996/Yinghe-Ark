@@ -137,7 +137,13 @@
     "storyToScriptSubtitle": "Story To Script V2",
     "scriptToStoryboardSubtitle": "Script To Storyboard V2",
     "stop": "停止",
-    "minimize": "最小化"
+    "minimize": "最小化",
+    "retry": "重试",
+    "retryFailed": "重试失败步骤（{count}）",
+    "continueNext": "进入下一步",
+    "continueToScript": "进入拆解",
+    "continueToStoryboard": "进入分镜",
+    "viewPartialResults": "查看已有结果"
   },
   "pipelineChecklist": {
     "title": "创作进度",

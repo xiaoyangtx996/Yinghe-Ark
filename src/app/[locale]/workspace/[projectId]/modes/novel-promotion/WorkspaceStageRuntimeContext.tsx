@@ -32,6 +32,8 @@ export interface WorkspaceStageRuntimeValue {
   onArtStyleChange: (value: string) => Promise<void>
   onGenrePackChange: (value: string) => Promise<void>
   onRunStoryToScript: () => Promise<void>
+  /** Rebuild existing breakdown; always prompts for confirmation. */
+  onRebuildStoryToScript: (clipCount?: number) => Promise<void>
   onClipUpdate: (clipId: string, data: unknown) => Promise<void>
   onOpenAssetLibrary: () => void
   onRunScriptToStoryboard: () => Promise<void>

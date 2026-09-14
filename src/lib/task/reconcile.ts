@@ -5,7 +5,7 @@
  * 提供三个层次的对账能力：
  *   1. isJobAlive   — 单任务即时检查（供 createTask 去重时调用）
  *   2. reconcileActiveTasks — 批量对账（供 watchdog 定时调用）
- *   3. startTaskWatchdog    — 定时巡检入口（在 instrumentation.ts 启动）
+ *   3. startTaskWatchdog    — 定时巡检入口（由 scripts/watchdog.ts 启动，勿在 Next instrumentation 内重复启动）
  */
 
 import { prisma } from '@/lib/prisma'

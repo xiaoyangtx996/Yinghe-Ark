@@ -5,6 +5,7 @@
     "autoSave": "自动保存",
     "visualSettings": "画面设置",
     "visualStyle": "画面风格",
+    "genrePack": "题材风格",
     "modelParams": "模型参数",
     "aspectRatio": "画面比例",
     "ttsSettings": "旁白配置",

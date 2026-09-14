@@ -11,6 +11,8 @@ interface WorkspaceTopActionsProps {
   assetLibraryLabel: string
   settingsLabel: string
   refreshTitle: string
+  /** inline = document flow (default); fixed = legacy floating overlay */
+  placement?: 'inline' | 'fixed'
 }
 
 export default function WorkspaceTopActions({
@@ -20,6 +22,7 @@ export default function WorkspaceTopActions({
   assetLibraryLabel,
   settingsLabel,
   refreshTitle,
+  placement = 'inline',
 }: WorkspaceTopActionsProps) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const { showToast } = useToast()
@@ -42,32 +45,37 @@ export default function WorkspaceTopActions({
     }
   }, [isRefreshing, onRefresh, refreshTitle, showToast])
 
+  const rootClass =
+    placement === 'fixed'
+      ? 'fixed top-[4.75rem] right-6 z-40 workspace-actions'
+      : 'relative z-10 workspace-actions'
+
   return (
-    <div className="fixed top-[4.75rem] right-6 z-40 flex gap-2">
+    <div className={rootClass} data-placement={placement}>
       <button
         type="button"
         onClick={onOpenAssetLibrary}
         title={assetLibraryLabel}
         aria-label={assetLibraryLabel}
-        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
+        className="glass-btn-base flex items-center gap-2 px-3 text-[var(--glass-text-primary)]"
       >
         <AppIcon name="package" className="h-4 w-4" />
-        <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{assetLibraryLabel}</span>
+        <span className="font-medium text-[13px] hidden md:inline tracking-[0.01em]">{assetLibraryLabel}</span>
       </button>
       <button
         type="button"
         onClick={onOpenSettings}
         title={settingsLabel}
         aria-label={settingsLabel}
-        className="glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)]"
+        className="glass-btn-base flex items-center gap-2 px-3 text-[var(--glass-text-primary)]"
       >
         <AppIcon name="settingsHexMinor" className="h-4 w-4" />
-        <span className="font-semibold text-sm hidden md:inline tracking-[0.01em]">{settingsLabel}</span>
+        <span className="font-medium text-[13px] hidden md:inline tracking-[0.01em]">{settingsLabel}</span>
       </button>
       <button
         type="button"
         onClick={handleRefreshClick}
-        className={`glass-btn-base glass-btn-secondary flex items-center gap-2 px-3 py-2.5 text-[var(--glass-text-primary)] ${
+        className={`glass-btn-base flex items-center gap-2 px-2.5 text-[var(--glass-text-primary)] ${
           isRefreshing ? 'opacity-60 cursor-wait' : ''
         }`}
         title={refreshTitle}

@@ -28,7 +28,11 @@ interface UseWorkspaceStageRuntimeParams {
   }> | undefined
   handleUpdateEpisode: (key: string, value: unknown) => Promise<void>
   handleUpdateConfig: (key: string, value: unknown) => Promise<void>
-  runWithRebuildConfirm: (action: 'storyToScript' | 'scriptToStoryboard', operation: () => Promise<void>) => Promise<void>
+  runWithRebuildConfirm: (
+    action: 'storyToScript' | 'scriptToStoryboard',
+    operation: () => Promise<void>,
+    options?: { forceConfirm?: boolean; clipCount?: number },
+  ) => Promise<void>
   runStoryToScriptFlow: () => Promise<void>
   runScriptToStoryboardFlow: () => Promise<void>
   handleUpdateClip: (clipId: string, updates: Record<string, unknown>) => Promise<void>
@@ -106,6 +110,10 @@ export function useWorkspaceStageRuntime({
     onArtStyleChange: (value) => handleUpdateConfig('artStyle', value),
     onGenrePackChange: (value) => handleUpdateConfig('genrePack', value),
     onRunStoryToScript: () => runWithRebuildConfirm('storyToScript', runStoryToScriptFlow),
+    onRebuildStoryToScript: (clipCount) => runWithRebuildConfirm('storyToScript', runStoryToScriptFlow, {
+      forceConfirm: true,
+      clipCount,
+    }),
     onClipUpdate: (clipId, data) => {
       if (!data || typeof data !== 'object' || Array.isArray(data)) {
         throw new Error('onClipUpdate requires a plain object payload')

@@ -9,9 +9,15 @@
 </p>
 
 <p align="center">
+  <sub>基于 <a href="https://github.com/waooAI/waoowaoo">waoowaoo</a> 二次开发</sub>
+</p>
+
+<p align="center">
   <a href="README_en.md">English</a>
   ·
   <a href="https://github.com/xiaoyangtx996/Yinghe-Ark/issues">Issues</a>
+  ·
+  <a href="https://github.com/xiaoyangtx996/Yinghe-Ark">GitHub</a>
 </p>
 
 <p align="center">
@@ -39,7 +45,9 @@
 - **角色 & 场景生成** — 跨镜头保持外貌与空间一致
 - **分镜视频** — 文字转镜头，支持局部重跑
 - **AI 配音** — 多角色语音合成
+- **AI 剪辑** — 镜头编排与成片导出
 - **资产中心** — 角色 / 场景 / 道具跨项目复用
+- **厂商资源池** — 多模型、多服务商接入与默认模型配置
 - **中英双语** — 界面一键切换
 
 ---
@@ -124,12 +132,54 @@ npm run dev
 
 ---
 
-## 界面预览
+## 产品预览
 
-![工作台预览 1](https://github.com/user-attachments/assets/fa0e9c57-9ea0-4df3-893e-b76c4c9d304b)
-![工作台预览 2](https://github.com/user-attachments/assets/f2fb6a64-5ba8-4896-a064-be0ded213e42)
-![工作台预览 3](https://github.com/user-attachments/assets/09bbff39-e535-4c67-80a9-69421c3b05ee)
-![工作台预览 4](https://github.com/user-attachments/assets/688e3147-6e95-43b0-b9e7-dd9af40db8a0)
+> 截图均使用仓库相对路径 `images/`，可在 GitHub 直接渲染；首次打开若较慢，请稍等图片加载完成。
+
+### 创作工作台
+
+从项目管理、故事与拆解、分镜与配音，到成片与资产中心，围绕短剧 / 漫剧组织为连续工作流。
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>我的项目</strong><br/><img src="./images/我的项目.png" alt="我的项目" width="100%"/></td>
+    <td width="50%" align="center"><strong>故事页面</strong><br/><img src="./images/故事页面.png" alt="故事页面" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>拆解界面</strong><br/><img src="./images/拆解界面.png" alt="拆解界面" width="100%"/></td>
+    <td width="50%" align="center"><strong>分镜管理</strong><br/><img src="./images/分镜管理.png" alt="分镜管理" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>分镜管理（细节）</strong><br/><img src="./images/分镜管理2.png" alt="分镜管理细节" width="100%"/></td>
+    <td width="50%" align="center"><strong>配音</strong><br/><img src="./images/配音.png" alt="配音" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>成片</strong><br/><img src="./images/成片.png" alt="成片" width="100%"/></td>
+    <td width="50%" align="center"><strong>成片管理</strong><br/><img src="./images/成片管理.png" alt="成片管理" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>资产中心</strong><br/><img src="./images/资产中心.png" alt="资产中心" width="100%"/></td>
+    <td width="50%" align="center"><strong>AI 剪辑</strong><br/><img src="./images/Ai剪辑.png" alt="AI 剪辑" width="100%"/></td>
+  </tr>
+</table>
+
+### 设置与运维
+
+模型默认配置、厂商资源池、账户与用户设置，以及任务日志。
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>默认模型配置</strong><br/><img src="./images/默认模型配置.png" alt="默认模型配置" width="100%"/></td>
+    <td width="50%" align="center"><strong>厂商资源池</strong><br/><img src="./images/厂商资源池.png" alt="厂商资源池" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>用户设置</strong><br/><img src="./images/用户设置.png" alt="用户设置" width="100%"/></td>
+    <td width="50%" align="center"><strong>账户设置</strong><br/><img src="./images/账户设置.png" alt="账户设置" width="100%"/></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" colspan="2"><strong>日志管理</strong><br/><img src="./images/日志管理.png" alt="日志管理" width="70%"/></td>
+  </tr>
+</table>
 
 ---
 
@@ -139,6 +189,12 @@ npm run dev
 
 - 🐛 [提交 Bug](https://github.com/xiaoyangtx996/Yinghe-Ark/issues)
 - 💡 [功能建议](https://github.com/xiaoyangtx996/Yinghe-Ark/issues)
+
+---
+
+## 鸣谢
+
+本项目基于开源项目 [waoowaoo](https://github.com/waooAI/waoowaoo) 进行二次开发与能力扩展，感谢上游作者与社区。
 
 ---
 

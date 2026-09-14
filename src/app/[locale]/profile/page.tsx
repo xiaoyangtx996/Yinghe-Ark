@@ -1,22 +1,26 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
+import AppBootScreen from '@/components/AppBootScreen'
 import { SecondarySidebar } from '@/components/SecondarySidebar'
-import ApiConfigTab from './components/ApiConfigTab'
 import { BasicSettingsPanel } from './components/BasicSettingsPanel'
-import { AppIcon } from '@/components/ui/icons'
 import { useRouter } from '@/i18n/navigation'
 
 type SettingsPane = 'basic' | 'defaults' | 'providers'
+
+const ApiConfigTab = dynamic(
+  () => import('./components/ApiConfigTab').then((m) => m.default),
+  { ssr: false },
+)
 
 export default function ProfilePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const t = useTranslations('profile')
   const ta = useTranslations('apiConfig')
-  const tc = useTranslations('common')
   const tn = useTranslations('nav')
   const [pane, setPane] = useState<SettingsPane>('basic')
   const [addProviderOpen, setAddProviderOpen] = useState(false)
@@ -30,19 +34,13 @@ export default function ProfilePage() {
     if (pane !== 'providers') setAddProviderOpen(false)
   }, [pane])
 
-  if (status === 'loading' || !session) {
-    return (
-      <div className="glass-page flex min-h-dvh flex-col items-center justify-center gap-3">
-        <span
-          className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--glass-stroke-strong)] border-t-[var(--film-gold)]"
-          aria-hidden
-        />
-        <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
-      </div>
-    )
+  if (status === 'loading') {
+    return <AppBootScreen />
   }
 
-  const displayName = session.user?.name || t('user')
+  if (!session) {
+    return null
+  }
 
   const paneTitle =
     pane === 'basic'
@@ -52,11 +50,11 @@ export default function ProfilePage() {
         : ta('providerPool')
 
   return (
-    <div className="glass-page min-h-dvh">
+    <div className="glass-page min-h-dvh" data-page="profile">
       <Navbar />
       <SecondarySidebar
-        title={t('personalAccount')}
-        description={displayName}
+        title={tn('railSettings')}
+        description={t('basicSettingsDesc')}
         items={[
           {
             id: 'basic',
@@ -80,16 +78,6 @@ export default function ProfilePage() {
             onClick: () => setPane('providers'),
           },
         ]}
-        footer={(
-          <button
-            type="button"
-            onClick={() => signOut({ callbackUrl: '/' })}
-            className="glass-btn-base glass-btn-ghost flex w-full items-center justify-center gap-2 px-3 py-2 text-sm text-[var(--glass-tone-danger-fg)]"
-          >
-            <AppIcon name="logout" className="h-4 w-4" />
-            {t('logout')}
-          </button>
-        )}
       />
 
       <main

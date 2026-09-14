@@ -3,7 +3,7 @@
 import { useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import type { NovelPromotionStoryboard } from '@/types/project'
-import { queryKeys } from '@/lib/query/keys'
+import { setEpisodeQueryData } from '@/lib/query/episode-data-cache'
 
 type EpisodeDataCache = Record<string, unknown> & {
   storyboards?: NovelPromotionStoryboard[]
@@ -26,7 +26,7 @@ export function usePanelEpisodeCachePatch({
 
   return useCallback((panelId: string, updates: Record<string, unknown>) => {
     if (!episodeId) return
-    queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), (previous: unknown) => {
+    setEpisodeQueryData(queryClient, projectId, episodeId, (previous: unknown) => {
       if (!isEpisodeDataCache(previous) || !Array.isArray(previous.storyboards)) return previous
 
       let changed = false

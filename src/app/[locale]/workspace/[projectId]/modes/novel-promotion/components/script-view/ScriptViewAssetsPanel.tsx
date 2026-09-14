@@ -461,7 +461,7 @@ export default function ScriptViewAssetsPanel({
         </div>
       </div>
 
-      <div className="relative z-10 flex-1 min-h-0 glass-surface-modal overflow-hidden p-3 pr-2">
+      <div className="relative z-10 flex-1 min-h-0 overflow-hidden rounded-[var(--glass-radius-panel)] bg-[var(--film-well-bg)] p-3 pr-2">
         <div className="flex h-full flex-col gap-5 overflow-y-auto pr-1 app-scrollbar">
           {assetsLoading && characters.length === 0 && locations.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-[var(--glass-text-tertiary)] animate-pulse">
@@ -472,7 +472,7 @@ export default function ScriptViewAssetsPanel({
           <div className="relative">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-sm font-medium text-[var(--glass-text-secondary)] flex items-center gap-2">
-                {tScript('asset.activeCharacters')} ({characters.filter((c) => activeCharIds.includes(c.id)).reduce((sum, char) => sum + getSelectedAppearances(char).length, 0)})
+                {tScript('asset.activeCharacters')} ({activeCharIds.filter((id) => characters.some((c) => c.id === id)).length})
               </h3>
               <button
                 ref={charEditorTriggerRef}
@@ -863,7 +863,7 @@ export default function ScriptViewAssetsPanel({
         </div>
       </div>
 
-      <div className="mt-4 mb-4">
+      <div className="mt-auto shrink-0 pt-1">
         {!allAssetsHaveImages && globalCharIds.length + globalLocationIds.length + globalPropIds.length > 0 && (
           <div className="mb-3 p-4 bg-[var(--glass-bg-surface)] border border-[var(--glass-stroke-base)] rounded-2xl shadow-sm">
             <p className="text-sm font-medium text-[var(--glass-text-primary)]">{tScript('generate.missingAssets', { count: missingAssetsCount })}</p>

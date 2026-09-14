@@ -639,6 +639,8 @@ model GlobalAssetFolder {
   id        String   @id @default(uuid())
   userId    String
   name      String
+  /// character | location | voice | sfx；null 表示旧数据，各类下可见
+  kind      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -648,6 +650,7 @@ model GlobalAssetFolder {
   voices     GlobalVoice[]
 
   @@index([userId])
+  @@index([userId, kind])
   @@map("global_asset_folders")
 }
 

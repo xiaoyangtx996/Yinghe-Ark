@@ -21,6 +21,7 @@ interface UseWorkspaceAutoRunParams {
   runWithRebuildConfirm: (
     action: 'storyToScript' | 'scriptToStoryboard',
     operation: () => Promise<void>,
+    options?: { forceConfirm?: boolean; clipCount?: number },
   ) => Promise<void>
   runStoryToScriptFlow: () => Promise<void>
 }

@@ -29,6 +29,7 @@ export {
     type GlobalProp,
     type GlobalVoice,
     type GlobalFolder,
+    type GlobalFolderKind,
 } from './useGlobalAssets'
 export {
     useGenerateCharacterImage,
@@ -222,11 +223,17 @@ export {
 // 项目数据
 export {
     useProjectData,
+    prefetchProjectData,
+    fetchProjectData,
     useRefreshProjectData,
+    useEpisodeIndex,
+    prefetchEpisodeIndex,
+    fetchEpisodeIndex,
     useEpisodeData,
     useEpisodes,
     useRefreshEpisodeData,
     useRefreshAll,
+    fetchEpisodeData,
     type Episode,
 } from './useProjectData'
 

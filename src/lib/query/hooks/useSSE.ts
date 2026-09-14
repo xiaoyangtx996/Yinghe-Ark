@@ -85,10 +85,12 @@ export function useSSE({ projectId, episodeId, enabled = true, onEvent }: UseSSE
       if (targetType === 'NovelPromotionEpisode') {
         invalidateEpisodeScoped(resolvedEpisodeId)
         queryClient.invalidateQueries({ queryKey: queryKeys.projectData(projectId) })
+        queryClient.invalidateQueries({ queryKey: queryKeys.episodeIndex(projectId) })
         return
       }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.projectData(projectId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.episodeIndex(projectId) })
     }
 
     const handleEvent = (event: MessageEvent) => {

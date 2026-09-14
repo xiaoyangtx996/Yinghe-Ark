@@ -4,8 +4,10 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
 } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -36,19 +38,42 @@ const WorkspaceContext = createContext<WorkspaceContextValue | null>(null)
 export function WorkspaceProvider({ projectId, episodeId, children }: WorkspaceProviderProps) {
   const queryClient = useQueryClient()
   const listenersRef = useRef(new Set<TaskEventListener>())
+  const [sseEnabled, setSseEnabled] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    const enable = () => {
+      if (!cancelled) setSseEnabled(true)
+    }
+    // Prefer idle so shell APIs / first paint win; fall back to a short timeout.
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(enable, { timeout: 1200 })
+      return () => {
+        cancelled = true
+        window.cancelIdleCallback(id)
+      }
+    }
+    const timer = window.setTimeout(enable, 400)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [projectId])
 
   const refreshData = useCallback(async (scope?: RefreshScope) => {
     const promises: Promise<unknown>[] = []
 
+    // scope=assets → 只刷资产；勿连带 episode（stage 挂载暖启动会走这条路径）
     if (!scope || scope === 'all' || scope === 'project') {
       promises.push(queryClient.refetchQueries({ queryKey: queryKeys.projectData(projectId) }))
+      promises.push(queryClient.refetchQueries({ queryKey: queryKeys.episodeIndex(projectId) }))
     }
 
     if (!scope || scope === 'all' || scope === 'assets') {
       promises.push(queryClient.refetchQueries({ queryKey: queryKeys.projectAssets.all(projectId) }))
     }
 
-    if (episodeId) {
+    if (episodeId && (!scope || scope === 'all' || scope === 'project')) {
       promises.push(queryClient.refetchQueries({ queryKey: queryKeys.episodeData(projectId, episodeId) }))
       promises.push(queryClient.refetchQueries({ queryKey: queryKeys.storyboards.all(episodeId) }))
       promises.push(queryClient.refetchQueries({ queryKey: queryKeys.voiceLines.all(episodeId) }))
@@ -77,7 +102,8 @@ export function WorkspaceProvider({ projectId, episodeId, children }: WorkspaceP
   useSSE({
     projectId,
     episodeId,
-    enabled: !!projectId,
+    // Defer EventSource until after first paint so cold workspace entry isn't competing with shell APIs.
+    enabled: !!projectId && sseEnabled,
     onEvent: handleTaskEvent,
   })
 

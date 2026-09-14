@@ -3,6 +3,7 @@
         "title": "Pre-video self-check",
         "subtitle": "Check items you verified — hints never block video generation",
         "progress": "{checked}/{total}",
+        "open": "Open checklist",
         "collapse": "Collapse",
         "expand": "Expand",
         "empty": "Self-check appears after storyboards are generated",

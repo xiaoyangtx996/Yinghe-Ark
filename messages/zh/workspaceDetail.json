@@ -6,6 +6,8 @@
   "refreshFailed": "刷新失败",
   "projectNotFound": "项目不存在",
   "backToWorkspace": "返回工作区",
+  "exitToProjects": "退出",
+  "exitToProjectsHint": "返回项目管理",
   "episode": "剧集",
   "modelSetup": {
     "title": "开始创作前，请先配置默认模型",
@@ -24,14 +26,17 @@
     "dragToMove": "拖动调整位置",
     "listTitle": "剧集列表",
     "episodeCount": "{count}集",
-    "empty": "暂无剧集，点击下方创建",
+    "empty": "导入小说文件按章节分集，或点「+」直接添加一集",
     "save": "保存",
     "deleteConfirm": "确定删除「{name}」？",
     "delete": "删除",
     "cancel": "取消",
     "rename": "重命名",
+    "moreActions": "更多操作",
     "newEpisodePlaceholder": "输入剧集名称...",
     "create": "创建",
-    "addEpisode": "添加剧集"
+    "addEpisode": "添加剧集",
+    "searchPlaceholder": "搜索集数或标题…",
+    "searchEmpty": "没有匹配的剧集"
   }
 }

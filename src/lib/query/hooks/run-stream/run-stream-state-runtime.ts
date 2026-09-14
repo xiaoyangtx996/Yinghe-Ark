@@ -27,6 +27,7 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
     endpoint,
     storageKeyPrefix,
     storageScopeKey,
+    recoveryEnabled = true,
     buildRequestBody,
     validateParams,
     resolveActiveRunId,
@@ -39,6 +40,8 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
   const abortRef = useRef<AbortController | null>(null)
   const finalResultRef = useRef<RunResult | null>(null)
   const resolveActiveRunIdRef = useRef(resolveActiveRunId)
+  const recoveredAfterSeqRef = useRef(0)
+  const retryInFlightRef = useRef<Set<string>>(new Set())
   const storageKey = useMemo(() => {
     if (storageScopeKey) {
       return `${storageKeyPrefix}:${projectId}:${storageScopeKey}`
@@ -59,7 +62,7 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
   }, [resolveActiveRunId])
 
   useEffect(() => {
-    if (!projectId || !resolveActiveRunIdRef.current) return
+    if (!recoveryEnabled || !projectId || !resolveActiveRunIdRef.current) return
 
     if (runStateRef.current) return
 
@@ -89,10 +92,11 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
             selectedStepId: null,
           }
         })
+        recoveredAfterSeqRef.current = 0
         setIsRecoveredRunning(true)
       },
     })
-  }, [projectId, storageKey, storageScopeKey])
+  }, [projectId, recoveryEnabled, storageKey, storageScopeKey])
 
   useEffect(() => {
     if (!projectId || !isRecoveredRunning || isLiveRunning) return
@@ -101,6 +105,7 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
 
     return subscribeRecoveredRun({
       runId,
+      afterSeq: recoveredAfterSeqRef.current,
       taskStreamTimeoutMs: TASK_STREAM_TIMEOUT_MS,
       applyAndCapture: applyEvent,
       onSettled: () => {
@@ -136,6 +141,7 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
 
       abortRef.current?.abort()
       setIsRecoveredRunning(false)
+      recoveredAfterSeqRef.current = 0
       setIsLiveRunning(true)
       const controller = new AbortController()
       abortRef.current = controller
@@ -180,41 +186,185 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
     if (!stepId) {
       throw new Error('stepId is required')
     }
-
-    const response = await apiFetch(
-      `/api/runs/${runId}/steps/${encodeURIComponent(stepId)}/retry`,
-      {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          modelOverride: params.modelOverride || undefined,
-          reason: params.reason || undefined,
-        }),
-      },
-    )
-    const payload = await response.json().catch(() => null)
-    if (!response.ok) {
-      const errorMessage =
-        payload && typeof payload === 'object' && typeof (payload as { error?: { message?: unknown } }).error?.message === 'string'
-          ? (payload as { error: { message: string } }).error.message
-          : 'retry step failed'
-      throw new Error(errorMessage)
+    if (retryInFlightRef.current.has(stepId)) {
+      return {
+        runId,
+        status: 'running',
+        summary: null,
+        payload: null,
+        errorMessage: '',
+      }
     }
+    retryInFlightRef.current.add(stepId)
 
-    applyEvent({
-      runId,
-      event: 'run.start',
-      ts: new Date().toISOString(),
-      status: 'running',
-      message: 'retrying failed step',
-    })
-    setIsRecoveredRunning(true)
-    return {
-      runId,
-      status: 'running',
-      summary: null,
-      payload: payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : null,
-      errorMessage: '',
+    try {
+      const response = await apiFetch(
+        `/api/runs/${runId}/steps/${encodeURIComponent(stepId)}/retry`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            modelOverride: params.modelOverride || undefined,
+            reason: params.reason || undefined,
+          }),
+        },
+      )
+      const payload = await response.json().catch(() => null)
+      if (!response.ok) {
+        const detailsCode =
+          payload
+          && typeof payload === 'object'
+          && typeof (payload as { error?: { details?: { code?: unknown } } }).error?.details?.code === 'string'
+            ? (payload as { error: { details: { code: string } } }).error.details.code
+            : ''
+        // Step already left FAILED (e.g. prior retry accepted) — treat as soft success.
+        if (detailsCode === 'RUN_STEP_RETRY_ONLY_FAILED') {
+          try {
+            const snapshotResponse = await apiFetch(`/api/runs/${runId}`, {
+              method: 'GET',
+              cache: 'no-store',
+            })
+            if (snapshotResponse.ok) {
+              const snapshot = await snapshotResponse.json().catch(() => null)
+              const run =
+                snapshot
+                && typeof snapshot === 'object'
+                && snapshot !== null
+                  ? (snapshot as { run?: { lastSeq?: unknown; status?: unknown; errorMessage?: unknown; output?: unknown } }).run
+                  : undefined
+              const lastSeq =
+                typeof run?.lastSeq === 'number'
+                  ? Math.max(0, Math.floor(run.lastSeq))
+                  : 0
+              recoveredAfterSeqRef.current = lastSeq
+              const remoteStatus = typeof run?.status === 'string' ? run.status : ''
+              if (remoteStatus === 'completed') {
+                applyEvent({
+                  runId,
+                  event: 'run.complete',
+                  ts: new Date().toISOString(),
+                  status: 'completed',
+                  payload: run?.output && typeof run.output === 'object'
+                    ? (run.output as Record<string, unknown>)
+                    : null,
+                })
+                setIsRecoveredRunning(false)
+                return {
+                  runId,
+                  status: 'completed',
+                  summary: null,
+                  payload: null,
+                  errorMessage: '',
+                }
+              }
+              if (remoteStatus === 'failed' || remoteStatus === 'canceled') {
+                applyEvent({
+                  runId,
+                  event: 'run.error',
+                  ts: new Date().toISOString(),
+                  status: 'failed',
+                  message: typeof run?.errorMessage === 'string' ? run.errorMessage : `run ${remoteStatus}`,
+                })
+                setIsRecoveredRunning(false)
+                return {
+                  runId,
+                  status: 'failed',
+                  summary: null,
+                  payload: null,
+                  errorMessage: typeof run?.errorMessage === 'string' ? run.errorMessage : `run ${remoteStatus}`,
+                }
+              }
+            }
+          } catch {
+            // Fall through to reopen + recover.
+          }
+          applyEvent({
+            runId,
+            event: 'run.start',
+            ts: new Date().toISOString(),
+            status: 'running',
+            message: 'retry already in progress',
+          })
+          setIsRecoveredRunning(true)
+          return {
+            runId,
+            status: 'running',
+            summary: null,
+            payload: payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : null,
+            errorMessage: '',
+          }
+        }
+        const errorMessage =
+          payload && typeof payload === 'object' && typeof (payload as { error?: { message?: unknown } }).error?.message === 'string'
+            ? (payload as { error: { message: string } }).error.message
+            : 'retry step failed'
+        throw new Error(errorMessage)
+      }
+
+      const retryAttemptRaw =
+        payload
+        && typeof payload === 'object'
+        && typeof (payload as { retryAttempt?: unknown }).retryAttempt === 'number'
+          ? (payload as { retryAttempt: number }).retryAttempt
+          : NaN
+      const retryAttempt = Number.isFinite(retryAttemptRaw)
+        ? Math.max(1, Math.floor(retryAttemptRaw))
+        : Math.max(
+          1,
+          (runStateRef.current?.stepsById[stepId]?.attempt || 1) + 1,
+        )
+
+      // Skip historical terminal events so recovery does not settle on the prior run.error.
+      try {
+        const snapshotResponse = await apiFetch(`/api/runs/${runId}`, {
+          method: 'GET',
+          cache: 'no-store',
+        })
+        if (snapshotResponse.ok) {
+          const snapshot = await snapshotResponse.json().catch(() => null)
+          const lastSeq =
+            snapshot
+            && typeof snapshot === 'object'
+            && snapshot !== null
+            && typeof (snapshot as { run?: { lastSeq?: unknown } }).run?.lastSeq === 'number'
+              ? Math.max(0, Math.floor((snapshot as { run: { lastSeq: number } }).run.lastSeq))
+              : 0
+          recoveredAfterSeqRef.current = lastSeq
+        }
+      } catch {
+        // Keep prior afterSeq; best-effort.
+      }
+
+      const existingStep = runStateRef.current?.stepsById[stepId]
+      applyEvent({
+        runId,
+        event: 'run.start',
+        ts: new Date().toISOString(),
+        status: 'running',
+        message: 'retrying failed step',
+      })
+      applyEvent({
+        runId,
+        event: 'step.start',
+        ts: new Date().toISOString(),
+        status: 'running',
+        stepId,
+        stepAttempt: retryAttempt,
+        stepTitle: existingStep?.title,
+        stepIndex: existingStep?.stepIndex,
+        stepTotal: existingStep?.stepTotal,
+        message: 'retrying failed step',
+      })
+      setIsRecoveredRunning(true)
+      return {
+        runId,
+        status: 'running',
+        summary: null,
+        payload: payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : null,
+        errorMessage: '',
+      }
+    } finally {
+      retryInFlightRef.current.delete(stepId)
     }
   }, [applyEvent])
 
@@ -241,6 +391,8 @@ export function useRunStreamState<TParams extends Record<string, unknown>>(
     stop()
     setRunState(null)
     finalResultRef.current = null
+    recoveredAfterSeqRef.current = 0
+    retryInFlightRef.current.clear()
     setIsRecoveredRunning(false)
   }, [stop])
 

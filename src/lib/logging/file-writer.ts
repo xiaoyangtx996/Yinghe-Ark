@@ -435,6 +435,208 @@ export async function readLogFile(
         return null
     }
 }
+
+export type AuditLogKind = 'login' | 'operation'
+
+export interface AuditLogEventRow {
+    id: string
+    ts: string
+    level: string
+    module: string
+    action: string
+    message: string
+    userId: string | null
+    username: string | null
+    projectId: string | null
+    success: boolean | null
+    source: string
+}
+
+const AUTH_ACTIONS = new Set(['LOGIN', 'REGISTER', 'CHANGE_PASSWORD', 'LOGOUT'])
+
+function isLoginEvent(event: {
+    module?: string
+    action?: string
+}): boolean {
+    if (event.module === 'auth') return true
+    return Boolean(event.action && AUTH_ACTIONS.has(event.action))
+}
+
+function isOperationEvent(event: {
+    audit?: boolean
+    module?: string
+    action?: string
+}): boolean {
+    if (isLoginEvent(event)) return false
+    if (event.audit) return true
+    if (event.module === 'user') return true
+    return false
+}
+
+type ParsedAuditCandidate = AuditLogEventRow & { audit?: boolean }
+
+function parseAuditLine(line: string, source: string, index: number): ParsedAuditCandidate | null {
+    const trimmed = line.trim()
+    if (!trimmed.startsWith('{')) return null
+    try {
+        const parsed = JSON.parse(trimmed) as {
+            ts?: string
+            level?: string
+            module?: string
+            action?: string
+            message?: string
+            userId?: string
+            audit?: boolean
+            projectId?: string
+            details?: Record<string, unknown> | unknown[] | null
+        }
+        const details =
+            parsed.details && typeof parsed.details === 'object' && !Array.isArray(parsed.details)
+                ? parsed.details
+                : null
+        const username =
+            typeof details?.username === 'string'
+                ? details.username
+                : typeof parsed.message === 'string' && parsed.module === 'auth'
+                    ? parsed.message
+                    : null
+        const success =
+            typeof details?.success === 'boolean'
+                ? details.success
+                : details && 'error' in details
+                    ? false
+                    : null
+
+        return {
+            id: `${source}:${index}:${parsed.ts || ''}`,
+            ts: typeof parsed.ts === 'string' ? parsed.ts : '',
+            level: typeof parsed.level === 'string' ? parsed.level : 'INFO',
+            module: typeof parsed.module === 'string' ? parsed.module : '',
+            action: typeof parsed.action === 'string' ? parsed.action : '',
+            message: typeof parsed.message === 'string' ? parsed.message : '',
+            userId:
+                typeof parsed.userId === 'string'
+                    ? parsed.userId
+                    : typeof details?.userId === 'string'
+                        ? details.userId
+                        : null,
+            username,
+            projectId: typeof parsed.projectId === 'string' ? parsed.projectId : null,
+            success,
+            source,
+            audit: parsed.audit,
+        }
+    } catch {
+        return null
+    }
+}
+
+/**
+ * Query recent login / operation audit events from log files (newest first).
+ */
+export async function queryAuditLogEvents(options: {
+    kind: AuditLogKind
+    limit?: number
+}): Promise<{ events: AuditLogEventRow[]; totalMatched: number }> {
+    if (isEdgeOrBrowser()) return { events: [], totalMatched: 0 }
+    const modules = await getNodeModules()
+    if (!modules) return { events: [], totalMatched: 0 }
+
+    const limit = Math.min(Math.max(options.limit ?? 100, 1), 500)
+    const logsDir = modules.path.join(modules.cwd, 'logs')
+    const matched: AuditLogEventRow[] = []
+
+    try {
+        const files = modules.fs.readdirSync(logsDir)
+            .filter((f: string) => f.endsWith('.log'))
+            .sort((a: string, b: string) => {
+                // Prefer global app.log first, then admin_*, then others
+                const rank = (name: string) => {
+                    if (name === 'app.log') return 0
+                    if (name.startsWith('admin_')) return 1
+                    return 2
+                }
+                return rank(a) - rank(b) || a.localeCompare(b)
+            })
+
+        // Login events only live in app.log (auth has no projectId); skip Internal_* forever.
+        const scanFiles =
+            options.kind === 'login'
+                ? files.filter((f: string) => f === 'app.log')
+                : files.filter((f: string) => f === 'app.log' || f.startsWith('admin_'))
+
+        for (const fileName of scanFiles) {
+            if (matched.length >= limit * 3) break
+            const filePath = modules.path.join(logsDir, fileName)
+            let content: string
+            try {
+                const stat = modules.fs.statSync(filePath)
+                const maxBytes = 2 * 1024 * 1024
+                if (stat.size <= maxBytes) {
+                    content = modules.fs.readFileSync(filePath, 'utf-8')
+                } else {
+                    const fd = modules.fs.openSync(filePath, 'r')
+                    try {
+                        const buffer = Buffer.alloc(maxBytes)
+                        modules.fs.readSync(fd, buffer, 0, maxBytes, Math.max(0, stat.size - maxBytes))
+                        content = buffer.toString('utf-8')
+                    } finally {
+                        modules.fs.closeSync(fd)
+                    }
+                }
+            } catch {
+                continue
+            }
+
+            const lines = content.split('\n')
+            for (let i = lines.length - 1; i >= 0; i -= 1) {
+                const row = parseAuditLine(lines[i] || '', fileName, i)
+                if (!row) continue
+                const probe = {
+                    audit: row.audit,
+                    module: row.module,
+                    action: row.action,
+                }
+                const ok =
+                    options.kind === 'login' ? isLoginEvent(probe) : isOperationEvent(probe)
+                if (!ok) continue
+                const clean: AuditLogEventRow = {
+                    id: row.id,
+                    ts: row.ts,
+                    level: row.level,
+                    module: row.module,
+                    action: row.action,
+                    message: row.message,
+                    userId: row.userId,
+                    username: row.username,
+                    projectId: row.projectId,
+                    success: row.success,
+                    source: row.source,
+                }
+                matched.push(clean)
+            }
+        }
+    } catch {
+        return { events: [], totalMatched: 0 }
+    }
+
+    matched.sort((a, b) => b.ts.localeCompare(a.ts))
+    // Dedupe identical events that appear in both app.log and project logs
+    const seen = new Set<string>()
+    const deduped: AuditLogEventRow[] = []
+    for (const event of matched) {
+        const key = `${event.ts}|${event.module}|${event.action}|${event.message}|${event.userId || ''}`
+        if (seen.has(key)) continue
+        seen.add(key)
+        deduped.push(event)
+    }
+
+    return {
+        events: deduped.slice(0, limit),
+        totalMatched: deduped.length,
+    }
+}
+
 /**
  * 清理所有项目日志文件中 24 小时前的内容。
  * 供 watchdog 定期调用（建议每小时一次）。

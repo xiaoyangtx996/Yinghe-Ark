@@ -2,8 +2,7 @@
 
 import { useRunStreamState, type RunResult } from './useRunStreamState'
 import { TASK_TYPE } from '@/lib/task/types'
-import { apiFetch } from '@/lib/api-fetch'
-import { selectRecoverableRun } from '@/lib/run-runtime/recovery'
+import { resolveActiveRunIdForWorkflow } from './run-stream/resolve-active-run'
 
 export type StoryToScriptRunParams = {
   episodeId: string
@@ -19,56 +18,26 @@ export type StoryToScriptRunResult = RunResult
 type UseStoryToScriptRunStreamOptions = {
   projectId: string
   episodeId?: string | null
+  recoveryEnabled?: boolean
 }
 
-export function useStoryToScriptRunStream({ projectId, episodeId }: UseStoryToScriptRunStreamOptions) {
+export function useStoryToScriptRunStream({
+  projectId,
+  episodeId,
+  recoveryEnabled = true,
+}: UseStoryToScriptRunStreamOptions) {
   return useRunStreamState<StoryToScriptRunParams>({
     projectId,
     endpoint: (pid) => `/api/novel-promotion/${pid}/story-to-script-stream`,
     storageKeyPrefix: 'novel-promotion:story-to-script-run',
     storageScopeKey: episodeId || undefined,
-    resolveActiveRunId: async ({ projectId: pid, storageScopeKey }) => {
-      if (!storageScopeKey) return null
-      const search = new URLSearchParams({
+    recoveryEnabled,
+    resolveActiveRunId: ({ projectId: pid, storageScopeKey }) =>
+      resolveActiveRunIdForWorkflow({
         projectId: pid,
+        storageScopeKey,
         workflowType: TASK_TYPE.STORY_TO_SCRIPT_RUN,
-        targetType: 'NovelPromotionEpisode',
-        targetId: storageScopeKey,
-        episodeId: storageScopeKey,
-        limit: '20',
-      })
-      search.append('status', 'queued')
-      search.append('status', 'running')
-      search.append('status', 'canceling')
-      search.set('_v', '2')
-      const response = await apiFetch(`/api/runs?${search.toString()}`, {
-        method: 'GET',
-        cache: 'no-store',
-      })
-      if (!response.ok) return null
-      const data = await response.json().catch(() => null)
-      const runs = data && typeof data === 'object' && Array.isArray((data as { runs?: unknown[] }).runs)
-        ? (data as {
-          runs: Array<{
-            id?: unknown
-            status?: unknown
-            createdAt?: unknown
-            updatedAt?: unknown
-            leaseExpiresAt?: unknown
-            heartbeatAt?: unknown
-          }>
-        }).runs
-        : []
-      const decision = selectRecoverableRun(runs.map((run) => ({
-        id: typeof run?.id === 'string' ? run.id : null,
-        status: typeof run?.status === 'string' ? run.status : null,
-        createdAt: typeof run?.createdAt === 'string' ? run.createdAt : null,
-        updatedAt: typeof run?.updatedAt === 'string' ? run.updatedAt : null,
-        leaseExpiresAt: typeof run?.leaseExpiresAt === 'string' ? run.leaseExpiresAt : null,
-        heartbeatAt: typeof run?.heartbeatAt === 'string' ? run.heartbeatAt : null,
-      })))
-      return decision.runId
-    },
+      }),
     validateParams: (params) => {
       if (!params.episodeId) {
         throw new Error('episodeId is required')

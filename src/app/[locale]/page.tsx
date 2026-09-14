@@ -13,7 +13,7 @@ function isSupportedLocale(value: string): value is SupportedLocale {
 
 /**
  * Marketing root (`/{locale}`).
- * Logged-in users are redirected server-side to `/home` so QA/product never
+ * Logged-in users are redirected server-side to `/workspace` so QA/product never
  * confuses the marketing landing with the creator shell.
  */
 export default async function LandingPage({

@@ -18,6 +18,8 @@ interface ProjectSnapshotInput {
   projectData: unknown
   projectCharacters: unknown[]
   projectLocations: unknown[]
+  characterCount: number
+  locationCount: number
   globalAssetText: string
   novelText: string
   analysisModel: string | undefined
@@ -80,7 +82,11 @@ interface BuildWorkspaceControllerViewModelParams {
     rebuildConfirmTitle: string
     rebuildConfirmMessage: string
     pendingActionType: 'storyToScript' | 'scriptToStoryboard' | null
-    runWithRebuildConfirm: (action: 'storyToScript' | 'scriptToStoryboard', operation: () => Promise<void>) => Promise<void>
+    runWithRebuildConfirm: (
+      action: 'storyToScript' | 'scriptToStoryboard',
+      operation: () => Promise<void>,
+      options?: { forceConfirm?: boolean; clipCount?: number },
+    ) => Promise<void>
     handleCancelRebuildConfirm: () => void
     handleAcceptRebuildConfirm: () => void
   }
@@ -102,6 +108,8 @@ interface BuildWorkspaceControllerViewModelParams {
     handleAnalyzeAssets: () => Promise<void>
     runStoryToScriptFlow: () => Promise<void>
     runScriptToStoryboardFlow: () => Promise<void>
+    continueAfterStoryToScript: () => Promise<void>
+    continueAfterScriptToStoryboard: () => Promise<void>
     showCreatingToast: boolean
     videoRunning: boolean
     voiceRunning: boolean

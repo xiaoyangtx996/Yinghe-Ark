@@ -216,7 +216,7 @@ export default function ClipEventGraph({
   if (nodes.length === 0) return null
 
   return (
-    <div className="space-y-3 rounded-[var(--glass-radius-md)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface)] p-3">
+    <div className="space-y-3 rounded-[var(--glass-radius-panel)] bg-[var(--film-well-bg)] p-3">
       <div className="flex flex-wrap items-center gap-2 px-1">
         <AppIcon name="idea" className="h-3.5 w-3.5 text-[var(--film-gold)]" />
         <p className="text-xs font-medium text-[var(--glass-text-secondary)]">

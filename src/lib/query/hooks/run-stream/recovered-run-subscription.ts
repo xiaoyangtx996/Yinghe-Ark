@@ -50,6 +50,8 @@ async function reconcileRunTerminalState(runId: string): Promise<{
 type SubscribeRecoveredRunArgs = {
   runId: string
   taskStreamTimeoutMs: number
+  /** Skip historical events (e.g. after a step retry so old run.error does not settle early). */
+  afterSeq?: number
   applyAndCapture: (event: RunStreamEvent) => void
   onSettled: () => void
 }
@@ -59,7 +61,7 @@ type Cleanup = () => void
 export function subscribeRecoveredRun(args: SubscribeRecoveredRunArgs): Cleanup {
   let settled = false
   let polling = false
-  let afterSeq = 0
+  let afterSeq = Math.max(0, Math.floor(args.afterSeq ?? 0))
   let emptyPollCount = 0
   let idleTimeoutTimer: ReturnType<typeof setTimeout> | null = null
   let pollTimer: ReturnType<typeof setInterval> | null = null

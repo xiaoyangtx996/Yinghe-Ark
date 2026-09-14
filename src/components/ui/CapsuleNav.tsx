@@ -22,6 +22,8 @@ interface CapsuleNavProps {
     onItemClick: (id: string) => void
     projectId?: string  // 用于构建链接
     episodeId?: string  // 用于构建链接
+    /** inline | fixed | rail (vertical stage list beside content) */
+    placement?: 'inline' | 'fixed' | 'rail'
 }
 
 /**
@@ -37,6 +39,7 @@ function NavItem({
     disabled,
     disabledLabel,
     index,
+    orientation = 'horizontal',
 }: {
     active: boolean
     onClick: () => void
@@ -46,6 +49,7 @@ function NavItem({
     disabled?: boolean
     disabledLabel?: string
     index: number
+    orientation?: 'horizontal' | 'vertical'
 }) {
     const handleClick = (e: React.MouseEvent) => {
         if (disabled) return
@@ -67,7 +71,7 @@ function NavItem({
     }
 
     return (
-        <div className="relative group min-w-[5.5rem] flex-shrink-0">
+        <div className={`relative group flex-shrink-0 ${orientation === 'vertical' ? 'w-full min-w-0' : 'min-w-[5.5rem]'}`}>
             <button
                 onClick={handleClick}
                 onAuxClick={handleAuxClick}
@@ -83,7 +87,7 @@ function NavItem({
                 <span className={`film-stages__t ${disabled ? 'opacity-70' : ''}`}>{label}</span>
             </button>
             {disabled && disabledLabel && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                <div className={`absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${orientation === 'vertical' ? 'left-full top-1/2 ml-2 -translate-y-1/2' : 'left-1/2 top-full mt-2 -translate-x-1/2'}`}>
                     <div className="glass-surface-soft text-[length:var(--glass-font-size-caption)] px-3 py-2 whitespace-nowrap text-[var(--glass-text-primary)]">
                         {disabledLabel}
                     </div>
@@ -95,10 +99,17 @@ function NavItem({
 
 
 /**
- * CapsuleNav - 胶囊形态悬浮导航
+ * CapsuleNav - 阶段导航（默认文档流；rail=左侧竖排；fixed=旧悬浮）
  * 支持中键和Ctrl+点击在新标签页打开
  */
-export function CapsuleNav({ items, activeId, onItemClick, projectId, episodeId }: CapsuleNavProps) {
+export function CapsuleNav({
+    items,
+    activeId,
+    onItemClick,
+    projectId,
+    episodeId,
+    placement = 'inline',
+}: CapsuleNavProps) {
     // 构建每个导航项的链接地址
     const buildHref = (stageId: string): string | undefined => {
         if (!projectId) return undefined
@@ -110,9 +121,24 @@ export function CapsuleNav({ items, activeId, onItemClick, projectId, episodeId 
         return `/workspace/${projectId}?${params.toString()}`
     }
 
+    const isRail = placement === 'rail'
+    const isFixed = placement === 'fixed'
+
+    const navClass = isFixed
+        ? 'fixed top-[4.75rem] left-1/2 z-40 w-[min(860px,calc(100vw-2rem))] -translate-x-1/2 animate-fadeInDown max-[900px]:left-[calc(var(--app-rail-width)+0.75rem)] max-[900px]:right-3 max-[900px]:w-auto max-[900px]:translate-x-0 max-[900px]:top-[7.25rem]'
+        : 'relative z-10 w-full min-w-0'
+
+    const stagesClass = [
+        'film-stages w-full',
+        isRail ? 'film-stages--rail max-w-none' : '',
+        placement === 'inline' ? 'max-w-none' : '',
+    ]
+        .filter(Boolean)
+        .join(' ')
+
     return (
-        <nav className="fixed top-[4.75rem] left-1/2 z-40 w-[min(860px,calc(100vw-2rem))] -translate-x-1/2 animate-fadeInDown max-[900px]:left-[calc(var(--app-rail-width)+0.75rem)] max-[900px]:right-3 max-[900px]:w-auto max-[900px]:translate-x-0 max-[900px]:top-[7.25rem]">
-            <div className="film-stages w-full">
+        <nav className={navClass} data-placement={placement}>
+            <div className={stagesClass}>
                 {items.map((item, index) => (
                     <NavItem
                         key={item.id}
@@ -124,6 +150,7 @@ export function CapsuleNav({ items, activeId, onItemClick, projectId, episodeId 
                         disabled={item.disabled}
                         disabledLabel={item.disabledLabel}
                         index={index}
+                        orientation={isRail ? 'vertical' : 'horizontal'}
                     />
                 ))}
             </div>
@@ -153,6 +180,8 @@ interface EpisodeSelectorProps {
     onRename?: (id: string, newName: string) => void
     onDelete?: (id: string) => void
     projectName?: string  // 项目名称，显示在左上角
+    /** inline = document flow (default); fixed = legacy floating overlay */
+    placement?: 'inline' | 'fixed'
 }
 
 export function EpisodeSelector({
@@ -162,7 +191,8 @@ export function EpisodeSelector({
     onAdd,
     onRename,
     onDelete,
-    projectName
+    projectName,
+    placement = 'inline',
 }: EpisodeSelectorProps) {
     const t = useTranslations('common')
     const [isOpen, setIsOpen] = useState(false)
@@ -184,29 +214,34 @@ export function EpisodeSelector({
 
     if (!currentEp) return null
 
+    const rootClass =
+        placement === 'fixed'
+            ? 'fixed top-[4.75rem] left-[calc(var(--app-rail-width)+1.5rem)] z-40'
+            : 'relative z-10 shrink-0'
+
     return (
-        <div className="fixed top-[4.75rem] left-[calc(var(--app-rail-width)+1.5rem)] z-40" ref={menuRef}>
+        <div className={rootClass} data-placement={placement} ref={menuRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="glass-btn-base glass-btn-secondary flex items-center gap-3 px-4 py-3 transition-all group rounded-[var(--glass-radius-sm)]"
+                className="glass-btn-base glass-btn-secondary flex items-center gap-3 px-3.5 py-2 transition-all group rounded-[12px] min-h-[2.75rem]"
             >
-                <div className="flex h-10 w-10 items-center justify-center rounded-[var(--glass-radius-sm)] border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] text-[length:var(--glass-font-size-caption)] font-medium text-[var(--glass-tone-info-fg)]">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-[color-mix(in_srgb,var(--film-gold)_16%,transparent)] text-[12px] font-semibold tracking-[0.04em] text-[var(--film-gold)]">
                     {t('episode')}
                 </div>
-                <div className="flex flex-col items-start text-left mr-2">
-                    <span className="text-[length:var(--glass-font-size-body)] font-medium text-[var(--glass-text-primary)] line-clamp-1 max-w-[160px]">
+                <div className="flex flex-col items-start text-left mr-0.5 gap-0">
+                    <span className="text-[13px] font-semibold tracking-[-0.01em] text-[var(--glass-text-primary)] line-clamp-1 max-w-[200px]">
                         {projectName || t('project')}
                     </span>
-                    <span className="text-[length:var(--glass-font-size-body)] text-[var(--glass-text-secondary)] line-clamp-1 max-w-[160px]">
+                    <span className="text-[12px] leading-snug text-[var(--glass-text-secondary)] line-clamp-1 max-w-[200px]">
                         {currentEp.title}
                     </span>
                 </div>
-                <AppIcon name="chevronDown" className={`w-4 h-4 text-[var(--glass-text-tertiary)] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <AppIcon name="chevronDown" className={`w-4 h-4 text-[var(--glass-text-tertiary)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="glass-surface-modal absolute left-0 top-full mt-2 w-72 origin-top-left p-2 animate-fadeIn">
-                    <div className="max-h-[300px] overflow-y-auto app-scrollbar space-y-1">
+                <div className="glass-surface-modal absolute left-0 top-full mt-2 w-80 origin-top-left p-2 animate-fadeIn rounded-[16px]">
+                    <div className="max-h-[360px] overflow-y-auto app-scrollbar space-y-0.5">
                         {episodes.map(ep => {
                             const statusColor = ep.status?.visual === 'ready'
                                 ? 'bg-[var(--glass-tone-success-fg)]'

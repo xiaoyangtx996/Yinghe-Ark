@@ -7,12 +7,14 @@
   "signup": "Sign Up",
   "logout": "Logout",
   "railHome": "Create",
-  "railBrandHome": "Home",
+  "railBrandHome": "Projects home",
   "railPrimary": "Primary navigation",
   "railProjects": "Projects",
   "railAssets": "Assets",
+  "railFilms": "Films",
   "railLogs": "Logs",
   "railSettings": "Settings",
+  "railAccount": "Account",
   "themeToLight": "Switch to light mode",
   "themeToDark": "Switch to dark mode"
 }

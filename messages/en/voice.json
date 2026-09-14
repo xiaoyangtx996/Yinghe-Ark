@@ -4,6 +4,7 @@
         "title": "Pre-voice self-check",
         "subtitle": "Check items you verified — hints never block generation",
         "progress": "{checked}/{total}",
+        "open": "Open checklist",
         "collapse": "Collapse",
         "expand": "Expand",
         "empty": "Self-check appears once dialogue lines are available",

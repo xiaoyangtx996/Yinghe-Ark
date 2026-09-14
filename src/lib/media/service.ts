@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import { prisma } from '@/lib/prisma'
 import { extractStorageKey } from '@/lib/storage'
 import { stablePublicIdFromStorageKey } from './hash'
@@ -19,10 +20,95 @@ type MediaObjectRow = {
 
 type MediaModel = {
   findUnique: (args: unknown) => Promise<unknown>
+  findMany: (args: unknown) => Promise<unknown>
   upsert: (args: unknown) => Promise<unknown>
 }
 
 const mediaModel = (prisma as unknown as { mediaObject: MediaModel }).mediaObject
+
+/** Request-scoped cache so attachMedia* can reuse identical mediaId/storageKey lookups. */
+const mediaResolveCache = new AsyncLocalStorage<Map<string, Promise<MediaRef | null>>>()
+
+function cachedResolve(key: string, factory: () => Promise<MediaRef | null>): Promise<MediaRef | null> {
+  const store = mediaResolveCache.getStore()
+  if (!store) return factory()
+  const existing = store.get(key)
+  if (existing) return existing
+  const pending = factory()
+  store.set(key, pending)
+  return pending
+}
+
+export function runWithMediaResolveCache<T>(fn: () => Promise<T>): Promise<T> {
+  return mediaResolveCache.run(new Map(), fn)
+}
+
+/**
+ * Seed the request-scoped cache with a single findMany for distinct media ids.
+ * No-ops outside runWithMediaResolveCache. Missing ids are cached as null.
+ * Found rows also seed `key:` and `public:` aliases.
+ */
+export async function prefetchMediaObjectsByIds(ids: Iterable<string>): Promise<void> {
+  const store = mediaResolveCache.getStore()
+  if (!store) return
+
+  const unique: string[] = []
+  const seen = new Set<string>()
+  for (const id of ids) {
+    if (typeof id !== 'string') continue
+    const trimmed = id.trim()
+    if (!trimmed || seen.has(trimmed)) continue
+    seen.add(trimmed)
+    if (!store.has(`id:${trimmed}`)) unique.push(trimmed)
+  }
+  if (unique.length === 0) return
+
+  const rows = (await mediaModel.findMany({
+    where: { id: { in: unique } },
+  })) as MediaObjectRow[]
+  const byId = new Map(rows.map((row) => [row.id, row]))
+
+  for (const id of unique) {
+    const row = byId.get(id)
+    const ref = row ? mapMediaObjectToRef(row) : null
+    store.set(`id:${id}`, Promise.resolve(ref))
+    if (row && ref) {
+      store.set(`key:${row.storageKey}`, Promise.resolve(ref))
+      store.set(`public:${row.publicId}`, Promise.resolve(ref))
+    }
+  }
+}
+
+/**
+ * Seed cache for known storage keys via one findMany.
+ * Missing keys are left unset so ensureMediaObjectFromStorageKey can still upsert.
+ */
+export async function prefetchMediaObjectsByStorageKeys(keys: Iterable<string>): Promise<void> {
+  const store = mediaResolveCache.getStore()
+  if (!store) return
+
+  const unique: string[] = []
+  const seen = new Set<string>()
+  for (const key of keys) {
+    if (typeof key !== 'string') continue
+    const normalized = normalizeStorageKey(key.trim())
+    if (!normalized || seen.has(normalized)) continue
+    seen.add(normalized)
+    if (!store.has(`key:${normalized}`)) unique.push(normalized)
+  }
+  if (unique.length === 0) return
+
+  const rows = (await mediaModel.findMany({
+    where: { storageKey: { in: unique } },
+  })) as MediaObjectRow[]
+
+  for (const row of rows) {
+    const ref = mapMediaObjectToRef(row)
+    store.set(`key:${row.storageKey}`, Promise.resolve(ref))
+    store.set(`id:${row.id}`, Promise.resolve(ref))
+    store.set(`public:${row.publicId}`, Promise.resolve(ref))
+  }
+}
 
 const MIME_BY_EXT: Record<string, string> = {
   '.png': 'image/png',
@@ -91,58 +177,64 @@ export async function ensureMediaObjectFromStorageKey(
 ): Promise<MediaRef> {
   const storageKey = normalizeStorageKey(rawStorageKey)
 
-  const existing = (await mediaModel.findUnique({ where: { storageKey } })) as MediaObjectRow | null
-  if (existing != null) {
-    return mapMediaObjectToRef(existing)
-  }
-
-  const publicId = stablePublicIdFromStorageKey(storageKey)
-  try {
-    const created = (await mediaModel.upsert({
-      where: { publicId },
-      update: {
-        storageKey,
-        mimeType: metadata?.mimeType ?? guessMimeTypeFromStorageKey(storageKey),
-        sizeBytes: metadata?.sizeBytes == null ? undefined : BigInt(metadata.sizeBytes),
-        width: metadata?.width ?? undefined,
-        height: metadata?.height ?? undefined,
-        durationMs: metadata?.durationMs ?? undefined,
-      },
-      create: {
-        publicId,
-        storageKey,
-        mimeType: metadata?.mimeType ?? guessMimeTypeFromStorageKey(storageKey),
-        sizeBytes: metadata?.sizeBytes == null ? null : BigInt(metadata.sizeBytes),
-        width: metadata?.width ?? null,
-        height: metadata?.height ?? null,
-        durationMs: metadata?.durationMs ?? null,
-      },
-    })) as MediaObjectRow
-
-    return mapMediaObjectToRef(created)
-  } catch (error: unknown) {
-    // P2002 = unique constraint violation. Another concurrent request already
-    // created/updated the row.  Re-fetch instead of crashing.
-    const code = (error as { code?: string })?.code
-    if (code === 'P2002') {
-      const fallback = (await mediaModel.findUnique({ where: { publicId } })) as MediaObjectRow | null
-        ?? (await mediaModel.findUnique({ where: { storageKey } })) as MediaObjectRow | null
-      if (fallback) return mapMediaObjectToRef(fallback)
+  return cachedResolve(`key:${storageKey}`, async () => {
+    const existing = (await mediaModel.findUnique({ where: { storageKey } })) as MediaObjectRow | null
+    if (existing != null) {
+      return mapMediaObjectToRef(existing)
     }
-    throw error
-  }
+
+    const publicId = stablePublicIdFromStorageKey(storageKey)
+    try {
+      const created = (await mediaModel.upsert({
+        where: { publicId },
+        update: {
+          storageKey,
+          mimeType: metadata?.mimeType ?? guessMimeTypeFromStorageKey(storageKey),
+          sizeBytes: metadata?.sizeBytes == null ? undefined : BigInt(metadata.sizeBytes),
+          width: metadata?.width ?? undefined,
+          height: metadata?.height ?? undefined,
+          durationMs: metadata?.durationMs ?? undefined,
+        },
+        create: {
+          publicId,
+          storageKey,
+          mimeType: metadata?.mimeType ?? guessMimeTypeFromStorageKey(storageKey),
+          sizeBytes: metadata?.sizeBytes == null ? null : BigInt(metadata.sizeBytes),
+          width: metadata?.width ?? null,
+          height: metadata?.height ?? null,
+          durationMs: metadata?.durationMs ?? null,
+        },
+      })) as MediaObjectRow
+
+      return mapMediaObjectToRef(created)
+    } catch (error: unknown) {
+      // P2002 = unique constraint violation. Another concurrent request already
+      // created/updated the row.  Re-fetch instead of crashing.
+      const code = (error as { code?: string })?.code
+      if (code === 'P2002') {
+        const fallback = (await mediaModel.findUnique({ where: { publicId } })) as MediaObjectRow | null
+          ?? (await mediaModel.findUnique({ where: { storageKey } })) as MediaObjectRow | null
+        if (fallback) return mapMediaObjectToRef(fallback)
+      }
+      throw error
+    }
+  }) as Promise<MediaRef>
 }
 
 export async function getMediaObjectByPublicId(publicId: string) {
-  const row = (await mediaModel.findUnique({ where: { publicId } })) as MediaObjectRow | null
-  if (!row) return null
-  return mapMediaObjectToRef(row)
+  return cachedResolve(`public:${publicId}`, async () => {
+    const row = (await mediaModel.findUnique({ where: { publicId } })) as MediaObjectRow | null
+    if (!row) return null
+    return mapMediaObjectToRef(row)
+  })
 }
 
 export async function getMediaObjectById(id: string) {
-  const row = (await mediaModel.findUnique({ where: { id } })) as MediaObjectRow | null
-  if (!row) return null
-  return mapMediaObjectToRef(row)
+  return cachedResolve(`id:${id}`, async () => {
+    const row = (await mediaModel.findUnique({ where: { id } })) as MediaObjectRow | null
+    if (!row) return null
+    return mapMediaObjectToRef(row)
+  })
 }
 
 /**

@@ -367,4 +367,62 @@ describe('run stream state-machine', () => {
     expect(state?.stepsById['analyze_locations']?.reasoningOutput).toBe('先分析文本')
     expect(state?.stepsById['analyze_locations']?.textOutput).toBe('{"locations":[]}')
   })
+
+  it('reopens failed run/step on retry attempt', () => {
+    const runId = 'run-retry'
+    const state = applySequence([
+      { runId, event: 'run.start', ts: '2026-02-26T23:00:00.000Z', status: 'running' },
+      {
+        runId,
+        event: 'step.start',
+        ts: '2026-02-26T23:00:01.000Z',
+        status: 'running',
+        stepId: 'screenplay_clip_2',
+        stepTitle: 'clip 2',
+        stepIndex: 1,
+        stepTotal: 1,
+        stepAttempt: 1,
+      },
+      {
+        runId,
+        event: 'step.error',
+        ts: '2026-02-26T23:00:02.000Z',
+        status: 'failed',
+        stepId: 'screenplay_clip_2',
+        stepAttempt: 1,
+        message: 'OPENAI_COMPAT_RESPONSES_FAILED: 524',
+      },
+      {
+        runId,
+        event: 'run.error',
+        ts: '2026-02-26T23:00:03.000Z',
+        status: 'failed',
+        message: 'STORY_TO_SCRIPT_PARTIAL_FAILED: 1/5',
+      },
+      {
+        runId,
+        event: 'run.start',
+        ts: '2026-02-26T23:00:04.000Z',
+        status: 'running',
+        message: 'retrying failed step',
+      },
+      {
+        runId,
+        event: 'step.start',
+        ts: '2026-02-26T23:00:05.000Z',
+        status: 'running',
+        stepId: 'screenplay_clip_2',
+        stepTitle: 'clip 2',
+        stepIndex: 1,
+        stepTotal: 1,
+        stepAttempt: 2,
+      },
+    ])
+
+    expect(state?.status).toBe('running')
+    expect(state?.errorMessage).toBe('')
+    expect(state?.stepsById['screenplay_clip_2']?.status).toBe('running')
+    expect(state?.stepsById['screenplay_clip_2']?.attempt).toBe(2)
+    expect(state?.stepsById['screenplay_clip_2']?.errorMessage).toBe('')
+  })
 })

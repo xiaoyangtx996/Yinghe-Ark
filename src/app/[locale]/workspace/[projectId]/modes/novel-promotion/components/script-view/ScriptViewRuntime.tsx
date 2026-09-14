@@ -10,6 +10,11 @@ import { useMoveProjectStoryboardGroup } from '@/lib/query/mutations/storyboard-
 import { useMergeProjectClips } from '@/lib/query/mutations/useEpisodeMutations'
 import { queryKeys } from '@/lib/query/keys'
 import {
+  restoreEpisodeSnapshots,
+  setEpisodeQueryData,
+  snapshotEpisodeQueries,
+} from '@/lib/query/episode-data-cache'
+import {
   applyClipIdOrder,
   resolveAdjacentClipMove,
   resolveClipDragReorder,
@@ -391,15 +396,17 @@ export default function ScriptView({
   const applyOptimisticClipOrder = useCallback(
     (nextOrder: string[]) => {
       if (!episodeId) return null
-      const episodeQueryKey = queryKeys.episodeData(projectId, episodeId)
-      const previousEpisode = queryClient.getQueryData<Record<string, unknown>>(episodeQueryKey)
-      queryClient.setQueryData<Record<string, unknown> | undefined>(episodeQueryKey, (prev) => {
-        if (!prev || !Array.isArray(prev.clips)) return prev
-        const reordered = applyClipIdOrder(prev.clips as Array<{ id: string }>, nextOrder)
+      const previousSnapshots = snapshotEpisodeQueries(queryClient, projectId, episodeId)
+      setEpisodeQueryData(queryClient, projectId, episodeId, (prev) => {
+        if (!prev || typeof prev !== 'object' || !Array.isArray((prev as { clips?: unknown }).clips)) {
+          return prev
+        }
+        const episode = prev as Record<string, unknown> & { clips: Array<{ id: string }> }
+        const reordered = applyClipIdOrder(episode.clips, nextOrder)
         if (!reordered) return prev
-        return { ...prev, clips: reordered }
+        return { ...episode, clips: reordered }
       })
-      return previousEpisode ?? null
+      return previousSnapshots
     },
     [episodeId, projectId, queryClient],
   )
@@ -413,15 +420,15 @@ export default function ScriptView({
     if (!drag) return
 
     setMovingClipId(clipId)
-    const previousEpisode = applyOptimisticClipOrder(drag.nextOrder)
+    const previousSnapshots = applyOptimisticClipOrder(drag.nextOrder)
     try {
       await moveClipMutation.mutateAsync({ episodeId, clipId, direction })
       await queryClient.invalidateQueries({
         queryKey: queryKeys.episodeData(projectId, episodeId),
       })
     } catch (error: unknown) {
-      if (previousEpisode) {
-        queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), previousEpisode)
+      if (previousSnapshots) {
+        restoreEpisodeSnapshots(queryClient, previousSnapshots)
       } else {
         await queryClient.invalidateQueries({
           queryKey: queryKeys.episodeData(projectId, episodeId),
@@ -456,15 +463,15 @@ export default function ScriptView({
     if (!drag) return
 
     setMovingClipId(clipId)
-    const previousEpisode = applyOptimisticClipOrder(drag.nextOrder)
+    const previousSnapshots = applyOptimisticClipOrder(drag.nextOrder)
     try {
       await moveClipMutation.mutateAsync({ episodeId, clipId, overClipId })
       await queryClient.invalidateQueries({
         queryKey: queryKeys.episodeData(projectId, episodeId),
       })
     } catch (error: unknown) {
-      if (previousEpisode) {
-        queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), previousEpisode)
+      if (previousSnapshots) {
+        restoreEpisodeSnapshots(queryClient, previousSnapshots)
       } else {
         await queryClient.invalidateQueries({
           queryKey: queryKeys.episodeData(projectId, episodeId),
@@ -564,7 +571,7 @@ export default function ScriptView({
   const missingAssetsCount = charsWithoutImage.length + locationsWithoutImage.length + propsWithoutImage.length
 
   return (
-    <div className="w-full grid grid-cols-12 gap-4 lg:gap-5 min-h-[400px] lg:h-[calc(100vh-180px)] animate-fadeIn">
+    <div className="grid h-full min-h-0 w-full flex-1 grid-cols-12 grid-rows-[minmax(0,1fr)] gap-4 animate-fadeIn lg:gap-5">
       <ScriptViewScriptPanel
         projectId={projectId}
         episodeId={episodeId}

@@ -1,12 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { replaceBrowserWorkspaceQuery } from '@/lib/workspace/workspace-url-query'
 
 type RefreshOptions = { scope?: string; mode?: string }
-
-interface RouterLike {
-  replace: (href: string, options?: { scroll?: boolean }) => void
-}
 
 interface SearchParamsLike {
   get: (name: string) => string | null
@@ -16,14 +13,18 @@ interface SearchParamsLike {
 interface UseWorkspaceAssetLibraryShellParams {
   currentStage: string
   searchParams: SearchParamsLike | null
-  router: RouterLike
+  /** @deprecated kept for call-site compat; query cleanup uses history.replaceState */
+  router?: unknown
   onRefresh: (options?: RefreshOptions) => Promise<void>
 }
 
+/**
+ * Asset library open/close + URL deep-links.
+ * Stage assets are loaded by useProjectAssets subscribers — do not warm-refetch on every stage entry.
+ */
 export function useWorkspaceAssetLibraryShell({
-  currentStage,
+  currentStage: _currentStage,
   searchParams,
-  router,
   onRefresh,
 }: UseWorkspaceAssetLibraryShellParams) {
   const [isAssetLibraryOpen, setIsAssetLibraryOpen] = useState(false)
@@ -52,18 +53,24 @@ export function useWorkspaceAssetLibraryShell({
   useEffect(() => {
     if (!searchParams) return
 
-    const shouldTriggerGlobalAnalyze = searchParams.get('globalAnalyze') === '1'
-    const shouldOpenAssetLibrary = searchParams.get('assetLibrary') === '1'
-    const focusCharacterId = searchParams.get('focusCharacter')
+    const liveSearch =
+      typeof window !== 'undefined' ? window.location.search : `?${searchParams.toString()}`
+    const liveParams = new URLSearchParams(
+      liveSearch.startsWith('?') ? liveSearch.slice(1) : liveSearch,
+    )
+
+    const shouldTriggerGlobalAnalyze = liveParams.get('globalAnalyze') === '1'
+    const shouldOpenAssetLibrary = liveParams.get('assetLibrary') === '1'
+    const focusCharacterId = liveParams.get('focusCharacter')
 
     if (!shouldTriggerGlobalAnalyze && !shouldOpenAssetLibrary) {
       return
     }
 
-    const newParams = new URLSearchParams(searchParams.toString())
-    if (shouldTriggerGlobalAnalyze) newParams.delete('globalAnalyze')
-    if (shouldOpenAssetLibrary) newParams.delete('assetLibrary')
-    router.replace(`?${newParams.toString()}`, { scroll: false })
+    if (shouldTriggerGlobalAnalyze) liveParams.delete('globalAnalyze')
+    if (shouldOpenAssetLibrary) liveParams.delete('assetLibrary')
+    if (focusCharacterId) liveParams.delete('focusCharacter')
+    replaceBrowserWorkspaceQuery(liveParams)
 
     openAssetLibrary(focusCharacterId)
 
@@ -71,19 +78,7 @@ export function useWorkspaceAssetLibraryShell({
       hasTriggeredGlobalAnalyze.current = true
       setTriggerGlobalAnalyzeOnOpen(true)
     }
-  }, [openAssetLibrary, router, searchParams])
-
-  useEffect(() => {
-    const needsAssets =
-      currentStage === 'script' ||
-      currentStage === 'assets' ||
-      currentStage === 'storyboard' ||
-      currentStage === 'videos'
-
-    if (needsAssets) {
-      onRefresh({ scope: 'assets' })
-    }
-  }, [currentStage, onRefresh])
+  }, [openAssetLibrary, searchParams])
 
   return {
     isAssetLibraryOpen,

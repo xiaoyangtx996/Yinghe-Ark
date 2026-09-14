@@ -3,6 +3,7 @@
     "title": "导出前自检",
     "subtitle": "勾选表示已核对；建议不阻断生成视频",
     "progress": "{checked}/{total}",
+    "open": "查看自检",
     "collapse": "收起",
     "expand": "展开",
     "empty": "有分镜镜头后，这里会出现自检清单",

@@ -12,6 +12,7 @@ export type ActivityFeedStageInput = {
   title: string
   status: string
   subtitle?: string
+  retryable?: boolean
 }
 
 export type ActivityFeedItem = {
@@ -20,6 +21,7 @@ export type ActivityFeedItem = {
   title: string
   status: ActivityFeedStatus
   subtitle?: string
+  retryable?: boolean
 }
 
 function normalizeFeedStatus(status: string): ActivityFeedStatus {
@@ -64,5 +66,6 @@ export function resolveAgentActivityFeed(
     title: stage.title,
     status: normalizeFeedStatus(stage.status),
     subtitle: stage.subtitle,
+    retryable: stage.retryable !== false,
   }))
 }

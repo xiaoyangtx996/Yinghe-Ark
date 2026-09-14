@@ -2,6 +2,7 @@ import * as React from 'react'
 import { createElement } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import HomePage from '@/app/[locale]/home/page'
 import {
   HOME_QUICK_START_MIN_ROWS,
@@ -66,6 +67,7 @@ vi.mock('@/i18n/navigation', () => ({
   },
   useRouter: () => ({
     push: vi.fn(),
+    prefetch: vi.fn(),
   }),
 }))
 
@@ -103,7 +105,10 @@ describe('HomePage quick-start input', () => {
   it('renders the homepage textarea with a default three-row height baseline', () => {
     Reflect.set(globalThis, 'React', React)
 
-    const html = renderToStaticMarkup(createElement(HomePage))
+    const queryClient = new QueryClient()
+    const html = renderToStaticMarkup(
+      createElement(QueryClientProvider, { client: queryClient }, createElement(HomePage)),
+    )
 
     expect(HOME_QUICK_START_MIN_ROWS).toBe(3)
     expect(html).toContain('StoryInputComposer')

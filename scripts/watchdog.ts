@@ -6,6 +6,7 @@ import { markTaskFailed } from '@/lib/task/service'
 import { publishTaskEvent } from '@/lib/task/publisher'
 import { TASK_EVENT_TYPE, TASK_TYPE, type TaskType } from '@/lib/task/types'
 import { cleanupAllProjectLogs } from '@/lib/logging/file-writer'
+import { startTaskWatchdog } from '@/lib/task/reconcile'
 
 const INTERVAL_MS = Number.parseInt(process.env.WATCHDOG_INTERVAL_MS || '30000', 10) || 30000
 const HEARTBEAT_TIMEOUT_MS = Number.parseInt(process.env.TASK_HEARTBEAT_TIMEOUT_MS || '90000', 10) || 90000
@@ -219,6 +220,8 @@ logger.info({
     heartbeatTimeoutMs: HEARTBEAT_TIMEOUT_MS,
   },
 })
+// BullMQ/DB 对账（原 Next instrumentation 内 startTaskWatchdog）改由本进程承载，避免与请求事件循环争用
+startTaskWatchdog()
 void tick()
 setInterval(() => {
   void tick()

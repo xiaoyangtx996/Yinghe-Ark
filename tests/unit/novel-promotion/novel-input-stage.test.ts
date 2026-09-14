@@ -18,25 +18,31 @@ vi.mock('@/components/story-input/StoryInputComposer', () => ({
     minRows,
     maxHeightViewportRatio,
     textareaClassName,
+    topLeft,
     topRight,
     footer,
     secondaryActions,
     primaryAction,
+    selectionAi,
   }: {
     minRows: number
     maxHeightViewportRatio: number
     textareaClassName?: string
+    topLeft?: React.ReactNode
     topRight?: React.ReactNode
     footer?: React.ReactNode
     secondaryActions?: React.ReactNode
-    primaryAction: React.ReactNode
+    primaryAction?: React.ReactNode
+    selectionAi?: { enabled?: boolean }
   }) => createElement(
     'section',
     {
       'data-min-rows': String(minRows),
       'data-max-height-ratio': String(maxHeightViewportRatio),
       'data-textarea-class': textareaClassName,
+      'data-selection-ai': selectionAi?.enabled ? 'true' : 'false',
     },
+    topLeft,
     topRight,
     footer,
     secondaryActions,
@@ -59,6 +65,7 @@ vi.mock('@/lib/api-fetch', () => ({
 
 vi.mock('@/lib/home/ai-story-expand', () => ({
   expandHomeStory: vi.fn(),
+  editHomeStorySelection: vi.fn(),
 }))
 
 vi.mock('@/components/ui/icons', () => ({
@@ -67,7 +74,7 @@ vi.mock('@/components/ui/icons', () => ({
 }))
 
 describe('NovelInputStage', () => {
-  it('uses the shared composer with a taller adaptive baseline in story mode', () => {
+  it('uses direction-C chrome: blank write + selection AI + process bar outside toolbar', () => {
     Reflect.set(globalThis, 'React', React)
 
     const html = renderToStaticMarkup(
@@ -81,10 +88,14 @@ describe('NovelInputStage', () => {
 
     expect(html).toContain('StoryInputComposer')
     expect(html).toContain('data-min-rows="8"')
-    expect(html).toContain('data-max-height-ratio="0.5"')
     expect(html).toContain('data-textarea-class="px-0 pt-0 pb-3 align-top"')
-    expect(html).toContain('aiWrite.trigger')
+    expect(html).toContain('data-selection-ai="true"')
+    expect(html).toContain('storyInput.blankWrite')
+    expect(html).toContain('storyInput.stageChip')
+    expect(html).toContain('storyInput.processBar.title')
+    expect(html).toContain('storyInput.processBar.cta')
     expect(html).toContain('AiWriteModal')
+    expect(html).not.toContain('aiWrite.trigger')
     expect(html).not.toContain('storyInput.wordCount 0')
     expect(html).not.toContain('storyInput.currentConfigSummary')
   })

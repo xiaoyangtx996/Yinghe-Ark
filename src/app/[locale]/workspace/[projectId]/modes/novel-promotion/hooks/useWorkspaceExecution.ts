@@ -86,8 +86,22 @@ export function useWorkspaceExecution({
     () => readSessionBoolean(scriptToStoryboardMinimizedStorageKey),
   )
 
-  const storyToScriptStream = useStoryToScriptRunStream({ projectId, episodeId })
-  const scriptToStoryboardStream = useScriptToStoryboardRunStream({ projectId, episodeId })
+  // Stage-gate recovery probes: idle storyboard must not burn story→script /api/runs.
+  const storyToScriptRecoveryEnabled =
+    currentStage === 'config' || currentStage === 'script' || currentStage === 'assets'
+  const scriptToStoryboardRecoveryEnabled =
+    currentStage === 'script' || currentStage === 'storyboard'
+
+  const storyToScriptStream = useStoryToScriptRunStream({
+    projectId,
+    episodeId,
+    recoveryEnabled: storyToScriptRecoveryEnabled,
+  })
+  const scriptToStoryboardStream = useScriptToStoryboardRunStream({
+    projectId,
+    episodeId,
+    recoveryEnabled: scriptToStoryboardRecoveryEnabled,
+  })
   const handledStoryToScriptRunIdsRef = useRef<Set<string>>(new Set())
   const handledScriptToStoryboardRunIdsRef = useRef<Set<string>>(new Set())
   const storyToScriptWasActiveRef = useRef(false)
@@ -211,6 +225,10 @@ export function useWorkspaceExecution({
         return
       }
       const rawMessage = getErrorMessage(err)
+      // Partial failure keeps the run console open with retry / continue CTAs — no blocking alert.
+      if (/STORY_TO_SCRIPT_PARTIAL_FAILED|SCRIPT_TO_STORYBOARD_PARTIAL_FAILED/i.test(rawMessage)) {
+        return
+      }
       const friendlyMessage = isRunStreamTimeoutMessage(rawMessage)
         ? t('execution.taskStreamTimeout')
         : rawMessage
@@ -247,6 +265,9 @@ export function useWorkspaceExecution({
         return
       }
       const rawMessage = getErrorMessage(err)
+      if (/STORY_TO_SCRIPT_PARTIAL_FAILED|SCRIPT_TO_STORYBOARD_PARTIAL_FAILED/i.test(rawMessage)) {
+        return
+      }
       alert(`${t('execution.generationFailed')}: ${isRunStreamTimeoutMessage(rawMessage) ? t('execution.taskStreamTimeout') : rawMessage}`)
     } finally {
       setIsConfirmingAssets(false)
@@ -336,6 +357,54 @@ export function useWorkspaceExecution({
     storyToScriptStream.isRunning,
   ])
 
+  const continueAfterStoryToScript = useCallback(async () => {
+    const runId = storyToScriptStream.runId?.trim() || ''
+    if (runId && !handledStoryToScriptRunIdsRef.current.has(runId)) {
+      await finalizeStoryToScriptSuccess(runId)
+      return
+    }
+    try {
+      await onRefresh()
+    } catch (refreshError) {
+      _ulogInfo('[WorkspaceExecution] refresh on continue story-to-script failed', {
+        message: getErrorMessage(refreshError),
+      })
+    }
+    setStoryToScriptConsoleMinimized(true)
+    onStageChange('script')
+    onOpenAssetLibrary()
+    storyToScriptStream.reset()
+  }, [
+    finalizeStoryToScriptSuccess,
+    onOpenAssetLibrary,
+    onRefresh,
+    onStageChange,
+    storyToScriptStream,
+  ])
+
+  const continueAfterScriptToStoryboard = useCallback(async () => {
+    const runId = scriptToStoryboardStream.runId?.trim() || ''
+    if (runId && !handledScriptToStoryboardRunIdsRef.current.has(runId)) {
+      await finalizeScriptToStoryboardSuccess(runId)
+      return
+    }
+    try {
+      await onRefresh()
+    } catch (refreshError) {
+      _ulogInfo('[WorkspaceExecution] refresh on continue script-to-storyboard failed', {
+        message: getErrorMessage(refreshError),
+      })
+    }
+    setScriptToStoryboardConsoleMinimized(true)
+    onStageChange('storyboard')
+    scriptToStoryboardStream.reset()
+  }, [
+    finalizeScriptToStoryboardSuccess,
+    onRefresh,
+    onStageChange,
+    scriptToStoryboardStream,
+  ])
+
   return {
     isSubmittingTTS,
     isAssetAnalysisRunning,
@@ -352,6 +421,8 @@ export function useWorkspaceExecution({
     handleAnalyzeAssets,
     runStoryToScriptFlow,
     runScriptToStoryboardFlow,
+    continueAfterStoryToScript,
+    continueAfterScriptToStoryboard,
     showCreatingToast,
   }
 }

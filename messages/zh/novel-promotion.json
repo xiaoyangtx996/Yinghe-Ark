@@ -1,7 +1,7 @@
 {
   "stages": {
     "story": "故事",
-    "script": "剧本",
+    "script": "拆解",
     "storyboard": "分镜",
     "video": "成片",
     "voice": "配音",
@@ -21,17 +21,19 @@
     "enterVideoGeneration": "进入视频生成 →"
   },
   "smartImport": {
-    "title": "开启你的创作之旅",
-    "subtitle": "首先，选择你的创作方式",
+    "title": "开始创作",
+    "subtitle": "导入小说文件按章节分集，或直接添加一集",
     "manualCreate": {
-      "title": "从第一集开始创作",
-      "description": "从第一集开始，适合边写边播或单集短视频制作",
-      "button": "开始创作"
+      "title": "直接添加一集",
+      "description": "先建一集空剧集，适合单集试写或边写边拍",
+      "button": "拆解",
+      "enterButton": "进入拆解",
+      "rebuildButton": "重新拆解"
     },
     "smartImport": {
-      "title": "智能全书导入",
-      "description": "上传整本小说或剧本，AI 引擎自动识别章节结构，一键完成智能分集。",
-      "button": "立即导入",
+      "title": "导入剧集",
+      "description": "上传 TXT / DOCX 小说文件，按章节标记自动分成左侧剧集列表",
+      "button": "开始分集",
       "recommended": "推荐"
     },
     "upload": {
@@ -44,14 +46,20 @@
       "filePlaceholder": "已上传文件模式",
       "clickUpload": "点击上传文档",
       "clearTextFirst": "请先清空左侧文本",
-      "supportedFormats": "支持 Word, TXT 格式",
+      "supportedFormats": "支持 TXT、DOCX",
       "preview": "预览",
       "expandPreview": "展开更多",
       "collapsePreview": "收起预览",
       "deleteFile": "删除文件",
-      "startAnalysis": "开始智能分析",
+      "startAnalysis": "开始分集",
       "back": "返回",
-      "words": "字"
+      "words": "字",
+      "dropHint": "拖拽文件到此处，或点击选择",
+      "markerHint": "仅支持 TXT、DOCX 文件",
+      "startSplit": "开始分集",
+      "importing": "读取中…",
+      "changeFile": "点击可更换文件",
+      "clearFile": "清除"
     },
     "analyzing": {
       "title": "AI 正在分析你的故事",
@@ -98,7 +106,22 @@
   },
   "storyInput": {
     "currentEditing": "当前正在编辑：{name}",
-    "editingTip": "以下制作流程仅针对本集,如有其他剧集请在左上角切换",
+    "editingTip": "本页写小说正文。划选段落可扩写 / 优化 / 重写；写完后从底部进入剧本。",
+    "stageChip": "01 故事 · 小说构思",
+    "blankWrite": "空白处 · AI 帮写整章",
+    "placeholder": "请输入本集小说正文…\n\n也可先点右上角「AI 帮写整章」从一句话灵感起笔。\n划选段落会出现「扩写 / AI 优化 / 重写」。",
+    "selectionAi": {
+      "expand": "扩写",
+      "optimize": "AI 优化",
+      "rewrite": "重写",
+      "working": "改写中…"
+    },
+    "processBar": {
+      "title": "下一步：进入 02 剧本",
+      "description": "把本集小说正文交给剧本流程；左侧六步导航会切到「剧本」。",
+      "cta": "添加剧本",
+      "hint": "不会丢失当前故事文本"
+    },
     "wordCount": "字数：",
     "assetLibraryTip": {
       "title": "需要自定义角色和场景？",
@@ -171,7 +194,9 @@
   "rebuildConfirm": {
     "storyToScript": {
       "title": "将重建剧本流程",
-      "message": "检测到当前剧集已有下游分镜数据（{storyboardCount} 个分镜，{panelCount} 个镜头面板）。继续执行将清空这些数据并重新生成，是否继续？"
+      "message": "检测到当前剧集已有下游分镜数据（{storyboardCount} 个分镜，{panelCount} 个镜头面板）。继续执行将清空这些数据并重新生成，是否继续？",
+      "scriptOnlyTitle": "确认重新拆解",
+      "scriptOnlyMessage": "检测到当前剧集已有拆解结果（{clipCount} 个片段）。重新拆解将覆盖现有剧本内容，是否继续？"
     },
     "scriptToStoryboard": {
       "title": "将重建分镜数据",

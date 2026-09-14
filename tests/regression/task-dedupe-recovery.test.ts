@@ -5,6 +5,7 @@ import { prisma } from '../helpers/prisma'
 import { resetBillingState } from '../helpers/db-reset'
 import { createTestProject, createTestUser } from '../helpers/billing-fixtures'
 
+// createTask dedupe calls isJobAlive; watchdog entry lives in scripts/watchdog.ts (not Next instrumentation).
 const reconcileMock = vi.hoisted(() => ({
   isJobAlive: vi.fn(async () => true),
 }))

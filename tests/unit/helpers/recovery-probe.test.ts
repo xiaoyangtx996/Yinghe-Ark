@@ -46,4 +46,126 @@ describe('recovery probe', () => {
 
     cleanup()
   })
+
+  it('stops probing after empty attempts are exhausted', async () => {
+    vi.useFakeTimers()
+
+    const resolveActiveRunId = vi.fn(async () => null)
+    const onRecovered = vi.fn()
+
+    const cleanup = startRecoveryProbe({
+      projectId: 'project-1',
+      storageKey: 'scope:story-to-script:episode-1',
+      storageScopeKey: 'episode-1',
+      hasRunState: () => false,
+      resolveActiveRunId,
+      onRecovered,
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(
+      recoveryProbeTestUtils.PROBE_RETRY_INTERVAL_MS * 5,
+    )
+
+    expect(resolveActiveRunId).toHaveBeenCalledTimes(
+      recoveryProbeTestUtils.PROBE_EMPTY_MAX_ATTEMPTS,
+    )
+    expect(onRecovered).not.toHaveBeenCalled()
+
+    cleanup()
+  })
+
+  it('does not consume empty budget on transport errors', async () => {
+    vi.useFakeTimers()
+
+    const resolveActiveRunId = vi
+      .fn<({ projectId, storageScopeKey }: { projectId: string; storageScopeKey?: string }) => Promise<string | null>>()
+      .mockRejectedValueOnce(new Error('network'))
+      .mockRejectedValueOnce(new Error('network'))
+      .mockResolvedValueOnce('run-recovered')
+    const onRecovered = vi.fn()
+
+    const cleanup = startRecoveryProbe({
+      projectId: 'project-1',
+      storageKey: 'scope:story-to-script:episode-1',
+      storageScopeKey: 'episode-1',
+      hasRunState: () => false,
+      resolveActiveRunId,
+      onRecovered,
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(recoveryProbeTestUtils.PROBE_ERROR_RETRY_MS)
+    await vi.advanceTimersByTimeAsync(recoveryProbeTestUtils.PROBE_SUCCESS_COOLDOWN_MS)
+
+    expect(onRecovered).toHaveBeenCalledWith('run-recovered')
+    cleanup()
+  })
+
+  it('cools down after empty budget so a remount does not immediately re-probe', async () => {
+    vi.useFakeTimers()
+
+    const resolveActiveRunId = vi.fn(async () => null)
+    const onRecovered = vi.fn()
+
+    const cleanup1 = startRecoveryProbe({
+      projectId: 'project-1',
+      storageKey: 'scope:story-to-script:episode-1',
+      storageScopeKey: 'episode-1',
+      hasRunState: () => false,
+      resolveActiveRunId,
+      onRecovered,
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(
+      recoveryProbeTestUtils.PROBE_RETRY_INTERVAL_MS,
+    )
+    cleanup1()
+
+    expect(resolveActiveRunId).toHaveBeenCalledTimes(
+      recoveryProbeTestUtils.PROBE_EMPTY_MAX_ATTEMPTS,
+    )
+
+    const cleanup2 = startRecoveryProbe({
+      projectId: 'project-1',
+      storageKey: 'scope:story-to-script:episode-1',
+      storageScopeKey: 'episode-1',
+      hasRunState: () => false,
+      resolveActiveRunId,
+      onRecovered,
+    })
+
+    await vi.advanceTimersByTimeAsync(0)
+    await vi.advanceTimersByTimeAsync(
+      recoveryProbeTestUtils.PROBE_RETRY_INTERVAL_MS,
+    )
+
+    // Still within empty-exhaust cooldown — no new resolve calls.
+    expect(resolveActiveRunId).toHaveBeenCalledTimes(
+      recoveryProbeTestUtils.PROBE_EMPTY_MAX_ATTEMPTS,
+    )
+
+    cleanup2()
+  })
+
+  it('cancels a deferred initial probe before it hits the network', async () => {
+    vi.useFakeTimers()
+
+    const resolveActiveRunId = vi.fn(async () => null)
+    const onRecovered = vi.fn()
+
+    const cleanup = startRecoveryProbe({
+      projectId: 'project-1',
+      storageKey: 'scope:story-to-script:episode-1',
+      storageScopeKey: 'episode-1',
+      hasRunState: () => false,
+      resolveActiveRunId,
+      onRecovered,
+    })
+    cleanup()
+
+    await vi.advanceTimersByTimeAsync(0)
+    expect(resolveActiveRunId).not.toHaveBeenCalled()
+  })
 })

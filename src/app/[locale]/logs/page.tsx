@@ -3,20 +3,29 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import dynamic from 'next/dynamic'
 import Navbar from '@/components/Navbar'
+import AppBootScreen from '@/components/AppBootScreen'
 import { SecondarySidebar } from '@/components/SecondarySidebar'
 import { useRouter } from '@/i18n/navigation'
-import { BillingRecordsPanel } from './components/BillingRecordsPanel'
-import { SystemLogsPanel } from './components/SystemLogsPanel'
 
-type LogsTab = 'billing' | 'system'
+type LogsTab = 'operation' | 'login' | 'system'
+
+const AuditEventsPanel = dynamic(
+  () => import('./components/AuditEventsPanel').then((m) => m.AuditEventsPanel),
+  { ssr: false },
+)
+
+const SystemLogsPanel = dynamic(
+  () => import('./components/SystemLogsPanel').then((m) => m.SystemLogsPanel),
+  { ssr: false },
+)
 
 export default function LogsPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const t = useTranslations('logs')
-  const tc = useTranslations('common')
-  const [activeTab, setActiveTab] = useState<LogsTab>('billing')
+  const [activeTab, setActiveTab] = useState<LogsTab>('operation')
 
   useEffect(() => {
     if (status === 'loading') return
@@ -26,41 +35,40 @@ export default function LogsPage() {
   }, [router, session, status])
 
   if (status === 'loading') {
-    return (
-      <div className="glass-page min-h-dvh">
-        <Navbar />
-        <main className="mx-auto flex h-dvh max-w-[1440px] flex-col items-center justify-center px-4 pb-4 pt-4 sm:px-6">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--glass-stroke-base)] border-t-[var(--glass-text-secondary)]" />
-          <p className="mt-3 text-sm text-[var(--glass-text-secondary)]">{tc('loading')}</p>
-        </main>
-      </div>
-    )
+    return <AppBootScreen />
   }
 
   if (!session) {
-    return (
-      <div className="glass-page flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--glass-stroke-base)] border-t-[var(--glass-text-secondary)]" />
-      </div>
-    )
+    return null
   }
 
-  const title = activeTab === 'billing' ? t('tabBilling') : t('tabSystem')
-  const description = activeTab === 'billing' ? t('tabBillingDesc') : t('tabSystemDesc')
+  const paneMeta: Record<LogsTab, { title: string; desc: string }> = {
+    operation: { title: t('tabOperation'), desc: t('tabOperationDesc') },
+    login: { title: t('tabLogin'), desc: t('tabLoginDesc') },
+    system: { title: t('tabSystem'), desc: t('tabSystemDesc') },
+  }
+  const { title, desc: description } = paneMeta[activeTab]
 
   return (
-    <div className="glass-page min-h-dvh">
+    <div className="glass-page min-h-dvh" data-page="logs">
       <Navbar />
       <SecondarySidebar
         title={t('title')}
         description={t('subtitle')}
         items={[
           {
-            id: 'billing',
-            label: t('tabBilling'),
-            icon: 'receipt',
-            active: activeTab === 'billing',
-            onClick: () => setActiveTab('billing'),
+            id: 'operation',
+            label: t('tabOperation'),
+            icon: 'clipboardCheck',
+            active: activeTab === 'operation',
+            onClick: () => setActiveTab('operation'),
+          },
+          {
+            id: 'login',
+            label: t('tabLogin'),
+            icon: 'lock',
+            active: activeTab === 'login',
+            onClick: () => setActiveTab('login'),
           },
           {
             id: 'system',
@@ -84,7 +92,9 @@ export default function LogsPage() {
         </header>
 
         <div className="flex min-h-0 flex-1 flex-col">
-          {activeTab === 'billing' ? <BillingRecordsPanel /> : <SystemLogsPanel />}
+          {activeTab === 'operation' ? <AuditEventsPanel kind="operation" /> : null}
+          {activeTab === 'login' ? <AuditEventsPanel kind="login" /> : null}
+          {activeTab === 'system' ? <SystemLogsPanel /> : null}
         </div>
       </main>
     </div>

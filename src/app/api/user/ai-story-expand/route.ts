@@ -4,6 +4,12 @@ import { requireUserAuth, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
 import { getUserModelConfig } from '@/lib/config-service'
 import { maybeSubmitLLMTask } from '@/lib/llm-observe/route-task'
+import {
+  AI_STORY_MODES,
+  isAiStoryMode,
+  isAiStorySelectionMode,
+  normalizeAiStoryMode,
+} from '@/lib/story/ai-story-modes'
 import { TASK_TYPE } from '@/lib/task/types'
 
 export const POST = apiHandler(async (request: NextRequest) => {
@@ -12,9 +18,23 @@ export const POST = apiHandler(async (request: NextRequest) => {
   const { session } = authResult
 
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
-  const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : ''
-  if (!prompt) {
+  if (body.mode !== undefined && !isAiStoryMode(body.mode)) {
     throw new ApiError('INVALID_PARAMS')
+  }
+  const mode = normalizeAiStoryMode(body.mode)
+
+  const prompt = typeof body.prompt === 'string' ? body.prompt.trim() : ''
+  const selectedText = typeof body.selectedText === 'string' ? body.selectedText.trim() : ''
+  const fullText = typeof body.fullText === 'string' ? body.fullText : ''
+
+  if (mode === AI_STORY_MODES.FROM_SCRATCH) {
+    if (!prompt) {
+      throw new ApiError('INVALID_PARAMS')
+    }
+  } else if (isAiStorySelectionMode(mode)) {
+    if (!selectedText) {
+      throw new ApiError('INVALID_PARAMS')
+    }
   }
 
   const userConfig = await getUserModelConfig(session.user.id)
@@ -22,8 +42,12 @@ export const POST = apiHandler(async (request: NextRequest) => {
     throw new ApiError('MISSING_CONFIG')
   }
 
+  const dedupeSeed = mode === AI_STORY_MODES.FROM_SCRATCH
+    ? `${session.user.id}:home-story-expand:${prompt}`
+    : `${session.user.id}:home-story-edit:${mode}:${selectedText}:${fullText.slice(0, 200)}`
+
   const dedupeDigest = createHash('sha1')
-    .update(`${session.user.id}:home-story-expand:${prompt}`)
+    .update(dedupeSeed)
     .digest('hex')
     .slice(0, 16)
 
@@ -36,7 +60,10 @@ export const POST = apiHandler(async (request: NextRequest) => {
     targetId: session.user.id,
     routePath: '/api/user/ai-story-expand',
     body: {
+      mode,
       prompt,
+      selectedText,
+      fullText,
       analysisModel: userConfig.analysisModel,
     },
     dedupeKey: `home_ai_story_expand:${dedupeDigest}`,

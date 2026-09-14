@@ -38,6 +38,7 @@ const prismaMock = vi.hoisted(() => ({
     update: vi.fn(),
   },
   novelPromotionClip: {
+    findUnique: vi.fn(),
     update: vi.fn(),
   },
   novelPromotionStoryboard: {
@@ -241,9 +242,18 @@ describe('api contract - crud routes (behavior)', () => {
       content: 'clip content',
       screenplay: JSON.stringify({ scenes: [{ id: 1 }] }),
     })
+    prismaMock.novelPromotionClip.findUnique.mockResolvedValue({
+      id: 'clip-1',
+      episode: {
+        novelPromotionProject: { projectId: 'project-1' },
+      },
+    })
     prismaMock.novelPromotionStoryboard.findUnique.mockResolvedValue({
       id: 'storyboard-1',
-      projectId: 'project-1',
+      panels: [],
+      episode: {
+        novelPromotionProject: { projectId: 'project-1' },
+      },
     })
     prismaMock.novelPromotionStoryboard.update.mockResolvedValue({
       id: 'storyboard-1',
@@ -253,6 +263,11 @@ describe('api contract - crud routes (behavior)', () => {
       id: 'panel-1',
       storyboardId: 'storyboard-1',
       panelIndex: 0,
+      storyboard: {
+        episode: {
+          novelPromotionProject: { projectId: 'project-1' },
+        },
+      },
     })
     prismaMock.novelPromotionPanel.update.mockResolvedValue({
       id: 'panel-1',

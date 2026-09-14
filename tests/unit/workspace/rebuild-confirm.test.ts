@@ -67,6 +67,7 @@ describe('useRebuildConfirm', () => {
     const hook = useRebuildConfirm({
       episodeId: 'episode-1',
       episodeStoryboards: [],
+      existingClipCount: 0,
       getProjectStoryboardStats,
       t: (key: string) => key,
     })
@@ -90,6 +91,7 @@ describe('useRebuildConfirm', () => {
     const hook = useRebuildConfirm({
       episodeId: 'episode-1',
       episodeStoryboards: [],
+      existingClipCount: 0,
       getProjectStoryboardStats,
       t: (key: string) => key,
     })
@@ -107,6 +109,60 @@ describe('useRebuildConfirm', () => {
     }
     expect(resetCall('storyToScript')).toBeNull()
     expect(resetCall('scriptToStoryboard')).toBe('scriptToStoryboard')
+  })
+
+  it('story to script with existing clips opens confirm even without storyboards', async () => {
+    const getProjectStoryboardStats = vi.fn(async () => ({ storyboardCount: 0, panelCount: 0 }))
+    const action = vi.fn(async () => undefined)
+
+    const hook = useRebuildConfirm({
+      episodeId: 'episode-1',
+      episodeStoryboards: [],
+      existingClipCount: 4,
+      getProjectStoryboardStats,
+      t: (key: string) => key,
+    })
+
+    await hook.runWithRebuildConfirm('storyToScript', action)
+
+    expect(action).not.toHaveBeenCalled()
+    expect(setShowRebuildConfirmMock).toHaveBeenCalledWith(true)
+    expect(setRebuildConfirmContextMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'storyToScript',
+        clipCount: 4,
+        storyToScriptKind: 'script',
+      }),
+    )
+  })
+
+  it('forceConfirm opens confirm even when clip count is zero', async () => {
+    const getProjectStoryboardStats = vi.fn(async () => ({ storyboardCount: 0, panelCount: 0 }))
+    const action = vi.fn(async () => undefined)
+
+    const hook = useRebuildConfirm({
+      episodeId: 'episode-1',
+      episodeStoryboards: [],
+      existingClipCount: 0,
+      getProjectStoryboardStats,
+      t: (key: string) => key,
+    })
+
+    await hook.runWithRebuildConfirm('storyToScript', action, {
+      forceConfirm: true,
+      clipCount: 4,
+    })
+
+    expect(action).not.toHaveBeenCalled()
+    expect(getProjectStoryboardStats).not.toHaveBeenCalled()
+    expect(setShowRebuildConfirmMock).toHaveBeenCalledWith(true)
+    expect(setRebuildConfirmContextMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        actionType: 'storyToScript',
+        clipCount: 4,
+        storyToScriptKind: 'script',
+      }),
+    )
   })
 })
 

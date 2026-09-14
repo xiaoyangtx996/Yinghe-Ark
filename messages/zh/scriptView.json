@@ -26,6 +26,7 @@
         "title": "出片前自检",
         "subtitle": "勾选即表示你已经核对过；建议不阻断下一步",
         "progress": "{checked}/{total}",
+        "open": "查看自检",
         "collapse": "收起",
         "expand": "展开",
         "empty": "生成剧本片段后，这里会出现自检清单",

@@ -264,6 +264,10 @@ export interface NovelPromotionProject {
   characters?: Character[]
   locations?: Location[]
   props?: Prop[]
+  /** Present on shell /data responses (assets come from /api/assets). */
+  episodeCount?: number
+  characterCount?: number
+  locationCount?: number
   episodes?: Array<{
     id: string
     episodeNumber: number

@@ -122,9 +122,9 @@ model NovelPromotionEpisode {
   id                      String                     @id @default(uuid())
   novelPromotionProjectId String
   episodeNumber           Int
-  name                    String
+  name                    String                     @db.VarChar(512)
   description             String?                    @db.Text
-  novelText               String?                    @db.Text
+  novelText               String?                    @db.LongText
   audioUrl                String?                    @db.Text
   audioMediaId            String?
   audioMedia              MediaObject?               @relation("NovelPromotionEpisodeAudioMedia", fields: [audioMediaId], references: [id], onDelete: SetNull)
@@ -802,6 +802,8 @@ model GlobalAssetFolder {
   id        String   @id @default(uuid())
   userId    String
   name      String
+  /// character | location | voice | sfx；null 表示旧数据，各类下可见
+  kind      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -811,6 +813,7 @@ model GlobalAssetFolder {
   voices     GlobalVoice[]
 
   @@index([userId])
+  @@index([userId, kind])
   @@map("global_asset_folders")
 }
 

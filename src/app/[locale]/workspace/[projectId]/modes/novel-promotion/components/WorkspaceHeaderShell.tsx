@@ -1,23 +1,11 @@
 'use client'
 
-import { CapsuleNav, EpisodeSelector } from '@/components/ui/CapsuleNav'
+import type { ReactNode } from 'react'
 import { SettingsModal, WorldContextModal } from '@/components/ui/ConfigModals'
 import WorkspaceTopActions from './WorkspaceTopActions'
-import type { NovelPromotionPanel } from '@/types/project'
+import WorkspaceStageSwitcher from './WorkspaceStageSwitcher'
 import type { CapabilitySelections, ModelCapabilities } from '@/lib/model-config-contract'
-import { resolveEpisodeStageArtifacts } from '@/lib/novel-promotion/stage-readiness'
 import { resolveCapsuleActiveId } from '@/lib/novel-promotion/capsule-active-id'
-
-interface EpisodeSummary {
-  id: string
-  name: string
-  episodeNumber?: number
-  description?: string | null
-  clips?: unknown[]
-  storyboards?: Array<{
-    panels?: NovelPromotionPanel[] | null
-  }>
-}
 
 interface UserModelOption {
   value: string
@@ -51,16 +39,10 @@ interface WorkspaceHeaderShellProps {
   audioModel: string | null | undefined
   capabilityOverrides: CapabilitySelections
   videoRatio: string | null | undefined
+  genrePack: string | null | undefined
   ttsRate: string | null | undefined
   onUpdateConfig: (key: string, value: unknown) => Promise<void>
   globalAssetText: string
-  projectName: string
-  episodes: EpisodeSummary[]
-  currentEpisodeId?: string
-  onEpisodeSelect?: (episodeId: string) => void
-  onEpisodeCreate?: () => void
-  onEpisodeRename?: (episodeId: string, newName: string) => void
-  onEpisodeDelete?: (episodeId: string) => void
   capsuleNavItems: Array<{
     id: string
     icon: string
@@ -79,6 +61,7 @@ interface WorkspaceHeaderShellProps {
   assetLibraryLabel: string
   settingsLabel: string
   refreshTitle: string
+  children: ReactNode
 }
 
 export default function WorkspaceHeaderShell({
@@ -98,27 +81,20 @@ export default function WorkspaceHeaderShell({
   audioModel,
   capabilityOverrides,
   videoRatio,
+  genrePack,
   ttsRate,
   onUpdateConfig,
   globalAssetText,
-  projectName,
-  episodes,
-  currentEpisodeId,
-  onEpisodeSelect,
-  onEpisodeCreate,
-  onEpisodeRename,
-  onEpisodeDelete,
   capsuleNavItems,
   currentStage,
   onStageChange,
-  projectId,
-  episodeId,
   onOpenAssetLibrary,
   onOpenSettingsModal,
   onRefresh,
   assetLibraryLabel,
   settingsLabel,
   refreshTitle,
+  children,
 }: WorkspaceHeaderShellProps) {
   return (
     <>
@@ -136,6 +112,7 @@ export default function WorkspaceHeaderShell({
         videoModel={videoModel ?? undefined}
         audioModel={audioModel ?? undefined}
         videoRatio={videoRatio ?? undefined}
+        genrePack={genrePack ?? undefined}
         capabilityOverrides={capabilityOverrides}
         ttsRate={ttsRate ?? undefined}
         onArtStyleChange={(value) => { onUpdateConfig('artStyle', value) }}
@@ -147,6 +124,7 @@ export default function WorkspaceHeaderShell({
         onVideoModelChange={(value) => { onUpdateConfig('videoModel', value) }}
         onAudioModelChange={(value) => { onUpdateConfig('audioModel', value) }}
         onVideoRatioChange={(value) => { onUpdateConfig('videoRatio', value) }}
+        onGenrePackChange={(value) => { onUpdateConfig('genrePack', value) }}
         onCapabilityOverridesChange={(value) => { onUpdateConfig('capabilityOverrides', value) }}
         onTTSRateChange={(value) => { onUpdateConfig('ttsRate', value) }}
       />
@@ -157,59 +135,34 @@ export default function WorkspaceHeaderShell({
         text={globalAssetText}
         onChange={(value) => { onUpdateConfig('globalAssetText', value) }}
       />
-      {episodes.length > 0 && currentEpisodeId && (() => {
-        const getNum = (name: string) => { const m = name.match(/\d+/); return m ? parseInt(m[0], 10) : Infinity }
-        const sorted = [...episodes].sort((a, b) => {
-          const d = getNum(a.name) - getNum(b.name)
-          return d !== 0 ? d : a.name.localeCompare(b.name, 'zh')
-        })
-        return (
-          <EpisodeSelector
-            projectName={projectName}
-            episodes={sorted.map((ep) => {
-              const stageArtifacts = resolveEpisodeStageArtifacts({
-                novelText: null,
-                clips: ep.clips || [],
-                storyboards: ep.storyboards || [],
-                voiceLines: [],
-              })
-              return {
-                id: ep.id,
-                title: ep.name,
-                summary: ep.description ?? undefined,
-                status: {
-                  script: stageArtifacts.hasScript ? 'ready' as const : 'empty' as const,
-                  visual: stageArtifacts.hasVideo ? 'ready' as const : 'empty' as const,
-                },
-              }
-            })}
-            currentId={currentEpisodeId}
-            onSelect={(id) => onEpisodeSelect?.(id)}
-            onAdd={onEpisodeCreate}
-            onRename={(id, newName) => onEpisodeRename?.(id, newName)}
-            onDelete={onEpisodeDelete}
-          />
-        )
-      })()}
 
+      <div className="workspace-split">
+        <div className="workspace-split__main min-w-0 flex-1">
+          <div className="workspace-toolbar">
+            <WorkspaceStageSwitcher
+              items={capsuleNavItems}
+              activeId={resolveCapsuleActiveId(currentStage)}
+              onStageChange={onStageChange}
+            />
 
+            <div className="min-h-[2.75rem] flex-1" />
 
-      <CapsuleNav
-        items={capsuleNavItems}
-        activeId={resolveCapsuleActiveId(currentStage)}
-        onItemClick={onStageChange}
-        projectId={projectId}
-        episodeId={episodeId}
-      />
+            <WorkspaceTopActions
+              placement="inline"
+              onOpenAssetLibrary={onOpenAssetLibrary}
+              onOpenSettings={onOpenSettingsModal}
+              onRefresh={onRefresh}
+              assetLibraryLabel={assetLibraryLabel}
+              settingsLabel={settingsLabel}
+              refreshTitle={refreshTitle}
+            />
+          </div>
 
-      <WorkspaceTopActions
-        onOpenAssetLibrary={onOpenAssetLibrary}
-        onOpenSettings={onOpenSettingsModal}
-        onRefresh={onRefresh}
-        assetLibraryLabel={assetLibraryLabel}
-        settingsLabel={settingsLabel}
-        refreshTitle={refreshTitle}
-      />
+          <div className="workspace-split__stage">
+            {children}
+          </div>
+        </div>
+      </div>
     </>
   )
 }

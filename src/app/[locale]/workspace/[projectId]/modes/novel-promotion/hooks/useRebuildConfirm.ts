@@ -4,11 +4,14 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import { logWarn as _ulogWarn } from '@/lib/logging/core'
 
 type RebuildActionType = 'storyToScript' | 'scriptToStoryboard'
+type StoryToScriptConfirmKind = 'script' | 'storyboard'
 
 interface RebuildConfirmContext {
   actionType: RebuildActionType
   storyboardCount: number
   panelCount: number
+  clipCount: number
+  storyToScriptKind: StoryToScriptConfirmKind | null
 }
 
 interface DownstreamCheckResult {
@@ -33,6 +36,8 @@ interface StoryboardLike {
 interface UseRebuildConfirmParams {
   episodeId?: string
   episodeStoryboards?: StoryboardLike[]
+  /** Existing breakdown clips; story→script rebuild should confirm when > 0. */
+  existingClipCount?: number
   getProjectStoryboardStats: (episodeId: string) => Promise<StoryboardStats>
   t: (key: string, values?: Record<string, string | number | Date>) => string
 }
@@ -40,6 +45,7 @@ interface UseRebuildConfirmParams {
 export function useRebuildConfirm({
   episodeId,
   episodeStoryboards,
+  existingClipCount = 0,
   getProjectStoryboardStats,
   t,
 }: UseRebuildConfirmParams) {
@@ -47,6 +53,7 @@ export function useRebuildConfirm({
   const [rebuildConfirmContext, setRebuildConfirmContext] = useState<RebuildConfirmContext | null>(null)
   const [pendingActionType, setPendingActionType] = useState<RebuildActionType | null>(null)
   const pendingRebuildActionRef = useRef<(() => Promise<void>) | null>(null)
+  const safeClipCount = Math.max(0, Math.floor(existingClipCount || 0))
 
   const getFallbackStoryboardStats = useCallback(() => {
     const storyboards = Array.isArray(episodeStoryboards) ? episodeStoryboards : []
@@ -83,14 +90,37 @@ export function useRebuildConfirm({
 
   const runWithRebuildConfirm = useCallback(async (
     actionType: RebuildActionType,
-    action: () => Promise<void>
+    action: () => Promise<void>,
+    options?: { forceConfirm?: boolean; clipCount?: number },
   ) => {
     if (pendingActionType === actionType) return
 
     setPendingActionType(actionType)
     try {
-      const downstream = await checkStoryboardDownstreamData()
-      if (!downstream.shouldConfirm) {
+      const clipCount = Math.max(
+        0,
+        Math.floor(
+          typeof options?.clipCount === 'number' ? options.clipCount : safeClipCount,
+        ),
+      )
+      const needsScriptConfirm = actionType === 'storyToScript'
+        && (Boolean(options?.forceConfirm) || clipCount > 0)
+
+      // forceConfirm / local clip gate: skip storyboard network round-trip for snappy confirm UI
+      const downstream = options?.forceConfirm
+        ? (() => {
+          const fallback = getFallbackStoryboardStats()
+          return {
+            shouldConfirm: hasDownstreamStoryboardData(fallback),
+            storyboardCount: fallback.storyboardCount,
+            panelCount: fallback.panelCount,
+          }
+        })()
+        : await checkStoryboardDownstreamData()
+
+      const shouldConfirm = downstream.shouldConfirm || needsScriptConfirm
+
+      if (!shouldConfirm) {
         try {
           await action()
         } finally {
@@ -110,13 +140,17 @@ export function useRebuildConfirm({
         actionType,
         storyboardCount: downstream.storyboardCount,
         panelCount: downstream.panelCount,
+        clipCount: options?.forceConfirm ? Math.max(clipCount, 1) : clipCount,
+        storyToScriptKind: actionType === 'storyToScript'
+          ? (downstream.shouldConfirm ? 'storyboard' : 'script')
+          : null,
       })
       setShowRebuildConfirm(true)
     } catch (error) {
       setPendingActionType((current) => (current === actionType ? null : current))
       throw error
     }
-  }, [checkStoryboardDownstreamData, pendingActionType])
+  }, [checkStoryboardDownstreamData, getFallbackStoryboardStats, pendingActionType, safeClipCount])
 
   const handleCancelRebuildConfirm = useCallback(() => {
     const currentActionType = rebuildConfirmContext?.actionType ?? pendingActionType
@@ -143,6 +177,9 @@ export function useRebuildConfirm({
   const rebuildConfirmTitle = useMemo(() => {
     if (!rebuildConfirmContext) return ''
     if (rebuildConfirmContext.actionType === 'storyToScript') {
+      if (rebuildConfirmContext.storyToScriptKind === 'script') {
+        return t('rebuildConfirm.storyToScript.scriptOnlyTitle')
+      }
       return t('rebuildConfirm.storyToScript.title')
     }
     return t('rebuildConfirm.scriptToStoryboard.title')
@@ -153,8 +190,12 @@ export function useRebuildConfirm({
     const values = {
       storyboardCount: rebuildConfirmContext.storyboardCount,
       panelCount: rebuildConfirmContext.panelCount,
+      clipCount: rebuildConfirmContext.clipCount,
     }
     if (rebuildConfirmContext.actionType === 'storyToScript') {
+      if (rebuildConfirmContext.storyToScriptKind === 'script') {
+        return t('rebuildConfirm.storyToScript.scriptOnlyMessage', values)
+      }
       return t('rebuildConfirm.storyToScript.message', values)
     }
     return t('rebuildConfirm.scriptToStoryboard.message', values)

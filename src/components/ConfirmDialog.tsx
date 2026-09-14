@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { AppIcon } from '@/components/ui/icons'
 
@@ -7,6 +8,8 @@ interface ConfirmDialogProps {
   show: boolean
   title: string
   message: string
+  /** Optional emphasis line under the message (e.g. folder name) */
+  detail?: string
   confirmText?: string
   cancelText?: string
   onConfirm: () => void
@@ -14,94 +17,106 @@ interface ConfirmDialogProps {
   type?: 'danger' | 'warning' | 'info'
 }
 
+/**
+ * Compact binary confirm for Yinghe film UI.
+ * Borrows Apple’s short decision rhythm (title → consequence → cancel/confirm),
+ * but uses glass surfaces, film gold, and solid action buttons — not iOS system chrome.
+ */
 export default function ConfirmDialog({
   show,
   title,
   message,
+  detail,
   confirmText,
   cancelText,
   onConfirm,
   onCancel,
-  type = 'danger'
+  type = 'danger',
 }: ConfirmDialogProps) {
   const t = useTranslations('common')
 
   const finalConfirmText = confirmText || t('confirm')
   const finalCancelText = cancelText || t('cancel')
+
+  useEffect(() => {
+    if (!show) return
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onCancel()
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        onConfirm()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [show, onCancel, onConfirm])
+
   if (!show) return null
 
-  const typeStyles = {
-    danger: {
-      icon: (
-        <AppIcon name="alert" className="w-6 h-6 text-[var(--glass-tone-danger-fg)]" />
-      ),
-      confirmBg: 'glass-btn-tone-danger',
-      iconBg: 'bg-[var(--glass-tone-danger-bg)]'
-    },
-    warning: {
-      icon: (
-        <AppIcon name="alert" className="w-6 h-6 text-[var(--glass-tone-warning-fg)]" />
-      ),
-      confirmBg: 'glass-btn-tone-warning',
-      iconBg: 'bg-[var(--glass-tone-warning-bg)]'
-    },
-    info: {
-      icon: (
-        <AppIcon name="info" className="w-6 h-6 text-[var(--glass-tone-info-fg)]" />
-      ),
-      confirmBg: 'glass-btn-tone-info',
-      iconBg: 'bg-[var(--glass-tone-info-bg)]'
-    }
-  }
-
-  const currentStyle = typeStyles[type]
+  const toneIcon =
+    type === 'danger' ? 'trash' : type === 'warning' ? 'info' : 'check'
+  const confirmBtnClass =
+    type === 'danger'
+      ? 'glass-btn-base glass-btn-tone-danger'
+      : type === 'warning'
+        ? 'glass-btn-base glass-btn-secondary film-confirm__btn--warning'
+        : 'glass-btn-base glass-btn-primary'
 
   return (
-    <>
-      {/* 背景遮罩 */}
-      <div
-        className="fixed inset-0 z-[80] glass-overlay animate-fade-in"
+    <div className="film-confirm-root" role="presentation">
+      <button
+        type="button"
+        className="film-confirm-backdrop"
+        aria-label={finalCancelText}
         onClick={onCancel}
       />
 
-      {/* 对话框 */}
-      <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 pointer-events-none">
-        <div
-          className="glass-surface-modal max-w-md w-full p-6 pointer-events-auto animate-scale-in"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* 图标 */}
-          <div className={`w-12 h-12 rounded-full ${currentStyle.iconBg} flex items-center justify-center mb-4`}>
-            {currentStyle.icon}
-          </div>
+      <div
+        className="film-confirm"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="film-confirm-title"
+        aria-describedby={message ? 'film-confirm-message' : undefined}
+        data-tone={type}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="film-confirm__mark" aria-hidden data-tone={type}>
+          <AppIcon name={toneIcon} className="h-5 w-5" />
+        </div>
 
-          {/* 标题 */}
-          <h3 className="mb-2 text-xl font-semibold text-[var(--glass-text-primary)]">
+        <div className="film-confirm__body">
+          <h3 id="film-confirm-title" className="film-confirm__title">
             {title}
           </h3>
+          {message ? (
+            <p id="film-confirm-message" className="film-confirm__message">
+              {message}
+            </p>
+          ) : null}
+          {detail ? <p className="film-confirm__detail">{detail}</p> : null}
+        </div>
 
-          {/* 消息 */}
-          <p className="mb-6 text-[var(--glass-text-secondary)]">
-            {message}
-          </p>
-
-          {/* 按钮 */}
-          <div className="flex gap-3">
-            <button
-              onClick={onCancel}
-              className="glass-btn-base glass-btn-secondary flex-1 px-4 py-2.5 font-medium rounded-xl"
-            >
-              {finalCancelText}
-            </button>
-            <button
-              onClick={onConfirm}
-              className={`glass-btn-base flex-1 px-4 py-2.5 font-medium rounded-xl ${currentStyle.confirmBg}`}
-            >
-              {finalConfirmText}
-            </button>
-          </div>
+        <div className="film-confirm__actions">
+          <button
+            type="button"
+            className="glass-btn-base glass-btn-secondary film-confirm__btn"
+            onClick={onCancel}
+          >
+            {finalCancelText}
+          </button>
+          <button
+            type="button"
+            className={`${confirmBtnClass} film-confirm__btn`}
+            onClick={onConfirm}
+            autoFocus
+          >
+            {finalConfirmText}
+          </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }

@@ -41,6 +41,8 @@ interface WorkspaceRunStreamConsolesProps {
   scriptToStoryboardConsoleMinimized: boolean
   onStoryToScriptMinimizedChange: (next: boolean) => void
   onScriptToStoryboardMinimizedChange: (next: boolean) => void
+  onContinueStoryToScript?: () => void
+  onContinueScriptToStoryboard?: () => void
   hideMinimizedBadges?: boolean
 }
 
@@ -51,6 +53,8 @@ export default function WorkspaceRunStreamConsoles({
   scriptToStoryboardConsoleMinimized,
   onStoryToScriptMinimizedChange,
   onScriptToStoryboardMinimizedChange,
+  onContinueStoryToScript,
+  onContinueScriptToStoryboard,
   hideMinimizedBadges,
 }: WorkspaceRunStreamConsolesProps) {
   const t = useTranslations('progress')
@@ -126,15 +130,15 @@ export default function WorkspaceRunStreamConsoles({
     stream: RunStreamState,
     stepId: string,
   ) => {
-    const input = typeof window !== 'undefined'
-      ? window.prompt('可选：输入重试模型（留空使用当前模型）')
-      : null
-    const modelOverride = typeof input === 'string' ? input.trim() : ''
-    await stream.retryStep({
-      stepId,
-      modelOverride: modelOverride || undefined,
-      reason: 'user_retry_from_console',
-    })
+    try {
+      await stream.retryStep({
+        stepId,
+        reason: 'user_retry_from_console',
+      })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      window.alert(message || 'retry failed')
+    }
   }
 
   return (
@@ -162,6 +166,8 @@ export default function WorkspaceRunStreamConsoles({
               onRetryStage={(stepId) => {
                 void handleRetryStepById(storyToScriptStream, stepId)
               }}
+              onContinue={onContinueStoryToScript}
+              continueLabel={t('runConsole.continueToScript')}
               outputText={storyToScriptStream.outputText}
               activeMessage={storyToScriptStream.activeMessage}
               overallProgress={storyToScriptStream.overallProgress}
@@ -214,6 +220,8 @@ export default function WorkspaceRunStreamConsoles({
               onRetryStage={(stepId) => {
                 void handleRetryStepById(scriptToStoryboardStream, stepId)
               }}
+              onContinue={onContinueScriptToStoryboard}
+              continueLabel={t('runConsole.continueToStoryboard')}
               outputText={scriptToStoryboardStream.outputText}
               activeMessage={scriptToStoryboardStream.activeMessage}
               overallProgress={scriptToStoryboardStream.overallProgress}

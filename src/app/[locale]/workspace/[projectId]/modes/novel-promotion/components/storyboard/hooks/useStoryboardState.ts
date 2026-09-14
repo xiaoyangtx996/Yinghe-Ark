@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query/keys'
+import { setEpisodeQueryData } from '@/lib/query/episode-data-cache'
 import { NovelPromotionStoryboard, NovelPromotionClip, NovelPromotionPanel } from '@/types/project'
 import { PanelEditData } from '../../PanelEditForm'
 import {
@@ -60,7 +61,7 @@ export function useStoryboardState({
           : nextStoryboardsOrUpdater
       )
 
-      queryClient.setQueryData(queryKeys.episodeData(projectId, episodeId), (previous: unknown) => {
+      setEpisodeQueryData(queryClient, projectId, episodeId, (previous: unknown) => {
         if (!previous || typeof previous !== 'object') return previous
         const episode = previous as { storyboards?: NovelPromotionStoryboard[] }
         const previousStoryboards = Array.isArray(episode.storyboards) ? episode.storyboards : []

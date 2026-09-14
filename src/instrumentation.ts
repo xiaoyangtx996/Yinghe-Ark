@@ -201,13 +201,7 @@ export async function register() {
       _ulogError('[Instrumentation] Failed to re-enqueue orphaned tasks:', error)
     }
 
-    // ─── Phase 3: 启动 Task Watchdog（DB ↔ BullMQ 持续对账）───
-    try {
-      const { startTaskWatchdog } = await import('@/lib/task/reconcile')
-      startTaskWatchdog()
-      _ulogInfo('[Instrumentation] Task watchdog started')
-    } catch (error) {
-      _ulogError('[Instrumentation] Failed to start task watchdog:', error)
-    }
+    // Phase 3: 持续对账由独立进程 scripts/watchdog.ts（dev:watchdog / start:watchdog）负责，
+    // 不再在 Next 进程内 startTaskWatchdog，避免与请求事件循环争用 Redis/DB。
   }
 }

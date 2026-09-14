@@ -40,9 +40,9 @@
   border-radius: var(--glass-radius-md);
 }
 
-/* Main creative well — muted inset, no outer chrome */
+/* Main creative well — single-layer panel fill */
 .glass-inset {
-  background: color-mix(in srgb, var(--glass-bg-muted) 70%, transparent);
+  background: var(--film-well-bg, #f7f1ea);
   border: none;
   box-shadow: none;
   border-radius: var(--glass-radius-panel);
@@ -144,6 +144,23 @@
   white-space: nowrap;
 }
 
+/* Square/circle icon-only control — kills horizontal padding that clips icons in w-8/h-8 buttons */
+.glass-btn-icon {
+  width: 2rem;
+  height: 2rem;
+  min-height: 0;
+  min-width: 2rem;
+  padding: 0;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.glass-btn-icon.glass-btn-icon-md {
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+}
+
 .glass-btn-base.glass-btn-comfortable {
   min-height: var(--glass-control-min-size);
   padding: 0 var(--glass-space-4);
@@ -152,6 +169,17 @@
 .glass-btn-base:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--glass-focus-ring-strong);
+}
+
+.glass-btn-base:active:not(:disabled):not([aria-disabled='true']) {
+  transform: scale(0.97);
+  transition-duration: 100ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-btn-base:active:not(:disabled):not([aria-disabled='true']) {
+    transform: none;
+  }
 }
 
 .glass-btn-base:disabled,

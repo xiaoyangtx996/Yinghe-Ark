@@ -62,8 +62,13 @@ function SkeletonRows({ cols }: { cols: number }) {
   )
 }
 
-export function BillingRecordsPanel() {
-  const t = useTranslations('logs')
+export type BillingFilterType = 'all' | 'recharge' | 'consume'
+
+export function BillingRecordsPanel({
+  initialType = 'all',
+}: {
+  initialType?: BillingFilterType
+} = {}) {
   const tb = useTranslations('billing')
   const tp = useTranslations('profile')
 
@@ -76,10 +81,10 @@ export function BillingRecordsPanel() {
     total: 0,
     totalPages: 0,
   })
-  const [type, setType] = useState('all')
+  const [type, setType] = useState<BillingFilterType>(initialType)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [applied, setApplied] = useState({ type: 'all', startDate: '', endDate: '' })
+  const [applied, setApplied] = useState({ type: initialType, startDate: '', endDate: '' })
 
   const fetchTransactions = useCallback(async (
     page: number,
@@ -114,8 +119,13 @@ export function BillingRecordsPanel() {
   }, [])
 
   useEffect(() => {
-    void fetchTransactions(1, { type: 'all', startDate: '', endDate: '' })
-  }, [fetchTransactions])
+    setType(initialType)
+    const next = { type: initialType, startDate: '', endDate: '' }
+    setStartDate('')
+    setEndDate('')
+    setApplied(next)
+    void fetchTransactions(1, next)
+  }, [fetchTransactions, initialType])
 
   const actionLabel = useCallback((action: string | null) => {
     if (!action) return '—'
@@ -132,8 +142,8 @@ export function BillingRecordsPanel() {
   const filterLabel = useMemo(() => {
     if (applied.type === 'recharge') return tb('income')
     if (applied.type === 'consume') return tb('expense')
-    return t('statFilterAll')
-  }, [applied.type, t, tb])
+    return tb('statFilterAll')
+  }, [applied.type, tb])
 
   const handleFilter = () => {
     const next = { type, startDate, endDate }
@@ -142,10 +152,10 @@ export function BillingRecordsPanel() {
   }
 
   const handleReset = () => {
-    setType('all')
+    setType(initialType)
     setStartDate('')
     setEndDate('')
-    const next = { type: 'all', startDate: '', endDate: '' }
+    const next = { type: initialType, startDate: '', endDate: '' }
     setApplied(next)
     void fetchTransactions(1, next)
   }
@@ -164,14 +174,14 @@ export function BillingRecordsPanel() {
     const rows = data.transactions || []
     const cur = data.currency || currency
     const header = [
-      t('time'),
-      t('type'),
-      t('amount'),
-      t('balanceAfter'),
-      t('project'),
-      t('episode'),
-      t('action'),
-      t('description'),
+      tb('time'),
+      tb('type'),
+      tb('amount'),
+      tb('balanceAfter'),
+      tb('project'),
+      tb('episode'),
+      tb('action'),
+      tb('description'),
     ]
     const lines = [
       header.map(toCsvCell).join(','),
@@ -212,19 +222,19 @@ export function BillingRecordsPanel() {
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="admin-stat-grid">
         <div className="admin-stat-card">
-          <p className="admin-stat-card__label">{t('statTotal')}</p>
+          <p className="admin-stat-card__label">{tb('statTotal')}</p>
           <p className="admin-stat-card__value">{loading ? '—' : pagination.total}</p>
           <p className="admin-stat-card__hint">{currency}</p>
         </div>
         <div className="admin-stat-card">
-          <p className="admin-stat-card__label">{t('statPage')}</p>
+          <p className="admin-stat-card__label">{tb('statPage')}</p>
           <p className="admin-stat-card__value admin-stat-card__value--sm">{loading ? '—' : items.length}</p>
           <p className="admin-stat-card__hint">
             {pagination.page}/{Math.max(pagination.totalPages, 1)}
           </p>
         </div>
         <div className="admin-stat-card">
-          <p className="admin-stat-card__label">{t('statFilter')}</p>
+          <p className="admin-stat-card__label">{tb('statFilter')}</p>
           <span className="admin-badge admin-badge--neutral">{filterLabel}</span>
           <p className="admin-stat-card__value admin-stat-card__value--meta">{dateRangeLabel}</p>
         </div>
@@ -237,7 +247,7 @@ export function BillingRecordsPanel() {
               {tb('transactionType')}
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value)}
+                onChange={(e) => setType(e.target.value as BillingFilterType)}
                 className="glass-input-base min-w-[140px] px-3 py-2 text-sm font-normal"
               >
                 <option value="all">{tb('allTypes')}</option>
@@ -277,7 +287,7 @@ export function BillingRecordsPanel() {
               className="glass-btn-base glass-btn-secondary inline-flex items-center gap-1.5 px-3 py-2 text-sm"
             >
               <AppIcon name="download" className="h-4 w-4" />
-              {t('exportCsv')}
+              {tb('exportCsv')}
             </button>
           </div>
         </div>
@@ -286,13 +296,13 @@ export function BillingRecordsPanel() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th>{t('time')}</th>
-                <th>{t('type')}</th>
-                <th>{t('amount')}</th>
-                <th>{t('project')}</th>
-                <th>{t('action')}</th>
-                <th>{t('detail')}</th>
-                <th>{t('balanceAfter')}</th>
+                <th>{tb('time')}</th>
+                <th>{tb('type')}</th>
+                <th>{tb('amount')}</th>
+                <th>{tb('project')}</th>
+                <th>{tb('action')}</th>
+                <th>{tb('detail')}</th>
+                <th>{tb('balanceAfter')}</th>
               </tr>
             </thead>
             <tbody>
@@ -306,7 +316,7 @@ export function BillingRecordsPanel() {
                         <AppIcon name="receipt" className="h-5 w-5" />
                       </div>
                       <p className="admin-empty__title">{tb('noRecords')}</p>
-                      <p className="admin-empty__desc">{t('tableDesc')}</p>
+                      <p className="admin-empty__desc">{tb('tableDesc')}</p>
                       <button
                         type="button"
                         onClick={handleReset}

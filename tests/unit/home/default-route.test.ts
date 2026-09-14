@@ -4,11 +4,11 @@ import {
   buildAuthenticatedHomeTarget,
 } from '@/lib/home/default-route'
 
-describe('authenticated home default route', () => {
-  it('uses /home as the only authenticated default pathname', () => {
-    expect(AUTHENTICATED_HOME_PATHNAME).toBe('/home')
+describe('authenticated default route', () => {
+  it('uses /workspace as the only authenticated default pathname', () => {
+    expect(AUTHENTICATED_HOME_PATHNAME).toBe('/workspace')
     expect(buildAuthenticatedHomeTarget()).toEqual({
-      pathname: '/home',
+      pathname: '/workspace',
     })
   })
 })

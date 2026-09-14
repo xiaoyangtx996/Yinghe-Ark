@@ -26,6 +26,7 @@
         "title": "Pre-export self-check",
         "subtitle": "Check items you already verified — hints never block storyboard",
         "progress": "{checked}/{total}",
+        "open": "Open checklist",
         "collapse": "Collapse",
         "expand": "Expand",
         "empty": "Self-check appears after script clips are generated",

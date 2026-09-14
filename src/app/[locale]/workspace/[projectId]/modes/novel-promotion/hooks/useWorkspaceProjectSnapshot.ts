@@ -27,10 +27,22 @@ export function useWorkspaceProjectSnapshot({
   return useMemo(() => {
     const projectData = project.novelPromotionData
     const capabilityOverrides = parseCapabilitySelections(projectData?.capabilityOverrides)
+    const projectCharacters = projectData?.characters || []
+    const projectLocations = projectData?.locations || []
+    const characterCount =
+      typeof projectData?.characterCount === 'number'
+        ? projectData.characterCount
+        : projectCharacters.length
+    const locationCount =
+      typeof projectData?.locationCount === 'number'
+        ? projectData.locationCount
+        : projectLocations.length
     return {
       projectData,
-      projectCharacters: projectData?.characters || [],
-      projectLocations: projectData?.locations || [],
+      projectCharacters,
+      projectLocations,
+      characterCount,
+      locationCount,
       episodeStoryboards: episode?.storyboards || [],
       currentStage: urlStage || 'config',
       globalAssetText: projectData?.globalAssetText || '',

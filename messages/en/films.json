@@ -1,0 +1,13 @@
+{
+  "title": "Films",
+  "subtitle": "Projects with generated videos — jump into the film stage to preview and export.",
+  "emptyTitle": "No films yet",
+  "emptyDesc": "Once a project has generated videos, it will appear here for management.",
+  "goProjects": "Go to projects",
+  "openVideos": "Open films",
+  "videoCount": "{count} videos",
+  "statEpisodes": "{n} eps",
+  "statImages": "{n} images",
+  "statVideos": "{n} videos",
+  "statPanels": "{n} panels"
+}

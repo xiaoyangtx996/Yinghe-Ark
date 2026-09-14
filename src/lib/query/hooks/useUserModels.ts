@@ -23,9 +23,10 @@ export interface UserModelsPayload {
     lipsync: UserModelOption[]
 }
 
-export function useUserModels() {
+export function useUserModels(options?: { enabled?: boolean }) {
     return useQuery({
         queryKey: queryKeys.userModels.all(),
+        enabled: options?.enabled ?? true,
         queryFn: async () => {
             const response = await apiFetch('/api/user/models')
             if (!response.ok) {

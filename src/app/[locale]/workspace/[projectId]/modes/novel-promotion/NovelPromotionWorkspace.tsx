@@ -7,6 +7,7 @@ import { AnimatedBackground } from '@/components/ui/SharedComponents'
 import { useTranslations } from 'next-intl'
 import { useMemo } from 'react'
 import { WorkspaceProvider } from './WorkspaceProvider'
+import { WorkspaceEpisodeProvider } from './WorkspaceEpisodeContext'
 import WorkspaceRunStreamConsoles from './components/WorkspaceRunStreamConsoles'
 import WorkspaceStageContent from './components/WorkspaceStageContent'
 import WorkspaceAssetLibraryModal from './components/WorkspaceAssetLibraryModal'
@@ -26,15 +27,9 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
   const tProgress = useTranslations('progress')
 
   const {
-    project,
     projectId,
     episodeId,
     episode,
-    episodes = [],
-    onEpisodeSelect,
-    onEpisodeCreate,
-    onEpisodeRename,
-    onEpisodeDelete,
   } = props
 
   const storyToScriptStream = vm.execution.storyToScriptStream
@@ -106,7 +101,7 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
   }
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <AnimatedBackground />
 
       <WorkspaceHeaderShell
@@ -126,16 +121,10 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
         audioModel={vm.project.audioModel}
         capabilityOverrides={vm.project.capabilityOverrides}
         videoRatio={vm.project.videoRatio}
+        genrePack={vm.project.genrePack}
         ttsRate={vm.project.ttsRate !== undefined && vm.project.ttsRate !== null ? String(vm.project.ttsRate) : undefined}
         onUpdateConfig={vm.actions.handleUpdateConfig}
         globalAssetText={vm.project.globalAssetText}
-        projectName={project.name}
-        episodes={episodes}
-        currentEpisodeId={episodeId}
-        onEpisodeSelect={onEpisodeSelect}
-        onEpisodeCreate={onEpisodeCreate}
-        onEpisodeRename={onEpisodeRename}
-        onEpisodeDelete={onEpisodeDelete}
         capsuleNavItems={vm.stageNav.capsuleNavItems}
         currentStage={vm.stageNav.currentStage}
         onStageChange={vm.stageNav.handleStageChange}
@@ -147,11 +136,9 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
         assetLibraryLabel={vm.i18n.t('buttons.assetLibrary')}
         settingsLabel={vm.i18n.t('buttons.settings')}
         refreshTitle={vm.i18n.t('buttons.refreshData')}
-      />
-
-      <div className="pt-24">
+      >
         {showPipelineChecklist ? (
-          <div className="px-4 sm:px-6">
+          <div className="shrink-0">
             <TaskPipelineChecklist
               items={pipelineItems}
               title={tProgress('pipelineChecklist.title')}
@@ -173,61 +160,65 @@ function NovelPromotionWorkspaceContent(props: NovelPromotionWorkspaceProps) {
             onGoVideos={() => vm.stageNav.handleStageChange('videos')}
           />
         </WorkspaceStageRuntimeProvider>
+      </WorkspaceHeaderShell>
 
-        <WorkspaceAssetLibraryModal
-          isOpen={vm.ui.isAssetLibraryOpen}
-          onClose={vm.ui.closeAssetLibrary}
-          assetsLoading={vm.ui.assetsLoading}
-          assetsLoadingState={vm.ui.assetsLoadingState}
-          hasCharacters={vm.project.projectCharacters.length > 0}
-          hasLocations={vm.project.projectLocations.length > 0}
-          projectId={projectId}
-          isAnalyzingAssets={vm.execution.isAssetAnalysisRunning}
-          focusCharacterId={vm.ui.assetLibraryFocusCharacterId}
-          focusCharacterRequestId={vm.ui.assetLibraryFocusRequestId}
-          triggerGlobalAnalyze={vm.ui.triggerGlobalAnalyzeOnOpen}
-          onGlobalAnalyzeComplete={() => vm.ui.setTriggerGlobalAnalyzeOnOpen(false)}
+      <WorkspaceAssetLibraryModal
+        isOpen={vm.ui.isAssetLibraryOpen}
+        onClose={vm.ui.closeAssetLibrary}
+        assetsLoading={vm.ui.assetsLoading}
+        assetsLoadingState={vm.ui.assetsLoadingState}
+        hasCharacters={vm.project.characterCount > 0}
+        hasLocations={vm.project.locationCount > 0}
+        projectId={projectId}
+        isAnalyzingAssets={vm.execution.isAssetAnalysisRunning}
+        focusCharacterId={vm.ui.assetLibraryFocusCharacterId}
+        focusCharacterRequestId={vm.ui.assetLibraryFocusRequestId}
+        triggerGlobalAnalyze={vm.ui.triggerGlobalAnalyzeOnOpen}
+        onGlobalAnalyzeComplete={() => vm.ui.setTriggerGlobalAnalyzeOnOpen(false)}
+      />
+
+      {vm.execution.showCreatingToast && (
+        <ProgressToast
+          show
+          message={vm.i18n.t('storyInput.creating')}
+          step={vm.execution.transitionProgress.step || ''}
+          runBadges={runBadges}
         />
+      )}
 
-        {vm.execution.showCreatingToast && (
-          <ProgressToast
-            show
-            message={vm.i18n.t('storyInput.creating')}
-            step={vm.execution.transitionProgress.step || ''}
-            runBadges={runBadges}
-          />
-        )}
+      <ConfirmDialog
+        show={vm.rebuild.showRebuildConfirm}
+        type="warning"
+        title={vm.rebuild.rebuildConfirmTitle}
+        message={vm.rebuild.rebuildConfirmMessage}
+        confirmText={vm.i18n.t('rebuildConfirm.confirm')}
+        cancelText={vm.i18n.t('rebuildConfirm.cancel')}
+        onConfirm={vm.rebuild.handleAcceptRebuildConfirm}
+        onCancel={vm.rebuild.handleCancelRebuildConfirm}
+      />
 
-        <ConfirmDialog
-          show={vm.rebuild.showRebuildConfirm}
-          type="warning"
-          title={vm.rebuild.rebuildConfirmTitle}
-          message={vm.rebuild.rebuildConfirmMessage}
-          confirmText={vm.i18n.t('rebuildConfirm.confirm')}
-          cancelText={vm.i18n.t('rebuildConfirm.cancel')}
-          onConfirm={vm.rebuild.handleAcceptRebuildConfirm}
-          onCancel={vm.rebuild.handleCancelRebuildConfirm}
-        />
-
-        <WorkspaceRunStreamConsoles
-          storyToScriptStream={vm.execution.storyToScriptStream}
-          scriptToStoryboardStream={vm.execution.scriptToStoryboardStream}
-          storyToScriptConsoleMinimized={vm.execution.storyToScriptConsoleMinimized}
-          scriptToStoryboardConsoleMinimized={vm.execution.scriptToStoryboardConsoleMinimized}
-          onStoryToScriptMinimizedChange={vm.execution.setStoryToScriptConsoleMinimized}
-          onScriptToStoryboardMinimizedChange={vm.execution.setScriptToStoryboardConsoleMinimized}
-          hideMinimizedBadges={vm.execution.showCreatingToast}
-        />
-      </div>
+      <WorkspaceRunStreamConsoles
+        storyToScriptStream={vm.execution.storyToScriptStream}
+        scriptToStoryboardStream={vm.execution.scriptToStoryboardStream}
+        storyToScriptConsoleMinimized={vm.execution.storyToScriptConsoleMinimized}
+        scriptToStoryboardConsoleMinimized={vm.execution.scriptToStoryboardConsoleMinimized}
+        onStoryToScriptMinimizedChange={vm.execution.setStoryToScriptConsoleMinimized}
+        onScriptToStoryboardMinimizedChange={vm.execution.setScriptToStoryboardConsoleMinimized}
+        onContinueStoryToScript={() => { void vm.execution.continueAfterStoryToScript() }}
+        onContinueScriptToStoryboard={() => { void vm.execution.continueAfterScriptToStoryboard() }}
+        hideMinimizedBadges={vm.execution.showCreatingToast}
+      />
     </div>
   )
 }
 
 export default function NovelPromotionWorkspace(props: NovelPromotionWorkspaceProps) {
-  const { projectId, episodeId } = props
+  const { projectId, episodeId, episode } = props
   return (
     <WorkspaceProvider projectId={projectId} episodeId={episodeId}>
-      <NovelPromotionWorkspaceContent {...props} />
+      <WorkspaceEpisodeProvider episode={episode} isPending={!episode}>
+        <NovelPromotionWorkspaceContent {...props} />
+      </WorkspaceEpisodeProvider>
     </WorkspaceProvider>
   )
 }

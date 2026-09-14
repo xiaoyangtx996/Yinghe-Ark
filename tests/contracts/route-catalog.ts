@@ -28,6 +28,7 @@ export type RouteCatalogEntry = {
 
 const ROUTE_FILES = [
   'src/app/api/admin/download-logs/route.ts',
+  'src/app/api/admin/logs/events/route.ts',
   'src/app/api/admin/logs/route.ts',
   'src/app/api/asset-hub/ai-design-character/route.ts',
   'src/app/api/asset-hub/ai-design-location/route.ts',
@@ -172,6 +173,7 @@ const ROUTE_FILES = [
   'src/app/api/user/costs/route.ts',
   'src/app/api/user/ai-story-expand/route.ts',
   'src/app/api/user/models/route.ts',
+  'src/app/api/user/password/route.ts',
   'src/app/api/user/transactions/route.ts',
 ] as const
 

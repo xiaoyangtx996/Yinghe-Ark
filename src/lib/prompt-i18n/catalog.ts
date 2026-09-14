@@ -85,6 +85,18 @@ export const PROMPT_CATALOG: Record<PromptId, PromptCatalogEntry> = {
     pathStem: 'novel-promotion/ai_story_expand',
     variableKeys: ['input'],
   },
+  [PROMPT_IDS.NP_AI_STORY_SELECTION_EXPAND]: {
+    pathStem: 'novel-promotion/ai_story_selection_expand',
+    variableKeys: ['full_text', 'selected_text'],
+  },
+  [PROMPT_IDS.NP_AI_STORY_SELECTION_OPTIMIZE]: {
+    pathStem: 'novel-promotion/ai_story_selection_optimize',
+    variableKeys: ['full_text', 'selected_text'],
+  },
+  [PROMPT_IDS.NP_AI_STORY_SELECTION_REWRITE]: {
+    pathStem: 'novel-promotion/ai_story_selection_rewrite',
+    variableKeys: ['full_text', 'selected_text'],
+  },
   [PROMPT_IDS.NP_CHARACTER_CREATE]: {
     pathStem: 'novel-promotion/character_create',
     variableKeys: ['user_input'],

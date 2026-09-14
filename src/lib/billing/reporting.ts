@@ -149,25 +149,25 @@ export async function getProjectTotalCost(projectId: string): Promise<number> {
 }
 
 export async function getProjectCostDetails(projectId: string) {
-  const byTypeRaw = await prisma.usageCost.groupBy({
-    by: ['apiType'],
-    where: { projectId },
-    _sum: { cost: true },
-    _count: true,
-  })
-
-  const byActionRaw = await prisma.usageCost.groupBy({
-    by: ['action'],
-    where: { projectId },
-    _sum: { cost: true },
-    _count: true,
-  })
-
-  const recentRecordsRaw = await prisma.usageCost.findMany({
-    where: { projectId },
-    orderBy: { createdAt: 'desc' },
-    take: 50,
-  })
+  const [byTypeRaw, byActionRaw, recentRecordsRaw] = await Promise.all([
+    prisma.usageCost.groupBy({
+      by: ['apiType'],
+      where: { projectId },
+      _sum: { cost: true },
+      _count: true,
+    }),
+    prisma.usageCost.groupBy({
+      by: ['action'],
+      where: { projectId },
+      _sum: { cost: true },
+      _count: true,
+    }),
+    prisma.usageCost.findMany({
+      where: { projectId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    }),
+  ])
 
   const byType = byTypeRaw.map((item) => ({
     ...item,
@@ -188,8 +188,11 @@ export async function getProjectCostDetails(projectId: string) {
     cost: toMoneyNumber(item.cost),
   }))
 
+  // Derive total from byType — avoid a 4th aggregate round-trip.
+  const total = byType.reduce((sum, item) => sum + (item._sum.cost || 0), 0)
+
   return {
-    total: await getProjectTotalCost(projectId),
+    total,
     byType,
     byAction,
     recentRecords,

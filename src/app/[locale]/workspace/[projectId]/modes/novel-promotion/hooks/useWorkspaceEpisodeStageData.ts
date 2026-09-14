@@ -1,25 +1,25 @@
 'use client'
 
-import { useEpisodeData } from '@/lib/query/hooks'
-import type { NovelPromotionClip, NovelPromotionStoryboard } from '@/types/project'
-import { useWorkspaceProvider } from '../WorkspaceProvider'
+import { useWorkspaceEpisodeContext } from '../WorkspaceEpisodeContext'
 
-interface EpisodeStagePayload {
-  name?: string
-  novelText?: string | null
-  clips?: NovelPromotionClip[]
-  storyboards?: NovelPromotionStoryboard[]
-}
-
+/**
+ * Stage-facing episode fields. Backed by the single page-level useEpisodeData subscription
+ * (via WorkspaceEpisodeProvider) — do not add another episode GET here.
+ */
 export function useWorkspaceEpisodeStageData() {
-  const { projectId, episodeId } = useWorkspaceProvider()
-  const { data: episodeData } = useEpisodeData(projectId, episodeId || null)
-  const payload = episodeData as EpisodeStagePayload | null
+  const {
+    episodeName,
+    novelText,
+    clips,
+    storyboards,
+    isEpisodePending,
+  } = useWorkspaceEpisodeContext()
 
   return {
-    episodeName: payload?.name,
-    novelText: payload?.novelText || '',
-    clips: payload?.clips || [],
-    storyboards: payload?.storyboards || [],
+    episodeName,
+    novelText,
+    clips,
+    storyboards,
+    isEpisodePending,
   }
 }

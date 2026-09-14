@@ -31,13 +31,16 @@ function rankRunStatus(status: RunStreamStatus): number {
 }
 
 function lockForwardStepStatus(prev: RunStepStatus, next: RunStepStatus): RunStepStatus {
-  if (prev === 'failed') return prev
+  // Allow intentional reopen after retry / higher attempt reset.
+  if (prev === 'failed' && next !== 'failed') return next
   if (prev === 'completed' && next !== 'stale') return prev
   if (prev === 'stale' && next !== 'failed') return prev
   return rankStepStatus(next) >= rankStepStatus(prev) ? next : prev
 }
 
 function lockForwardRunStatus(prev: RunStreamStatus, next: RunStreamStatus): RunStreamStatus {
+  // Allow retry reopen: failed → running, and terminal reconcile: failed → completed.
+  if (prev === 'failed' && (next === 'running' || next === 'completed')) return next
   if (prev === 'completed' || prev === 'failed') return prev
   return rankRunStatus(next) >= rankRunStatus(prev) ? next : prev
 }
@@ -292,6 +295,10 @@ export function applyRunStreamEvent(prev: RunState | null, event: RunStreamEvent
   if (event.event === 'run.start') {
     const nextStatus = normalizeRunStatus(event.status)
     base.status = lockForwardRunStatus(base.status, nextStatus === 'idle' ? 'running' : nextStatus)
+    if (base.status === 'running') {
+      base.errorMessage = ''
+      base.terminalAt = null
+    }
     if (event.payload && typeof event.payload === 'object') {
       base.payload = event.payload
     }

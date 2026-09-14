@@ -3,7 +3,9 @@ import { logError as _ulogError } from '@/lib/logging/core'
 import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
+import { useQueryClient } from '@tanstack/react-query'
 import Navbar from '@/components/Navbar'
+import AppBootScreen from '@/components/AppBootScreen'
 import ConfirmDialog from '@/components/ConfirmDialog'
 import TaskStatusInline from '@/components/task/TaskStatusInline'
 import { resolveTaskPresentationState } from '@/lib/task/presentation'
@@ -15,6 +17,7 @@ import { readApiErrorMessage } from '@/lib/api/read-error-message'
 import { validateProjectDraft } from '@/lib/projects/validation'
 import { formatProjectStatsLine } from '@/lib/projects/format-project-stats'
 import ProjectCardCover from '@/components/projects/ProjectCardCover'
+import { prefetchProjectWorkspaceEntry } from '@/lib/workspace/prefetch-project-entry'
 
 interface ProjectStats {
   episodes: number
@@ -72,6 +75,7 @@ function toProjectValidationMessage(
 export default function WorkspacePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -324,11 +328,7 @@ export default function WorkspacePage() {
   }
 
   if (status === 'loading' || !session) {
-    return (
-      <div className="glass-page min-h-screen flex items-center justify-center">
-        <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
-      </div>
-    )
+    return <AppBootScreen />
   }
 
   return (
@@ -432,6 +432,18 @@ export default function WorkspacePage() {
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
                 className="glass-surface group relative block cursor-pointer overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
+                prefetch
+                onMouseEnter={() => {
+                  prefetchProjectWorkspaceEntry(queryClient, project.id)
+                  try {
+                    router.prefetch({ pathname: `/workspace/${project.id}` })
+                  } catch {
+                    // ignore prefetch errors
+                  }
+                }}
+                onFocus={() => {
+                  prefetchProjectWorkspaceEntry(queryClient, project.id)
+                }}
               >
                 <ProjectCardCover
                   name={project.name}

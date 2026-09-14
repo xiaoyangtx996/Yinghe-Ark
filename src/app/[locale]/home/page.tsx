@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import Navbar from '@/components/Navbar'
+import AppBootScreen from '@/components/AppBootScreen'
 import { AppIcon } from '@/components/ui/icons'
 import StoryInputComposer from '@/components/story-input/StoryInputComposer'
 import TypewriterHero from '@/components/home/TypewriterHero'
@@ -24,6 +25,8 @@ import AiWriteModal from '@/components/home/AiWriteModal'
 import CreateConfirmWizard from '@/components/home/CreateConfirmWizard'
 import ProjectCardCover from '@/components/projects/ProjectCardCover'
 import { getGenrePackOption } from '@/lib/genre-packs'
+import { useQueryClient } from '@tanstack/react-query'
+import { prefetchProjectWorkspaceEntry } from '@/lib/workspace/prefetch-project-entry'
 
 interface ProjectStats {
   episodes: number
@@ -49,6 +52,7 @@ const RECENT_COUNT = 5
 export default function HomePage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const t = useTranslations('home')
   const tc = useTranslations('common')
 
@@ -178,15 +182,7 @@ export default function HomePage() {
   }
 
   if (status === 'loading' || !session) {
-    return (
-      <div className="glass-page flex min-h-screen flex-col items-center justify-center gap-3">
-        <span
-          className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[var(--glass-stroke-strong)] border-t-[var(--film-gold)]"
-          aria-hidden
-        />
-        <div className="text-[var(--glass-text-secondary)]">{tc('loading')}</div>
-      </div>
-    )
+    return <AppBootScreen />
   }
 
   return (
@@ -333,6 +329,17 @@ export default function HomePage() {
                 key={project.id}
                 href={{ pathname: `/workspace/${project.id}` }}
                 className="glass-surface group block overflow-hidden transition-colors hover:border-[var(--film-gold)]/45"
+                onMouseEnter={() => {
+                  prefetchProjectWorkspaceEntry(queryClient, project.id)
+                  try {
+                    router.prefetch({ pathname: `/workspace/${project.id}` })
+                  } catch {
+                    // ignore
+                  }
+                }}
+                onFocus={() => {
+                  prefetchProjectWorkspaceEntry(queryClient, project.id)
+                }}
               >
                 <ProjectCardCover
                   name={project.name}

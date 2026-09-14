@@ -101,15 +101,27 @@ export const queryKeys = {
 
     // ============ 顶层便捷函数 ============
     /**
-     * 项目基础数据
+     * 项目基础数据（shell：配置 + 计数，不含剧集索引）
      */
     projectData: (projectId: string) => ['project-data', projectId] as const,
 
     /**
-     * 剧集详情数据
+     * 剧集侧栏索引（columnar decode 后的 EpisodeIndexItem[]）
      */
-    episodeData: (projectId: string, episodeId: string) =>
-        ['episode-data', projectId, episodeId] as const,
+    episodeIndex: (projectId: string) => ['episode-index', projectId] as const,
+
+    /**
+     * 剧集详情数据
+     * - 无 view：前缀 key，用于 invalidate / setQueriesData（匹配全部 view）
+     * - 有 view：精确 key，用于 useQuery
+     */
+    episodeData: (projectId: string, episodeId: string, view?: 'full' | 'script' | 'panels') =>
+        view
+            ? (['episode-data', projectId, episodeId, view] as const)
+            : (['episode-data', projectId, episodeId] as const),
+
+    /** 成片管理列表（带视频的项目） */
+    filmsProjects: () => ['films-projects'] as const,
 } as const
 
 /**

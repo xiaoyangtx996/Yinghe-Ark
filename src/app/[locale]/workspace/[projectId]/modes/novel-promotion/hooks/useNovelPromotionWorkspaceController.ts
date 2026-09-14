@@ -22,6 +22,7 @@ import type { NovelPromotionWorkspaceProps } from '../types'
 import { useRouter } from '@/i18n/navigation'
 import { resolveEpisodeStageArtifacts } from '@/lib/novel-promotion/stage-readiness'
 import { usePipelineMediaTaskActivity } from './usePipelineMediaTaskActivity'
+import { hasScriptArtifacts } from '@/lib/novel-promotion/stage-readiness'
 
 export function useNovelPromotionWorkspaceController({
   project,
@@ -84,14 +85,22 @@ export function useNovelPromotionWorkspaceController({
     onStageChange,
   })
 
+  // Prefer episode from page shell (already stage-aware RQ). Avoid a second episode subscription.
+  const resolvedClips = episode?.clips
+  const resolvedStoryboards = episode?.storyboards
+  const existingClipCount = Array.isArray(resolvedClips) ? resolvedClips.length : 0
+
   const rebuildState = useRebuildConfirm({
     episodeId,
-    episodeStoryboards: episode?.storyboards,
+    episodeStoryboards: resolvedStoryboards,
+    existingClipCount: hasScriptArtifacts(resolvedClips) ? Math.max(existingClipCount, 1) : existingClipCount,
     getProjectStoryboardStats: configActions.getProjectStoryboardStats,
     t,
   })
 
-  const userModels = useWorkspaceUserModels()
+  const userModels = useWorkspaceUserModels({
+    enabled: isSettingsModalOpen || currentStage === 'videos',
+  })
 
   const execution = useWorkspaceExecution({
     projectId,
@@ -228,6 +237,8 @@ export function useNovelPromotionWorkspaceController({
     handleAnalyzeAssets: execution.handleAnalyzeAssets,
     runStoryToScriptFlow: execution.runStoryToScriptFlow,
     runScriptToStoryboardFlow: execution.runScriptToStoryboardFlow,
+    continueAfterStoryToScript: execution.continueAfterStoryToScript,
+    continueAfterScriptToStoryboard: execution.continueAfterScriptToStoryboard,
     showCreatingToast: execution.showCreatingToast,
     videoRunning,
     voiceRunning,

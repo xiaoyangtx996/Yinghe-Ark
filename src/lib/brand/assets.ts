@@ -3,7 +3,7 @@
  * PNG rasters for logo chrome and rail navigation; Lucide AppIcon remains for in-app ops.
  */
 
-export const BRAND_ASSET_VERSION = '5'
+export const BRAND_ASSET_VERSION = '6'
 
 export const brandLogo = {
   horizontal: '/brand/logo-horizontal.png',
@@ -22,6 +22,7 @@ export const brandNavIcon = {
   project: '/brand/icons/nav-project.png',
   workspace: '/brand/icons/nav-workspace.png',
   assets: '/brand/icons/nav-assets.png',
+  films: '/brand/icons/nav-films.png',
   logs: '/brand/icons/nav-logs.png',
   settings: '/brand/icons/nav-settings.png',
   profile: '/brand/icons/nav-profile.png',

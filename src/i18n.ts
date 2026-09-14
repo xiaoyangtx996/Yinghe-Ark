@@ -45,6 +45,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         progress,
         scriptView,
         assetHub,
+        films,
         assetModal,
         assetPicker,
         layout,
@@ -79,6 +80,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
         import(`../messages/${locale}/progress.json`),
         import(`../messages/${locale}/scriptView.json`),
         import(`../messages/${locale}/assetHub.json`),
+        import(`../messages/${locale}/films.json`),
         import(`../messages/${locale}/assetModal.json`),
         import(`../messages/${locale}/assetPicker.json`),
         import(`../messages/${locale}/layout.json`),
@@ -88,6 +90,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
     return {
         locale,
+        timeZone: 'Asia/Shanghai',
         messages: {
             common: common.default,
             stages: stages.default,
@@ -117,6 +120,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
             progress: progress.default,
             scriptView: scriptView.default,
             assetHub: assetHub.default,
+            films: films.default,
             assetModal: assetModal.default,
             assetPicker: assetPicker.default,
             layout: layout.default,
